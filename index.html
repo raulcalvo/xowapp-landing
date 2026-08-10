@@ -227,6 +227,68 @@
       line-height: 1.6;
     }
 
+    .hero-purpose {
+      max-width: 620px;
+      margin: 0 auto 32px auto;
+      padding: 20px 22px;
+      text-align: left;
+      background: var(--box-bg);
+      border: 1px solid var(--border-color);
+      border-left: 3px solid var(--teal-accent);
+      border-radius: 14px;
+    }
+
+    .hero-purpose-lead {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--heading-color);
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+
+    .hero-purpose-contrast {
+      font-size: 14.5px;
+      font-style: italic;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .purpose-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .purpose-feature {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--select-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 99px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--heading-color);
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .purpose-feature:hover {
+      border-color: var(--teal-accent);
+      transform: translateY(-1px);
+    }
+
+    .pf-icon {
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    @media (max-width: 640px) {
+      .purpose-features { gap: 8px; }
+      .purpose-feature { font-size: 12.5px; padding: 6px 12px; }
+    }
+
     .vision-cards {
       display: flex;
       flex-direction: column;
@@ -330,6 +392,24 @@
       <div class="app-brand-name">XowApp</div>
       <h1 id="heroHeadline">An App That Doesn't Want Your Data.</h1>
       <p class="hero-subtitle" id="heroSubtitle">We don't want your data. We don't want your attention. We're not going to sell what you share. We know that sounds strange in 2026, so here is our vision for XowApp.</p>
+      <div class="hero-purpose">
+        <p class="hero-purpose-lead" id="heroPurposeLead">XowApp is a private space to send and keep the photos and videos that matter — inside personal and group albums, straight from your device to theirs.</p>
+        <p class="hero-purpose-contrast" id="heroPurpose">Almost every other app turns your photos into data — mined, used to train models, sometimes resold. XowApp is built to be the exception.</p>
+        <div class="purpose-features">
+          <div class="purpose-feature">
+            <span class="pf-icon" aria-hidden="true">📸</span>
+            <span id="pfAlbums">Personal &amp; group albums</span>
+          </div>
+          <div class="purpose-feature">
+            <span class="pf-icon" aria-hidden="true">🔐</span>
+            <span id="pfE2E">End-to-end encrypted</span>
+          </div>
+          <div class="purpose-feature">
+            <span class="pf-icon" aria-hidden="true">🤝</span>
+            <span id="pfChosen">Only for who you choose</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Vision Cards -->
@@ -374,6 +454,11 @@
     "statusBadge": "🚀 Project in Motion • Our Vision",
     "heroHeadline": "An App That Doesn't Want Your Data.",
     "heroSubtitle": "We don't want your data. We don't want your attention. We're not going to sell what you share. We know that sounds strange in 2026, so here is our vision for XowApp.",
+    "heroPurposeLead": "XowApp is a private space to send and keep the photos and videos that matter — inside personal and group albums, straight from your device to theirs.",
+    "heroPurpose": "Almost every other app turns your photos into data — mined, used to train models, sometimes resold. XowApp is built to be the exception.",
+    "pfAlbums": "Personal & group albums",
+    "pfE2E": "End-to-end encrypted",
+    "pfChosen": "Only for who you choose",
     "sec1Title": "What you share is yours. Period.",
     "sec1Desc": "Your photos and videos are encrypted directly on your device before they ever leave it. They travel inside a mathematically sealed envelope that can only be opened on the recipient's device. We are the postal worker: we move the envelope, but by cryptographic design, we couldn't open it even if we wanted to.",
     "sec2Title": "Zero-Knowledge, in plain English.",
@@ -395,6 +480,11 @@
     "statusBadge": "🚀 Proyecto en Marcha • Nuestra Visión",
     "heroHeadline": "Una App que No Quiere tus Datos.",
     "heroSubtitle": "No queremos tus datos. No queremos tu atención. No vamos a vender lo que compartes. Sabemos que suena raro en 2026, así que esta es nuestra visión para XowApp.",
+    "heroPurposeLead": "XowApp es un espacio privado para enviar y guardar las fotos y vídeos que de verdad importan, en álbumes personales y de grupo, directamente de tu móvil al suyo.",
+    "heroPurpose": "Casi todas las demás apps convierten tus fotos en datos: las analizan, entrenan modelos con ellas o las revenden. XowApp está pensada para ser la excepción.",
+    "pfAlbums": "Álbumes personales y de grupo",
+    "pfE2E": "Cifrado de extremo a extremo",
+    "pfChosen": "Solo para quien tú elijas",
     "sec1Title": "Lo que compartes es tuyo. Punto.",
     "sec1Desc": "Tus fotos y tus vídeos se cifran directamente en tu móvil antes de salir de él. Viajan en un sobre sellado matemáticamente que solo se puede abrir en el dispositivo del destinatario. Nosotros somos el cartero: transportamos el sobre, pero por diseño criptográfico, nos es físicamente imposible abrirlo aunque quisiéramos.",
     "sec2Title": "Zero-Knowledge, en cristiano.",
@@ -416,6 +506,11 @@
     "statusBadge": "🚀 Projecte en Marxa • La Nostra Visió",
     "heroHeadline": "Una App que No Vol les teves Dades.",
     "heroSubtitle": "No volem les teves dades. No volem la teva atenció. No vendrem el que comparteixes. Sabem que sona estrany el 2026, així que aquesta és la nostra visió per a XowApp.",
+    "heroPurposeLead": "XowApp és un espai privat per enviar i guardar les fotos i vídeos que de veritat importen, en àlbums personals i de grup, directament del teu mòbil al seu.",
+    "heroPurpose": "Gairebé totes les altres aplicacions converteixen les teves fotos en dades: les analitzen, hi entrenen models o les revenen. XowApp està pensada per ser l'excepció.",
+    "pfAlbums": "Àlbums personals i de grup",
+    "pfE2E": "Xifrat d'extrem a extrem",
+    "pfChosen": "Només per a qui tu triïs",
     "sec1Title": "El que comparteixes és teu. Punt.",
     "sec1Desc": "Les teves fotos i vídeos es xifren directament al teu mòbil abans de sortir-ne. Viatgen en un sobre segellat matemàticament que només es pot obrir al dispositiu del destinatari. Nosaltres som el carter: transportem el sobre, però per disseny criptogràfic, ens és físicament impossible obrir-lo encara que ho volguéssim.",
     "sec2Title": "Zero-Knowledge, en cristià.",
@@ -437,6 +532,11 @@
     "statusBadge": "🚀 Projet en Cours • Notre Vision",
     "heroHeadline": "Une Application qui Ne Veut Pas de Vos Données.",
     "heroSubtitle": "Nous ne voulons pas vos données. Nous ne voulons pas votre attention. Nous n'allons pas vendre ce que vous partagez. Nous savons que ça paraît étrange en 2026, voici donc notre vision pour XowApp.",
+    "heroPurposeLead": "XowApp est un espace privé pour envoyer et conserver les photos et vidéos qui comptent vraiment, dans des albums personnels et de groupe, directement de votre téléphone au leur.",
+    "heroPurpose": "Presque toutes les autres applications transforment vos photos en données : analysées, utilisées pour entraîner des modèles, parfois revendues. XowApp est conçue pour être l'exception.",
+    "pfAlbums": "Albums personnels et de groupe",
+    "pfE2E": "Chiffré de bout en bout",
+    "pfChosen": "Seulement pour qui vous choisissez",
     "sec1Title": "Ce que vous partagez vous appartient. Point final.",
     "sec1Desc": "Vos photos et vidéos sont chiffrées directement sur votre téléphone avant même de le quitter. Elles voyagent dans une enveloppe scellée mathématiquement qui ne s'ouvre que sur l'appareil du destinataire. Nous sommes le facteur : nous déplaçons l'enveloppe, mais de par la conception cryptographique même, il nous est physiquement impossible de l'ouvrir, même si nous le voulions.",
     "sec2Title": "Zero-Knowledge, en clair.",
@@ -458,6 +558,11 @@
     "statusBadge": "🚀 Progetto in Corso • La Nostra Visione",
     "heroHeadline": "Un'App che Non Vuole i Tuoi Dati.",
     "heroSubtitle": "Non vogliamo i tuoi dati. Non vogliamo la tua attenzione. Non venderemo ciò che condividi. Sappiamo che suona strano nel 2026, quindi ecco la nostra visione per XowApp.",
+    "heroPurposeLead": "XowApp è uno spazio privato per inviare e conservare le foto e i video che contano davvero, in album personali e di gruppo, direttamente dal tuo telefono al loro.",
+    "heroPurpose": "Quasi tutte le altre app trasformano le tue foto in dati: analizzati, usati per addestrare modelli, a volte rivenduti. XowApp è pensata per essere l'eccezione.",
+    "pfAlbums": "Album personali e di gruppo",
+    "pfE2E": "Cifrato end-to-end",
+    "pfChosen": "Solo per chi scegli tu",
     "sec1Title": "Quello che condividi è tuo. Punto.",
     "sec1Desc": "Le tue foto e i tuoi video vengono crittografati direttamente sul tuo telefono prima ancora di uscirne. Viaggiano in una busta sigillata matematicamente che può essere aperta solo sul dispositivo del destinatario. Noi siamo il postino: trasportiamo la busta, ma per progettazione crittografica ci è fisicamente impossibile aprirla anche se volessimo.",
     "sec2Title": "Zero-Knowledge, in parole povere.",
@@ -479,6 +584,11 @@
     "statusBadge": "🚀 Projekt in Arbeit • Unsere Vision",
     "heroHeadline": "Eine App, die deine Daten nicht will.",
     "heroSubtitle": "Wir wollen deine Daten nicht. Wir wollen deine Aufmerksamkeit nicht. Wir werden nicht verkaufen, was du teilst. Wir wissen, das klingt 2026 seltsam, deshalb hier unsere Vision für XowApp.",
+    "heroPurposeLead": "XowApp ist ein privater Raum, um die Fotos und Videos zu senden und aufzubewahren, die wirklich zählen – in persönlichen und Gruppenalben, direkt von deinem Smartphone auf ihres.",
+    "heroPurpose": "Fast jede andere App macht aus deinen Fotos Daten: analysiert, zum Training von Modellen genutzt, manchmal weiterverkauft. XowApp soll die Ausnahme sein.",
+    "pfAlbums": "Persönliche & Gruppenalben",
+    "pfE2E": "Ende-zu-Ende-verschlüsselt",
+    "pfChosen": "Nur für wen du willst",
     "sec1Title": "Was du teilst, gehört dir. Punkt.",
     "sec1Desc": "Deine Fotos und Videos werden direkt auf deinem Smartphone verschlüsselt, bevor sie es überhaupt verlassen. Sie reisen in einem mathematisch versiegelten Umschlag, der sich nur auf dem Gerät der Empfängerin oder des Empfängers öffnen lässt. Wir sind der Postbote: Wir transportieren den Umschlag, aber durch das kryptografische System ist es uns selbst wenn wir wollten technisch unmöglich, ihn zu öffnen.",
     "sec2Title": "Zero-Knowledge, einfach erklärt.",
@@ -500,6 +610,11 @@
     "statusBadge": "🚀 Proiect În Derulare • Viziunea Noastră",
     "heroHeadline": "O Aplicație Care Nu Îți Vrea Datele.",
     "heroSubtitle": "Nu vrem datele tale. Nu vrem atenția ta. Nu vom vinde ce partajezi. Știm că sună ciudat în 2026, așa că iată viziunea noastră pentru XowApp.",
+    "heroPurposeLead": "XowApp este un spațiu privat pentru a trimite și păstra fotografiile și videoclipurile care contează cu adevărat, în albume personale și de grup, direct de pe telefonul tău pe al lor.",
+    "heroPurpose": "Aproape toate celelalte aplicații transformă fotografiile tale în date: analizate, folosite pentru antrenarea modelelor, uneori revândute. XowApp este gândită să fie excepția.",
+    "pfAlbums": "Albume personale și de grup",
+    "pfE2E": "Criptare cap-la-cap",
+    "pfChosen": "Doar pentru cine alegi tu",
     "sec1Title": "Ce partajezi este al tău. Punct.",
     "sec1Desc": "Fotografiile și videoclipurile tale sunt criptate direct pe telefon înainte de a-l părăsi. Ele călătoresc într-un plic sigilat matematic care se poate deschide doar pe dispozitivul destinatarului. Noi suntem poștașul: mutăm plicul, dar prin arhitectură criptografică, ne este fizic imposibil să îl deschidem chiar dacă am dori.",
     "sec2Title": "Zero-Knowledge, pe înțelesul tuturor.",
@@ -521,6 +636,11 @@
     "statusBadge": "🚀 Projeto em Andamento • Nossa Visão",
     "heroHeadline": "Um Aplicativo que Não Quer Seus Dados.",
     "heroSubtitle": "Não queremos seus dados. Não queremos sua atenção. Não vamos vender o que você compartilha. Sabemos que parece estranho em 2026, então aqui está nossa visão para o XowApp.",
+    "heroPurposeLead": "O XowApp é um espaço privado para enviar e guardar as fotos e vídeos que realmente importam, em álbuns pessoais e de grupo, diretamente do seu celular para o dele.",
+    "heroPurpose": "Quase todos os outros aplicativos transformam suas fotos em dados: analisados, usados para treinar modelos, às vezes revendidos. O XowApp foi pensado para ser a exceção.",
+    "pfAlbums": "Álbuns pessoais e de grupo",
+    "pfE2E": "Criptografado de ponta a ponta",
+    "pfChosen": "Só para quem você escolher",
     "sec1Title": "O que você compartilha é seu. Ponto final.",
     "sec1Desc": "Suas fotos e vídeos são criptografados diretamente no seu celular antes de saírem dele. Eles viajam em um envelope selado matematicamente que só pode ser aberto no dispositivo do destinatário. Nós somos o carteiro: transportamos o envelope, mas por design criptográfico, é fisicamente impossível abri-lo mesmo se quiséssemos.",
     "sec2Title": "Zero-Knowledge, em bom português.",
@@ -564,6 +684,11 @@
       document.getElementById('statusBadgeText').innerText = t.statusBadge;
       document.getElementById('heroHeadline').innerText = t.heroHeadline;
       document.getElementById('heroSubtitle').innerText = t.heroSubtitle;
+      document.getElementById('heroPurposeLead').innerText = t.heroPurposeLead;
+      document.getElementById('heroPurpose').innerText = t.heroPurpose;
+      document.getElementById('pfAlbums').innerText = t.pfAlbums;
+      document.getElementById('pfE2E').innerText = t.pfE2E;
+      document.getElementById('pfChosen').innerText = t.pfChosen;
 
       document.getElementById('sec1Title').innerText = t.sec1Title;
       document.getElementById('sec1Desc').innerText = t.sec1Desc;
