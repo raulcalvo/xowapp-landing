@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://pocketbase.raulcalvo.com; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-ancestors 'none'">
+  <title id="pageTitle" data-i18n-key="heroHeadline">XowApp</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/theme.css">
+</head>
+<body data-page="index">
+  <div class="xow-page">
+    <div id="xow-nav-root"></div>
+
+    <main class="xow-main">
+      <div class="xow-container">
+
+        <section class="xow-section xow-hero">
+          <h1 class="xow-title" id="heroHeadline"></h1>
+          <p class="xow-subtitle" id="heroSubtitle"></p>
+          <div class="xow-manifesto" id="hero_manifesto"></div>
+        </section>
+
+        <section class="xow-section xow-card">
+          <div class="xow-kicker" id="whatis_kicker"></div>
+          <h2 class="xow-title-sm" id="whatis_title"></h2>
+          <p class="xow-subtitle" id="whatis_body"></p>
+        </section>
+
+        <section class="xow-section xow-card">
+          <div class="xow-kicker" id="how_kicker"></div>
+          <h2 class="xow-title-sm" id="how_title"></h2>
+          <div class="xow-grid-3">
+            <div class="xow-step-card">
+              <svg class="icon"><use href="#i-photo_library"></use></svg>
+              <h3 id="how_step1_title"></h3>
+              <p id="how_step1_body"></p>
+            </div>
+            <div class="xow-step-card">
+              <svg class="icon"><use href="#i-lock"></use></svg>
+              <h3 id="how_step2_title"></h3>
+              <p id="how_step2_body"></p>
+            </div>
+            <div class="xow-step-card">
+              <svg class="icon"><use href="#i-shield"></use></svg>
+              <h3 id="how_step3_title"></h3>
+              <p id="how_step3_body"></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="xow-section">
+          <div class="xow-teaser">
+            <div class="xow-kicker xow-center" id="teaser_kicker"></div>
+            <h2 class="xow-title-sm" id="teaser_title"></h2>
+            <p class="xow-subtitle" id="teaser_body"></p>
+            <div class="xow-teaser-actions">
+              <a class="btn btn-primary" href="historia.html" id="teaser_cta_story"></a>
+              <a class="btn btn-secondary" href="vision.html" id="teaser_cta_vision"></a>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <div id="xow-footer-root"></div>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/i18n-data.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/nav.js"></script>
+  <script src="assets/js/donate-fab.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.raulcalvo.xowapp",
+            "sha256_cert_fingerprints": [
+                "8A:2B:A9:30:E9:7C:C0:B6:8C:41:A6:0B:D9:A6:FB:0E:A6:BC:27:57:4C:6F:49:54:62:5C:6D:F4:28:C7:30:97"
+            ]
+        }
+    }
+]

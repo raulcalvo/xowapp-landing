@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://pocketbase.raulcalvo.com; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-ancestors 'none'">
+  <title id="pageTitle" data-i18n-key="about_title">XowApp</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/theme.css">
+</head>
+<body data-page="about">
+  <div class="xow-page">
+    <div id="xow-nav-root"></div>
+
+    <main class="xow-main">
+      <div class="xow-container">
+
+        <section class="xow-section xow-card xow-about-header">
+          <div class="xow-kicker xow-center" id="about_kicker"></div>
+
+          <img class="xow-avatar-photo" src="assets/img/raul-calvo.jpg" data-i18n-key="about_photo_alt" data-i18n-attr="alt,title" alt="">
+
+          <h1 class="xow-title-sm" id="about_title"></h1>
+          <p class="xow-subtitle xow-center xow-lead" id="about_name"></p>
+          <p class="xow-about-role" id="about_role"></p>
+        </section>
+
+        <section class="xow-section xow-article">
+          <p id="about_p1"></p>
+          <p id="about_p2"></p>
+          <p id="about_p3"></p>
+          <p id="about_p4"></p>
+          <p id="about_p5"></p>
+          <p id="about_p6"></p>
+
+          <div class="xow-contact-box">
+            <h3 id="about_contact_title"></h3>
+            <p id="about_contact_body"></p>
+            <p><span id="about_contact_email_label"></span>: <a href="mailto:raulcalvo@gmail.com">raulcalvo@gmail.com</a></p>
+          </div>
+
+          <div class="xow-teaser-actions">
+            <a class="btn btn-primary" href="historia.html" id="about_cta_story"></a>
+            <a class="btn btn-secondary" href="donar.html" id="about_funding_cta"></a>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <div id="xow-footer-root"></div>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/i18n-data.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/nav.js"></script>
+  <script src="assets/js/donate-fab.js"></script>
+</body>
+</html>

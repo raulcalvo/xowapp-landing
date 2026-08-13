@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://pocketbase.raulcalvo.com; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-ancestors 'none'">
+  <title id="pageTitle" data-i18n-key="donar_title">XowApp</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/theme.css">
+</head>
+<body data-page="donar">
+  <div class="xow-page">
+    <div id="xow-nav-root"></div>
+
+    <main class="xow-main">
+      <div class="xow-container">
+
+        <section class="xow-section xow-center">
+          <div class="xow-kicker xow-center" id="donar_kicker"></div>
+          <h1 class="xow-title" id="donar_title"></h1>
+          <p class="xow-subtitle xow-lead" id="donar_intro"></p>
+        </section>
+
+        <section class="xow-section xow-card xow-center">
+          <p id="donar_stripe_notice"></p>
+          <button type="button" class="btn btn-primary btn-disabled" id="donar_stripe_cta_disabled" disabled></button>
+        </section>
+
+        <section class="xow-section xow-card">
+          <p id="fundingLoadingNotice" class="xow-funding-notice">
+            <svg class="icon"><use href="#i-schedule"></use></svg>
+            <span id="transparencia_status_loading"></span>
+          </p>
+          <p id="fundingMockNotice" class="xow-funding-notice" hidden>
+            <svg class="icon"><use href="#i-visibility_off"></use></svg>
+            <span id="transparencia_status_unavailable"></span>
+          </p>
+          <div id="fundingCards" hidden></div>
+        </section>
+
+        <section class="xow-section">
+          <p class="xow-center xow-subtitle xow-lead" id="donar_tier_note"></p>
+          <div class="xow-tiers" id="donarTiers"></div>
+          <p class="xow-tier-piggy-note" id="donar_quote_piggy"></p>
+        </section>
+
+        <section class="xow-section xow-card xow-center">
+          <h2 class="xow-title-sm" id="donar_thanks_title"></h2>
+          <p class="xow-subtitle xow-lead" id="donar_thanks_body"></p>
+        </section>
+
+        <section class="xow-section xow-funding-notice">
+          <svg class="icon"><use href="#i-volunteer_activism"></use></svg>
+          <span id="donar_playstore_notice"></span>
+        </section>
+
+        <section class="xow-section xow-center">
+          <a class="btn btn-secondary" href="transparencia.html" id="donar_transparency_link"></a>
+        </section>
+
+      </div>
+    </main>
+
+    <div id="xow-footer-root"></div>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/i18n-data.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/nav.js"></script>
+  <script src="assets/js/funding.js"></script>
+  <script src="assets/js/donar.js"></script>
+</body>
+</html>

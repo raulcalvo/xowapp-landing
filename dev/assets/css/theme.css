@@ -1,0 +1,1024 @@
+/* XowApp — shared theme + layout for the public website (public/assets/css/theme.css)
+ *
+ * The CSS custom properties below (color tokens + the [data-theme="light"] override) are
+ * copied verbatim from the inline <style> block that used to live in public/index.html
+ * (previous lines ~14-42). Values are untouched — only the surrounding layout/component
+ * rules are new, added to support the shared nav/footer/cards/buttons/forms/FAB used by
+ * every page in the expanded public site.
+ */
+
+:root {
+  --bg-color: #0f172a;
+  --card-bg: rgba(30, 41, 59, 0.75);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --teal-accent: #03dac5;
+  --teal-glow: rgba(3, 218, 197, 0.2);
+  --indigo-accent: #6366f1;
+  --indigo-glow: rgba(99, 102, 241, 0.2);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --heading-color: #ffffff;
+  --select-bg: rgba(15, 23, 42, 0.6);
+  --box-bg: rgba(99, 102, 241, 0.08);
+}
+
+[data-theme="light"] {
+  --bg-color: #f1f5f9;
+  --card-bg: rgba(255, 255, 255, 0.9);
+  --border-color: rgba(0, 0, 0, 0.08);
+  --teal-accent: #0d9488;
+  --teal-glow: rgba(13, 148, 136, 0.15);
+  --indigo-accent: #4f46e5;
+  --indigo-glow: rgba(79, 70, 229, 0.15);
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --heading-color: #0f172a;
+  --select-bg: rgba(255, 255, 255, 0.9);
+  --box-bg: rgba(79, 70, 229, 0.06);
+}
+
+/* ------------------------------------------------------------------ */
+/* Reset + base                                                        */
+/* ------------------------------------------------------------------ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, var(--teal-glow) 0%, transparent 70%);
+  top: -80px;
+  left: -80px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, var(--indigo-glow) 0%, transparent 70%);
+  bottom: -120px;
+  right: -120px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+a {
+  color: var(--teal-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.icon-sm {
+  width: 14px;
+  height: 14px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ------------------------------------------------------------------ */
+/* Page shell                                                          */
+/* ------------------------------------------------------------------ */
+
+.xow-page {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.xow-container {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.xow-main {
+  flex: 1;
+  padding: 32px 0 64px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Header / nav                                                        */
+/* ------------------------------------------------------------------ */
+
+.xow-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--card-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Row 1: brand (top-left) + theme/language pickers (top-right). */
+.xow-header-top {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 14px 20px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.xow-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.xow-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--heading-color);
+  flex-shrink: 0;
+}
+
+.xow-brand:hover {
+  text-decoration: none;
+}
+
+.xow-brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: #03dac5;
+  padding: 5px;
+  object-fit: contain;
+}
+
+.xow-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--select-bg);
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+/* Row 2: the full section menu, directly under row 1 — both rows are inside the sticky
+   `.xow-header`, so the whole thing (brand, pickers and menu) stays visible without scrolling. */
+.xow-nav {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 2px 20px 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.xow-nav-link {
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.xow-nav-link:hover {
+  text-decoration: none;
+  color: var(--text-main);
+  background: var(--box-bg);
+}
+
+.xow-nav-link.is-active {
+  color: var(--teal-accent);
+}
+
+.xow-nav-cta {
+  color: #04120f;
+  background: var(--teal-accent);
+}
+
+.xow-nav-cta:hover {
+  color: #04120f;
+  opacity: 0.9;
+  background: var(--teal-accent);
+}
+
+.xow-nav-admin {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.xow-nav-pickers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.picker-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--select-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 6px 10px;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.picker-container .icon {
+  width: 16px;
+  height: 16px;
+  color: var(--teal-accent);
+}
+
+.picker-select {
+  background: transparent;
+  border: none;
+  color: var(--teal-accent);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  max-width: 92px;
+}
+
+.picker-select option {
+  background: var(--bg-color);
+  color: var(--text-main);
+}
+
+@media (max-width: 860px) {
+  .xow-hamburger {
+    display: inline-flex;
+  }
+
+  .xow-nav {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .xow-nav.is-open {
+    display: flex;
+    padding-top: 10px;
+  }
+
+  .xow-nav-link {
+    width: 100%;
+  }
+
+  .xow-header-top {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 420px) {
+  .picker-select {
+    max-width: 64px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Footer                                                               */
+/* ------------------------------------------------------------------ */
+
+.xow-footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border-color);
+  padding: 28px 20px 36px;
+  text-align: center;
+}
+
+.xow-footer-inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.xow-footer-tagline {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.xow-footer-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+
+.xow-footer-links a {
+  color: var(--text-muted);
+}
+
+.xow-footer-links a:hover {
+  color: var(--teal-accent);
+}
+
+.xow-footer-rights {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Cards / sections                                                     */
+/* ------------------------------------------------------------------ */
+
+.xow-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border-color);
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.25);
+}
+
+.xow-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--teal-accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.xow-title {
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 800;
+  color: var(--heading-color);
+  line-height: 1.15;
+  margin-bottom: 14px;
+}
+
+.xow-subtitle {
+  color: var(--text-muted);
+  font-size: 17px;
+  max-width: 640px;
+}
+
+.xow-hero {
+  text-align: center;
+  padding: 20px 0 8px;
+}
+
+.xow-hero .xow-subtitle {
+  margin: 0 auto;
+}
+
+.xow-manifesto {
+  display: inline-block;
+  margin: 18px 0 4px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--teal-accent);
+  color: var(--teal-accent);
+  font-weight: 700;
+  font-size: 14.5px;
+  letter-spacing: 0.2px;
+}
+
+.xow-title-sm {
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: 800;
+  color: var(--heading-color);
+  margin-bottom: 14px;
+}
+
+.xow-center {
+  text-align: center;
+}
+
+.xow-section {
+  margin: 40px 0;
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.xow-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 24px;
+}
+
+@media (max-width: 720px) {
+  .xow-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.xow-step-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 22px;
+}
+
+.xow-step-card .icon {
+  width: 26px;
+  height: 26px;
+  color: var(--teal-accent);
+  margin-bottom: 10px;
+}
+
+.xow-step-card h3 {
+  color: var(--heading-color);
+  font-size: 17px;
+  margin-bottom: 8px;
+}
+
+.xow-step-card p {
+  color: var(--text-muted);
+  font-size: 14.5px;
+}
+
+.xow-teaser {
+  text-align: center;
+  padding: 36px 24px;
+  border-radius: 22px;
+  border: 1px solid var(--border-color);
+  background: linear-gradient(135deg, var(--box-bg), transparent);
+}
+
+.xow-teaser .xow-subtitle {
+  margin: 0 auto;
+}
+
+.xow-teaser-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Buttons                                                              */
+/* ------------------------------------------------------------------ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 12px;
+  padding: 12px 22px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.btn:hover {
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: var(--teal-accent);
+  color: #04120f;
+}
+
+.btn-primary:hover {
+  color: #04120f;
+  opacity: 0.92;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-main);
+  border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+  color: var(--text-main);
+  border-color: var(--teal-accent);
+}
+
+.btn-disabled,
+.btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ------------------------------------------------------------------ */
+/* Forms (admin login)                                                  */
+/* ------------------------------------------------------------------ */
+
+.xow-form-group {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.xow-form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.xow-form-group input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--select-bg);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.xow-form-group input:focus {
+  border-color: var(--teal-accent);
+}
+
+.xow-form-error {
+  color: #f87171;
+  font-size: 13.5px;
+  margin: -4px 0 16px;
+  min-height: 1em;
+}
+
+.xow-form-error:empty {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Donate FAB                                                           */
+/* ------------------------------------------------------------------ */
+
+.xow-fab {
+  /* Top-right, just under the theme/language pickers in the header — not a bottom-corner
+     overlay. `right` mirrors the header's own centered max-width:1040 container (20px inner
+     padding) instead of a flat viewport offset, so this lines up with the pickers above it
+     at any screen width instead of only on narrow ones. Fixed (not sticky) so it stays put
+     over the page content as you scroll, the same way the sticky header above it does — and
+     it sits above the header in stacking order since it visually overlaps the header's second
+     row (the section menu), which is otherwise empty on that side. */
+  position: fixed;
+  right: max(20px, calc(50vw - 500px));
+  top: 72px;
+  z-index: 21;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--teal-accent), var(--indigo-accent));
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.5);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.xow-fab:hover {
+  transform: scale(1.06);
+  text-decoration: none;
+}
+
+.xow-fab.is-wiggling {
+  animation: xow-fab-wiggle 0.6s ease;
+}
+
+[data-page="donar"] .xow-fab {
+  display: none;
+}
+
+@keyframes xow-fab-wiggle {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(-14deg); }
+  40% { transform: rotate(12deg); }
+  60% { transform: rotate(-8deg); }
+  80% { transform: rotate(6deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xow-fab.is-wiggling {
+    animation: none;
+  }
+  .xow-section {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Article (historia.html)                                              */
+/* ------------------------------------------------------------------ */
+
+.xow-article {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.xow-article p {
+  font-size: 17px;
+  color: var(--text-main);
+  margin-bottom: 20px;
+  line-height: 1.75;
+}
+
+.xow-pullquote {
+  border-left: 4px solid var(--teal-accent);
+  padding: 4px 0 4px 22px;
+  margin: 32px 0;
+  font-size: 20px;
+  font-style: italic;
+  color: var(--heading-color);
+}
+
+/* ------------------------------------------------------------------ */
+/* Vision blocks                                                        */
+/* ------------------------------------------------------------------ */
+
+.xow-vision-block {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.xow-vision-block:last-child {
+  border-bottom: none;
+}
+
+.xow-vision-icon {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--box-bg);
+  color: var(--teal-accent);
+}
+
+.xow-vision-block h3 {
+  color: var(--heading-color);
+  font-size: 19px;
+  margin-bottom: 8px;
+}
+
+.xow-vision-block p {
+  color: var(--text-muted);
+  font-size: 15.5px;
+}
+
+/* ------------------------------------------------------------------ */
+/* About page                                                           */
+/* ------------------------------------------------------------------ */
+
+.xow-avatar-placeholder {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--teal-accent), var(--indigo-accent));
+  color: #04120f;
+  font-size: 34px;
+  font-weight: 800;
+}
+
+.xow-avatar-photo {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  margin: 0 auto 18px;
+  display: block;
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+}
+
+.xow-about-header {
+  text-align: center;
+}
+
+.xow-lead {
+  margin: 0 auto;
+}
+
+.xow-about-role {
+  color: var(--text-muted);
+  font-size: 14.5px;
+  margin-bottom: 4px;
+}
+
+.xow-contact-box {
+  margin-top: 28px;
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--box-bg);
+  border: 1px solid var(--border-color);
+}
+
+/* ------------------------------------------------------------------ */
+/* Funding / transparency cards                                         */
+/* ------------------------------------------------------------------ */
+
+.xow-funding-notice {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--box-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 13.5px;
+  margin: 18px 0;
+}
+
+.xow-funding-notice .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--teal-accent);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.xow-funding-total {
+  text-align: center;
+  margin: 22px 0 30px;
+}
+
+.xow-funding-total-value {
+  font-size: clamp(32px, 6vw, 48px);
+  font-weight: 800;
+  color: var(--heading-color);
+}
+
+.xow-funding-total-label {
+  color: var(--text-muted);
+  font-size: 13.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.xow-phase-card {
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 16px;
+  background: var(--card-bg);
+}
+
+.xow-phase-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.xow-phase-name {
+  color: var(--heading-color);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.xow-phase-desc {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.xow-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.xow-badge-covered {
+  background: rgba(3, 218, 197, 0.14);
+  border: 1px solid rgba(3, 218, 197, 0.35);
+  color: var(--teal-accent);
+}
+
+.xow-badge-active {
+  background: rgba(99, 102, 241, 0.14);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  color: var(--indigo-accent);
+}
+
+.xow-badge-pending {
+  background: rgba(148, 163, 184, 0.14);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: var(--text-muted);
+}
+
+.xow-progress-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--select-bg);
+  overflow: hidden;
+  margin-top: 14px;
+}
+
+.xow-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--teal-accent), var(--indigo-accent));
+}
+
+.xow-phase-meta {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.xow-phase-toggle {
+  background: none;
+  border: none;
+  color: var(--teal-accent);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.xow-phase-detail {
+  display: none;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-color);
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+
+.xow-phase-card.is-expanded .xow-phase-detail {
+  display: block;
+}
+
+/* ------------------------------------------------------------------ */
+/* Donation tiers                                                       */
+/* ------------------------------------------------------------------ */
+
+.xow-tiers {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 22px 0;
+}
+
+@media (max-width: 560px) {
+  .xow-tiers {
+    grid-template-columns: 1fr;
+  }
+}
+
+.xow-tier-card {
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  background: var(--card-bg);
+}
+
+.xow-tier-emoji {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.xow-tier-amount {
+  color: var(--heading-color);
+  font-weight: 800;
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.xow-tier-quote {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.xow-tier-piggy-note {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  font-style: italic;
+  margin: -6px 0 10px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Admin page                                                           */
+/* ------------------------------------------------------------------ */
+
+.xow-admin-shell {
+  max-width: 420px;
+  margin: 12vh auto 0;
+  padding: 0 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.xow-admin-shell .xow-card {
+  text-align: center;
+}
+
+.xow-admin-shell form {
+  text-align: left;
+  margin-top: 20px;
+}
+
+.xow-admin-dashboard {
+  text-align: center;
+}
+
+.xow-admin-dashboard .xow-avatar-placeholder {
+  font-size: 24px;
+  width: 72px;
+  height: 72px;
+}
