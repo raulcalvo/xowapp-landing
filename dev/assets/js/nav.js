@@ -31,15 +31,24 @@
       return '<option value="' + code + '">' + LANG_LABELS[code] + '</option>';
     }).join('');
 
-    // Two stacked rows, both inside the sticky `.xow-header`, so the brand/pickers and the
-    // section menu are always visible without scrolling: row 1 is brand (top-left) + theme/
-    // language pickers (top-right); row 2, directly under it, is the full section menu.
+    // Single row inside the sticky `.xow-header`: brand (left), the section menu (middle,
+    // collapses into a hamburger dropdown once it doesn't fit), and the theme/language
+    // pickers (right, always visible). One row instead of two stacked ones means the fixed
+    // header only ever needs to be as tall as its shortest content -- the pickers -- instead
+    // of a brand row plus a separate menu row, which is what left a large empty gap above the
+    // page content, especially on mobile.
     return (
-      '<div class="xow-header-top">' +
+      '<div class="xow-header-bar">' +
         '<a class="xow-brand" href="index.html">' +
           '<img class="xow-brand-logo" src="logo.png" alt="XowApp" width="32" height="32">' +
           '<span>XowApp</span>' +
         '</a>' +
+        '<nav class="xow-nav" id="xowNav">' +
+          links +
+          '<a class="xow-nav-link xow-nav-admin" href="admin/index.html" id="nav_admin" target="_blank" rel="noopener noreferrer">' +
+            '<svg class="icon"><use href="#i-open_in_new"></use></svg><span data-i18n-key="nav_admin"></span>' +
+          '</a>' +
+        '</nav>' +
         '<div class="xow-header-controls">' +
           '<div class="xow-nav-pickers">' +
             '<div class="picker-container">' +
@@ -59,13 +68,7 @@
             '<svg class="icon"><use href="#i-menu"></use></svg>' +
           '</button>' +
         '</div>' +
-      '</div>' +
-      '<nav class="xow-nav" id="xowNav">' +
-        links +
-        '<a class="xow-nav-link xow-nav-admin" href="admin/index.html" id="nav_admin" target="_blank" rel="noopener noreferrer">' +
-          '<svg class="icon"><use href="#i-open_in_new"></use></svg><span data-i18n-key="nav_admin"></span>' +
-        '</a>' +
-      '</nav>'
+      '</div>'
     );
   }
 

@@ -16,7 +16,26 @@
     'donar_quote_rocket', 'donar_quote_handshake', 'donar_quote_gift',
   ];
 
+  // sessionStorage key donate-fab.js writes (KEY_FAB_ENTRY there) with the exact emoji shown
+  // on the FAB at click time -- read once here and cleared, so the banner below only appears
+  // for that one navigation, never on a direct visit/reload of donar.html.
+  var FAB_ENTRY_KEY = 'xow_donate_fab_entry';
+
+  // Same emoji -> quote mapping as DonationsView._getQuoteKey in the app, pointed at the
+  // donate-FAB's own emoji set (donar_quote_coffee..piggy, already used above for the tier
+  // cards and the piggy note -- see the file header comment).
+  var EMOJI_QUOTE_KEYS = {
+    '☕': 'donar_quote_coffee',
+    '🍕': 'donar_quote_pizza',
+    '❤️': 'donar_quote_heart',
+    '🚀': 'donar_quote_rocket',
+    '🤝': 'donar_quote_handshake',
+    '🎁': 'donar_quote_gift',
+    '🐷': 'donar_quote_piggy',
+  };
+
   var loadingEl, mockNoticeEl, cardsEl, tiersEl, lastResult;
+  var quoteBannerEl, quoteEmojiEl, quoteTextEl, activeQuoteEmoji;
 
   function renderFunding() {
     if (!lastResult) return;
@@ -41,9 +60,18 @@
     tiersEl.innerHTML = html;
   }
 
+  function renderQuoteBanner() {
+    if (!quoteBannerEl || !activeQuoteEmoji) return;
+    var lang = window.XowI18n ? window.XowI18n.getBrowserLanguage() : 'en';
+    var key = EMOJI_QUOTE_KEYS[activeQuoteEmoji] || EMOJI_QUOTE_KEYS['☕'];
+    quoteEmojiEl.textContent = activeQuoteEmoji;
+    quoteTextEl.textContent = window.XowI18n ? window.XowI18n.translate(lang, key) : '';
+  }
+
   function renderAll() {
     renderFunding();
     renderTiers();
+    renderQuoteBanner();
   }
 
   function init() {
@@ -51,6 +79,24 @@
     mockNoticeEl = document.getElementById('fundingMockNotice');
     cardsEl = document.getElementById('fundingCards');
     tiersEl = document.getElementById('donarTiers');
+    quoteBannerEl = document.getElementById('donarQuoteBanner');
+    quoteEmojiEl = document.getElementById('donarQuoteEmoji');
+    quoteTextEl = document.getElementById('donarQuoteText');
+
+    // Independent of XowFunding below -- the quote banner has nothing to do with the funding
+    // cards, so it shouldn't be skipped if that script failed to load.
+    try {
+      var enteredEmoji = sessionStorage.getItem(FAB_ENTRY_KEY);
+      if (enteredEmoji) {
+        sessionStorage.removeItem(FAB_ENTRY_KEY);
+        activeQuoteEmoji = enteredEmoji;
+        if (quoteBannerEl) quoteBannerEl.hidden = false;
+        renderQuoteBanner();
+      }
+    } catch (e) {
+      // Storage unavailable -- banner just stays hidden, same as a direct visit.
+    }
+
     if (!window.XowFunding) return;
 
     renderTiers();

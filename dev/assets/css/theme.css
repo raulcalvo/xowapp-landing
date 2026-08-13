@@ -158,14 +158,17 @@ a:hover {
   -webkit-backdrop-filter: blur(24px);
 }
 
-/* Row 1: brand (top-left) + theme/language pickers (top-right). */
-.xow-header-top {
-  max-width: 1040px;
+/* Single row: brand (left) + section nav (middle, collapses into a hamburger dropdown below
+   1280px — see the media query further down) + theme/language pickers (right, always
+   visible). Wider than the 860px-max page content on purpose, so brand + nav + pickers have
+   room to share one line on real desktop widths before falling back to the hamburger. */
+.xow-header-bar {
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 14px 20px 10px;
+  padding: 12px 20px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
 }
 
@@ -173,6 +176,8 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .xow-brand {
@@ -209,18 +214,15 @@ a:hover {
   background: var(--select-bg);
   color: var(--text-main);
   cursor: pointer;
+  flex-shrink: 0;
 }
 
-/* Row 2: the full section menu, directly under row 1 — both rows are inside the sticky
-   `.xow-header`, so the whole thing (brand, pickers and menu) stays visible without scrolling. */
 .xow-nav {
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: 2px 20px 14px;
   display: flex;
   align-items: center;
   gap: 4px;
   flex-wrap: wrap;
+  flex: 1;
 }
 
 .xow-nav-link {
@@ -301,33 +303,45 @@ a:hover {
   color: var(--text-main);
 }
 
-@media (max-width: 860px) {
+/* Below this width the section links can't share the row with the brand and the pickers
+   without wrapping, so they collapse into a dropdown opened by the hamburger, directly under
+   the bar. The brand and the theme/language pickers stay on the row, always visible. */
+@media (max-width: 1280px) {
   .xow-hamburger {
     display: inline-flex;
   }
 
   .xow-nav {
     display: none;
+    width: 100%;
+    order: 4;
     flex-direction: column;
     align-items: stretch;
     gap: 4px;
+    padding-top: 10px;
+    margin-top: 4px;
+    border-top: 1px solid var(--border-color);
   }
 
   .xow-nav.is-open {
     display: flex;
-    padding-top: 10px;
   }
 
   .xow-nav-link {
     width: 100%;
   }
-
-  .xow-header-top {
-    flex-wrap: wrap;
-  }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 480px) {
+  .xow-header-bar {
+    gap: 10px;
+    padding: 10px 14px;
+  }
+
+  .xow-nav-pickers {
+    gap: 6px;
+  }
+
   .picker-select {
     max-width: 64px;
   }
@@ -622,16 +636,14 @@ a:hover {
 /* ------------------------------------------------------------------ */
 
 .xow-fab {
-  /* Top-right, just under the theme/language pickers in the header — not a bottom-corner
-     overlay. `right` mirrors the header's own centered max-width:1040 container (20px inner
-     padding) instead of a flat viewport offset, so this lines up with the pickers above it
-     at any screen width instead of only on narrow ones. Fixed (not sticky) so it stays put
-     over the page content as you scroll, the same way the sticky header above it does — and
-     it sits above the header in stacking order since it visually overlaps the header's second
-     row (the section menu), which is otherwise empty on that side. */
+  /* Top-right, just under the header's single row — not a bottom-corner overlay. `right`
+     mirrors the header's own centered max-width:1280 container (20px inner padding) instead
+     of a flat viewport offset, so this lines up with the pickers above it at any screen width
+     instead of only on narrow ones. Fixed (not sticky) so it stays put over the page content
+     as you scroll, the same way the sticky header above it does. */
   position: fixed;
-  right: max(20px, calc(50vw - 500px));
-  top: 72px;
+  right: max(20px, calc(50vw - 620px));
+  top: 64px;
   z-index: 21;
   width: 42px;
   height: 42px;
@@ -940,6 +952,37 @@ a:hover {
 
 .xow-phase-card.is-expanded .xow-phase-detail {
   display: block;
+}
+
+/* ------------------------------------------------------------------ */
+/* Donate quote banner (mirrors DonationsView._buildQuoteBanner in the app)    */
+/* ------------------------------------------------------------------ */
+
+/* Only shown when donar.html is entered by tapping the donate FAB (see donar.js): it displays
+   whichever emoji was on the FAB at click time plus its matching one-line quote, exactly the
+   banner shown at the top of the app's own donations screen when tapping its shortcut button. */
+.xow-quote-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--teal-glow);
+  background: linear-gradient(135deg, var(--indigo-glow), var(--teal-glow));
+}
+
+.xow-quote-emoji {
+  font-size: 32px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.xow-quote-text {
+  color: var(--text-main);
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.35;
 }
 
 /* ------------------------------------------------------------------ */

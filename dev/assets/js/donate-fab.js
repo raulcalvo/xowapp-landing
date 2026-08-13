@@ -8,6 +8,10 @@
   var KEY_CURRENT = 'xow_donation_emoji_current';
   var KEY_LAST_CHANGE = 'xow_donation_emoji_last_change';
   var KEY_TARGET_DURATION = 'xow_donation_emoji_target_duration';
+  // sessionStorage, not localStorage: a one-shot marker consumed by donar.js on load (see
+  // KEY_FAB_ENTRY there) so the quote banner only appears when donar.html is reached by
+  // actually tapping this button -- not on a direct visit/reload/other link to donar.html.
+  var KEY_FAB_ENTRY = 'xow_donate_fab_entry';
 
   var EMOJI_MIN_MS = 120000;
   var EMOJI_MAX_MS = 300000;
@@ -120,6 +124,18 @@
     emojiEl = document.createElement('span');
     emojiEl.setAttribute('aria-hidden', 'true');
     buttonEl.appendChild(emojiEl);
+
+    // Captured synchronously on click, before the browser follows the href -- this is the
+    // static-site equivalent of the app passing `initialEmoji` to DonationsView when its
+    // shortcut button is tapped (see donation_shortcut_button.dart).
+    buttonEl.addEventListener('click', function () {
+      try {
+        sessionStorage.setItem(KEY_FAB_ENTRY, emojiEl.textContent || '');
+      } catch (e) {
+        // Storage unavailable (private mode, etc.) -- the banner just won't show; not worth
+        // blocking navigation over.
+      }
+    });
 
     document.body.appendChild(buttonEl);
 
