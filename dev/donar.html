@@ -31,7 +31,17 @@
 
         <section class="xow-section xow-card xow-center">
           <p id="donar_stripe_notice"></p>
-          <button type="button" class="btn btn-primary btn-disabled" id="donar_stripe_cta_disabled" disabled></button>
+          <p class="xow-center xow-subtitle xow-lead" id="donar_tier_note"></p>
+          <div class="xow-amount-card">
+            <div class="xow-amount-emoji" id="donarAmountEmoji" aria-hidden="true"></div>
+            <div class="xow-amount-value" id="donarAmountValue"></div>
+            <p class="xow-amount-blurb" id="donarAmountBlurb"></p>
+            <p class="xow-amount-hint" id="donar_amount_hint"></p>
+            <input type="range" class="xow-amount-slider" id="donarAmountSlider"
+              min="0" max="5" step="1" value="2" aria-labelledby="donarAmountValue">
+          </div>
+          <button type="button" class="btn btn-primary btn-disabled" id="donar_stripe_cta_disabled"
+            data-amount-eur="10" data-product-id="donation_10" disabled></button>
         </section>
 
         <section class="xow-section xow-card">
@@ -44,18 +54,6 @@
             <span id="transparencia_status_unavailable"></span>
           </p>
           <div id="fundingCards" hidden></div>
-        </section>
-
-        <section class="xow-section">
-          <p class="xow-center xow-subtitle xow-lead" id="donar_tier_note"></p>
-          <div class="xow-amount-card">
-            <div class="xow-amount-emoji" id="donarAmountEmoji" aria-hidden="true"></div>
-            <div class="xow-amount-value" id="donarAmountValue"></div>
-            <p class="xow-amount-blurb" id="donarAmountBlurb"></p>
-            <p class="xow-amount-hint" id="donar_amount_hint"></p>
-            <input type="range" class="xow-amount-slider" id="donarAmountSlider"
-              min="0" max="5" step="1" value="2" aria-labelledby="donarAmountValue">
-          </div>
         </section>
 
         <section class="xow-section xow-card xow-center">

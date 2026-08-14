@@ -270,6 +270,15 @@ a:hover {
   background: var(--teal-accent);
 }
 
+/* On its own page (e.g. "Donate" while on donar.html), a CTA link also gets .is-active --
+   .xow-nav-link.is-active (2 classes) otherwise outweighs .xow-nav-cta (1 class) and repaints
+   the text teal-on-teal, invisible against the CTA's own teal background. Only fixing the
+   text color here, not re-declaring the background: .xow-nav-cta above already wins that
+   half of the cascade on specificity, this rule only needs to win the color half back. */
+.xow-nav-link.xow-nav-cta.is-active {
+  color: #04120f;
+}
+
 .xow-nav-pickers {
   display: flex;
   align-items: center;
@@ -987,6 +996,15 @@ a:hover {
   border-radius: 16px;
   border: 1px solid var(--teal-glow);
   background: linear-gradient(135deg, var(--indigo-glow), var(--teal-glow));
+}
+
+/* The banner starts hidden via the `hidden` attribute (see donar.html) and donar.js only
+   clears it when arriving through the donate FAB. But author CSS at equal specificity beats
+   the UA's own `[hidden] { display: none }` default -- the `display: flex` above was silently
+   winning that fight, so the banner rendered as an empty flex box (no text/emoji) on every
+   *other* visit to donar.html instead of collapsing away. This re-wins it back. */
+.xow-quote-banner[hidden] {
+  display: none;
 }
 
 .xow-quote-emoji {

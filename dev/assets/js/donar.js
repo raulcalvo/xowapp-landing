@@ -16,6 +16,11 @@
     'donar_tier_blurb_2', 'donar_tier_blurb_5', 'donar_tier_blurb_10',
     'donar_tier_blurb_15', 'donar_tier_blurb_30', 'donar_tier_blurb_100',
   ];
+  // Mirrors kDonationProductIds in lib/models/funding_phase.dart -- kept in sync on the pay
+  // button via data-product-id/data-amount-eur (see renderAmountSelector) so that wiring up
+  // the real Stripe call later is just "read this button's dataset and charge that", with no
+  // slider-reading logic to duplicate.
+  var TIER_PRODUCT_IDS = ['donation_2', 'donation_5', 'donation_10', 'donation_15', 'donation_30', 'donation_100'];
   var DEFAULT_TIER_INDEX = 2; // 10€, same default as _DonationsViewState._selectedTierIndex.
 
   // sessionStorage key donate-fab.js writes (KEY_FAB_ENTRY there) with the exact emoji shown
@@ -38,7 +43,7 @@
 
   var loadingEl, mockNoticeEl, cardsEl, lastResult;
   var quoteBannerEl, quoteEmojiEl, quoteTextEl, activeQuoteEmoji;
-  var sliderEl, amountEmojiEl, amountValueEl, amountBlurbEl;
+  var sliderEl, amountEmojiEl, amountValueEl, amountBlurbEl, payButtonEl;
   var selectedTierIndex = DEFAULT_TIER_INDEX;
 
   function renderFunding() {
@@ -63,6 +68,14 @@
     // handed to CSS as a custom property, same trick on every input/rerender.
     var fillPct = (selectedTierIndex / (TIER_AMOUNTS_EUR.length - 1)) * 100;
     sliderEl.style.setProperty('--fill', fillPct + '%');
+
+    // Keeps the (currently disabled) pay button in sync with the slider so that turning on
+    // real Stripe donations later is just "read this button's dataset and charge that amount"
+    // -- see the TIER_PRODUCT_IDS comment above.
+    if (payButtonEl) {
+      payButtonEl.dataset.amountEur = String(amount);
+      payButtonEl.dataset.productId = TIER_PRODUCT_IDS[selectedTierIndex];
+    }
   }
 
   function renderQuoteBanner() {
@@ -90,6 +103,7 @@
     amountEmojiEl = document.getElementById('donarAmountEmoji');
     amountValueEl = document.getElementById('donarAmountValue');
     amountBlurbEl = document.getElementById('donarAmountBlurb');
+    payButtonEl = document.getElementById('donar_stripe_cta_disabled');
 
     // Independent of XowFunding below -- the quote banner has nothing to do with the funding
     // cards, so it shouldn't be skipped if that script failed to load.
