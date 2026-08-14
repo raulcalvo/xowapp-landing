@@ -270,14 +270,6 @@ a:hover {
   background: var(--teal-accent);
 }
 
-.xow-nav-admin {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--text-muted);
-  font-size: 13px;
-}
-
 .xow-nav-pickers {
   display: flex;
   align-items: center;
@@ -344,6 +336,20 @@ a:hover {
 
   .xow-nav-link {
     width: 100%;
+  }
+
+  /* Icon-only theme picker once the section nav no longer fits the row: the visible text
+     ("System"/"Dark"/"Light") is pushed off-canvas via text-indent, and the box is shrunk to
+     just the dark_mode icon (already to its left, unaffected) plus the native dropdown arrow.
+     text-indent only affects the closed box's own painted text, not the browser's native
+     popup list -- clicking it still opens a normal, fully-labelled options list. The language
+     picker instead gets real short-code option text (EN/ES/CAT/...), set by nav.js, since
+     unlike "icon-only" that has actual content to show in the closed box. */
+  #themeSelect {
+    width: 20px;
+    min-width: 20px;
+    padding-right: 0;
+    text-indent: -9999px;
   }
 }
 
@@ -997,53 +1003,92 @@ a:hover {
 }
 
 /* ------------------------------------------------------------------ */
-/* Donation tiers                                                       */
+/* Donation amount slider (mirrors _buildAmountSelector in                */
+/* lib/views/donations_view.dart: emoji + amount + blurb + hint + slider,  */
+/* all driven by the same tier index, same 6 amounts, same texts)          */
 /* ------------------------------------------------------------------ */
 
-.xow-tiers {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+.xow-amount-card {
+  text-align: center;
+  padding: 20px;
+  border-radius: 20px;
+  background: var(--indigo-glow);
   margin: 22px 0;
 }
 
-@media (max-width: 560px) {
-  .xow-tiers {
-    grid-template-columns: 1fr;
-  }
+.xow-amount-emoji {
+  font-size: 40px;
+  line-height: 1;
 }
 
-.xow-tier-card {
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 16px;
-  text-align: center;
-  background: var(--card-bg);
-}
-
-.xow-tier-emoji {
-  font-size: 28px;
-  margin-bottom: 6px;
-}
-
-.xow-tier-amount {
+.xow-amount-value {
   color: var(--heading-color);
   font-weight: 800;
-  font-size: 18px;
-  margin-bottom: 4px;
+  font-size: 34px;
+  margin-top: 8px;
 }
 
-.xow-tier-quote {
-  color: var(--text-muted);
+.xow-amount-blurb {
+  color: var(--text-main);
+  opacity: 0.75;
+  margin-top: 8px;
+}
+
+.xow-amount-hint {
+  color: var(--text-main);
+  opacity: 0.5;
   font-size: 13px;
+  margin-top: 4px;
 }
 
-.xow-tier-piggy-note {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 13.5px;
-  font-style: italic;
-  margin: -6px 0 10px;
+/* Native range input, restyled to match the app's Slider(activeColor: teal): a flat track
+   with a teal fill up to the thumb. `--fill` (a 0%-100% custom property) is set by donar.js
+   on load and on every `input` event -- there's no CSS selector for "the filled portion of a
+   range track", so this is the standard way to fake one. */
+.xow-amount-slider {
+  width: 100%;
+  margin-top: 16px;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(
+    to right,
+    var(--teal-accent) 0%,
+    var(--teal-accent) var(--fill, 40%),
+    var(--border-color) var(--fill, 40%),
+    var(--border-color) 100%
+  );
+  outline: none;
+  cursor: pointer;
+}
+
+.xow-amount-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--teal-accent);
+  border: 3px solid var(--bg-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.xow-amount-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--teal-accent);
+  border: 3px solid var(--bg-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.xow-amount-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: transparent;
 }
 
 /* ------------------------------------------------------------------ */

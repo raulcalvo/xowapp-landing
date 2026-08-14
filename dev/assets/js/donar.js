@@ -1,20 +1,22 @@
 // donar.html — funding status cards (shared with transparencia.html via funding.js) plus the
-// 6 donation tiers.
+// donation amount slider.
 //
-// Tier amounts/emojis are mirrored from lib/models/funding_phase.dart (kDonationTiersEur /
-// kDonationTierEmojis) so they always match what's shown inside the app (donar_tier_note says
-// exactly that). The content spec provides 7 short "quote" lines (donar_quote_coffee..piggy) —
-// one more than the 6 monetary tiers, because that set doubles as the donate-FAB's rotating
-// emoji captions. The first 6 are paired 1:1 with the tiers below; "piggy" is used as a
-// standalone closing line under the tier grid (see #donar_quote_piggy in donar.html) rather
-// than being dropped.
+// The amount selector is a straight port of _buildAmountSelector in
+// lib/views/donations_view.dart: the same 6 fixed amounts (kDonationTiersEur), the same mood
+// emoji per amount (kDonationTierEmojis), and the same "blurb" copy per amount
+// (donations_tier_blurb_<amount> in app_localizations.dart, mirrored here as
+// donar_tier_blurb_<amount>) -- moving the slider changes the emoji, the big amount value and
+// the blurb together, exactly like the app's Slider does. There's no real payment here (no
+// IAP on the web), so amountLabel is always the fixed "<amount> €" form -- the app's other
+// branch (a live store price) doesn't apply.
 (function () {
   var TIER_AMOUNTS_EUR = [2, 5, 10, 15, 30, 100];
   var TIER_EMOJIS = ['🙂', '😄', '🤩', '🥳', '🚀', '🤯'];
-  var TIER_QUOTE_KEYS = [
-    'donar_quote_coffee', 'donar_quote_pizza', 'donar_quote_heart',
-    'donar_quote_rocket', 'donar_quote_handshake', 'donar_quote_gift',
+  var TIER_BLURB_KEYS = [
+    'donar_tier_blurb_2', 'donar_tier_blurb_5', 'donar_tier_blurb_10',
+    'donar_tier_blurb_15', 'donar_tier_blurb_30', 'donar_tier_blurb_100',
   ];
+  var DEFAULT_TIER_INDEX = 2; // 10€, same default as _DonationsViewState._selectedTierIndex.
 
   // sessionStorage key donate-fab.js writes (KEY_FAB_ENTRY there) with the exact emoji shown
   // on the FAB at click time -- read once here and cleared, so the banner below only appears
@@ -22,8 +24,8 @@
   var FAB_ENTRY_KEY = 'xow_donate_fab_entry';
 
   // Same emoji -> quote mapping as DonationsView._getQuoteKey in the app, pointed at the
-  // donate-FAB's own emoji set (donar_quote_coffee..piggy, already used above for the tier
-  // cards and the piggy note -- see the file header comment).
+  // donate-FAB's own emoji set (donar_quote_coffee..piggy -- text now copied verbatim from
+  // the app's donations_quote_* strings, see i18n-data.js).
   var EMOJI_QUOTE_KEYS = {
     '☕': 'donar_quote_coffee',
     '🍕': 'donar_quote_pizza',
@@ -34,8 +36,10 @@
     '🐷': 'donar_quote_piggy',
   };
 
-  var loadingEl, mockNoticeEl, cardsEl, tiersEl, lastResult;
+  var loadingEl, mockNoticeEl, cardsEl, lastResult;
   var quoteBannerEl, quoteEmojiEl, quoteTextEl, activeQuoteEmoji;
+  var sliderEl, amountEmojiEl, amountValueEl, amountBlurbEl;
+  var selectedTierIndex = DEFAULT_TIER_INDEX;
 
   function renderFunding() {
     if (!lastResult) return;
@@ -45,19 +49,20 @@
     mockNoticeEl.hidden = !(lastResult.isMock || lastResult.isPlaceholder);
   }
 
-  function renderTiers() {
+  function renderAmountSelector() {
+    if (!sliderEl) return;
     var lang = window.XowI18n ? window.XowI18n.getBrowserLanguage() : 'en';
-    var html = TIER_AMOUNTS_EUR.map(function (amount, idx) {
-      var quote = window.XowI18n ? window.XowI18n.translate(lang, TIER_QUOTE_KEYS[idx]) : '';
-      return (
-        '<div class="xow-tier-card">' +
-          '<div class="xow-tier-emoji" aria-hidden="true">' + TIER_EMOJIS[idx] + '</div>' +
-          '<div class="xow-tier-amount">' + amount + ' €</div>' +
-          '<div class="xow-tier-quote">' + quote + '</div>' +
-        '</div>'
-      );
-    }).join('');
-    tiersEl.innerHTML = html;
+    var amount = TIER_AMOUNTS_EUR[selectedTierIndex];
+    var blurb = window.XowI18n ? window.XowI18n.translate(lang, TIER_BLURB_KEYS[selectedTierIndex]) : '';
+    amountEmojiEl.textContent = TIER_EMOJIS[selectedTierIndex];
+    amountValueEl.textContent = amount + ' €';
+    amountBlurbEl.textContent = blurb || '';
+    sliderEl.value = String(selectedTierIndex);
+    // Drives the CSS gradient fill in .xow-amount-slider (see theme.css) -- there's no
+    // selector for "the filled portion of a range track", so the fill % is computed here and
+    // handed to CSS as a custom property, same trick on every input/rerender.
+    var fillPct = (selectedTierIndex / (TIER_AMOUNTS_EUR.length - 1)) * 100;
+    sliderEl.style.setProperty('--fill', fillPct + '%');
   }
 
   function renderQuoteBanner() {
@@ -70,7 +75,7 @@
 
   function renderAll() {
     renderFunding();
-    renderTiers();
+    renderAmountSelector();
     renderQuoteBanner();
   }
 
@@ -78,10 +83,13 @@
     loadingEl = document.getElementById('fundingLoadingNotice');
     mockNoticeEl = document.getElementById('fundingMockNotice');
     cardsEl = document.getElementById('fundingCards');
-    tiersEl = document.getElementById('donarTiers');
     quoteBannerEl = document.getElementById('donarQuoteBanner');
     quoteEmojiEl = document.getElementById('donarQuoteEmoji');
     quoteTextEl = document.getElementById('donarQuoteText');
+    sliderEl = document.getElementById('donarAmountSlider');
+    amountEmojiEl = document.getElementById('donarAmountEmoji');
+    amountValueEl = document.getElementById('donarAmountValue');
+    amountBlurbEl = document.getElementById('donarAmountBlurb');
 
     // Independent of XowFunding below -- the quote banner has nothing to do with the funding
     // cards, so it shouldn't be skipped if that script failed to load.
@@ -97,9 +105,15 @@
       // Storage unavailable -- banner just stays hidden, same as a direct visit.
     }
 
-    if (!window.XowFunding) return;
+    renderAmountSelector();
+    if (sliderEl) {
+      sliderEl.addEventListener('input', function () {
+        selectedTierIndex = Number(sliderEl.value);
+        renderAmountSelector();
+      });
+    }
 
-    renderTiers();
+    if (!window.XowFunding) return;
 
     window.XowFunding.loadFundingStatus().then(function (result) {
       lastResult = result;

@@ -19,6 +19,23 @@
     it: 'Italiano', de: 'Deutsch', ro: 'Română', pt: 'Português',
   };
 
+  // Short closed-box form for the language picker once the section nav no longer fits on the
+  // header row (see NAV_COMPACT_QUERY below) -- "CAT" for Catalan to stay unambiguous next to
+  // "CA" (which reads as Canada in every other language-picker convention), everything else a
+  // plain ISO 639-1 code.
+  var LANG_CODES = {
+    en: 'EN', es: 'ES', ca: 'CAT', fr: 'FR',
+    it: 'IT', de: 'DE', ro: 'RO', pt: 'PT',
+  };
+
+  // Same breakpoint theme.css uses to collapse the section nav into the hamburger dropdown
+  // (".xow-nav" no longer fits the header row) -- the two pickers compact at the same point:
+  // the language picker's options switch from full names to LANG_CODES above (a real DOM text
+  // swap, so the native dropdown itself also lists the short codes once compact -- there's no
+  // way to keep the closed box compact while the open dropdown stays full-text on a native
+  // <select>), and the theme picker goes icon-only via a pure CSS rule (see theme.css).
+  var NAV_COMPACT_QUERY = '(max-width: 1280px)';
+
   function headerMarkup(currentPage) {
     var links = NAV_LINKS.map(function (link) {
       var classes = ['xow-nav-link'];
@@ -45,9 +62,6 @@
         '</a>' +
         '<nav class="xow-nav" id="xowNav">' +
           links +
-          '<a class="xow-nav-link xow-nav-admin" href="admin/index.html" id="nav_admin" target="_blank" rel="noopener noreferrer">' +
-            '<svg class="icon"><use href="#i-open_in_new"></use></svg><span data-i18n-key="nav_admin"></span>' +
-          '</a>' +
         '</nav>' +
         '<div class="xow-header-controls">' +
           '<div class="xow-nav-pickers" id="xowNavPickers">' +
@@ -79,11 +93,20 @@
         '<div class="xow-footer-links">' +
           '<a href="privacy.html" id="footer_privacy"></a>' +
           '<a href="safety.html" id="footer_safety"></a>' +
-          '<a href="admin/index.html" data-i18n-key="nav_admin" target="_blank" rel="noopener noreferrer"></a>' +
         '</div>' +
         '<p class="xow-footer-rights">&copy; 2026 XowApp. <span id="footer_rights"></span></p>' +
       '</div>'
     );
+  }
+
+  // Swaps the language picker's option labels between full names and LANG_CODES depending on
+  // whether the header is currently in its compact (section nav collapsed to hamburger) state.
+  // Real textContent, not a CSS truncation trick -- see the NAV_COMPACT_QUERY comment above.
+  function syncCompactPickers(langSelect, compact) {
+    if (!langSelect) return;
+    Array.prototype.forEach.call(langSelect.options, function (opt) {
+      opt.textContent = compact ? (LANG_CODES[opt.value] || opt.value) : (LANG_LABELS[opt.value] || opt.value);
+    });
   }
 
   function wireHeader(header) {
@@ -108,6 +131,14 @@
       langSelect.addEventListener('change', function (e) {
         window.XowI18n.changeLanguage(e.target.value);
       });
+    }
+
+    if (window.matchMedia) {
+      var mql = window.matchMedia(NAV_COMPACT_QUERY);
+      syncCompactPickers(langSelect, mql.matches);
+      var onChange = function (e) { syncCompactPickers(langSelect, e.matches); };
+      if (mql.addEventListener) mql.addEventListener('change', onChange);
+      else if (mql.addListener) mql.addListener(onChange); // Safari <14 fallback
     }
   }
 

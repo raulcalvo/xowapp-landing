@@ -48,8 +48,14 @@
 
         <section class="xow-section">
           <p class="xow-center xow-subtitle xow-lead" id="donar_tier_note"></p>
-          <div class="xow-tiers" id="donarTiers"></div>
-          <p class="xow-tier-piggy-note" id="donar_quote_piggy"></p>
+          <div class="xow-amount-card">
+            <div class="xow-amount-emoji" id="donarAmountEmoji" aria-hidden="true"></div>
+            <div class="xow-amount-value" id="donarAmountValue"></div>
+            <p class="xow-amount-blurb" id="donarAmountBlurb"></p>
+            <p class="xow-amount-hint" id="donar_amount_hint"></p>
+            <input type="range" class="xow-amount-slider" id="donarAmountSlider"
+              min="0" max="5" step="1" value="2" aria-labelledby="donarAmountValue">
+          </div>
         </section>
 
         <section class="xow-section xow-card xow-center">
