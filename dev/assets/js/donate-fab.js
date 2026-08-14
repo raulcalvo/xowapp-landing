@@ -15,8 +15,8 @@
 
   var EMOJI_MIN_MS = 120000;
   var EMOJI_MAX_MS = 300000;
-  var WIGGLE_MIN_MS = 20000;
-  var WIGGLE_MAX_MS = 40000;
+  var WIGGLE_MIN_MS = 6000;
+  var WIGGLE_MAX_MS = 12000;
   var WIGGLE_DURATION_MS = 600;
 
   var emojiTimer = null;

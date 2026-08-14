@@ -668,19 +668,20 @@ a:hover {
 .xow-fab {
   /* Inline in the header's picker row, immediately to the right of the language picker —
      part of the normal flex flow (not a fixed overlay), so it scrolls and wraps with the
-     rest of the row instead of needing its own viewport-relative positioning. */
+     rest of the row instead of needing its own viewport-relative positioning. No circle
+     backdrop -- just the emoji itself, sized to fill the same footprint the circle used to
+     occupy (34px), so the click/tap target stays the same even though there's no visible
+     bounding shape anymore. */
   position: relative;
   flex-shrink: 0;
   width: 34px;
   height: 34px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 30px;
   line-height: 1;
-  background: linear-gradient(135deg, var(--teal-accent), var(--indigo-accent));
-  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.5);
+  background: none;
   border: none;
   cursor: pointer;
   transition: transform 0.15s ease;
@@ -731,6 +732,23 @@ a:hover {
   color: var(--text-main);
   margin-bottom: 20px;
   line-height: 1.75;
+}
+
+/* Justified body copy -- long-form paragraphs only (historia/about's .xow-article p, vision's
+   .xow-vision-block p), never headings/kickers/subtitles, and only once the reading column is
+   wide enough to fit several words per line: below that, justify without hyphenation opens up
+   ugly "rivers" of whitespace, worse the fewer words fit (and worse still in languages with
+   long compound words, e.g. German). `hyphens: auto` softens that at every width by letting
+   long words break -- it keys off `lang` on <html>, which i18n.js already keeps in sync with
+   the active language, so this works per-language with no extra wiring. Left-aligned (the
+   default) below 700px matches actual mobile column widths (~300-340px after padding), where
+   justify would look worse than ragged-right, hyphenation or not. */
+@media (min-width: 700px) {
+  .xow-article p,
+  .xow-vision-block p {
+    text-align: justify;
+    hyphens: auto;
+  }
 }
 
 .xow-pullquote {
