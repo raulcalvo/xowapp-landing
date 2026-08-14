@@ -17,6 +17,7 @@
   var LANG_LABELS = {
     en: 'English', es: 'Español', ca: 'Català', fr: 'Français',
     it: 'Italiano', de: 'Deutsch', ro: 'Română', pt: 'Português',
+    pl: 'Polski', zh: '中文', ja: '日本語', da: 'Dansk', ar: 'العربية',
   };
 
   // Short closed-box form for the language picker once the section nav no longer fits on the
@@ -26,6 +27,7 @@
   var LANG_CODES = {
     en: 'EN', es: 'ES', ca: 'CAT', fr: 'FR',
     it: 'IT', de: 'DE', ro: 'RO', pt: 'PT',
+    pl: 'PL', zh: 'ZH', ja: 'JA', da: 'DA', ar: 'AR',
   };
 
   // Same breakpoint theme.css uses to collapse the section nav into the hamburger dropdown

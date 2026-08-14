@@ -14,7 +14,8 @@
 (function () {
   var STORAGE_LANG = 'xowapp_landing_lang';
   var STORAGE_THEME = 'xowapp_landing_theme';
-  var SUPPORTED_LANGS = ['en', 'es', 'ca', 'fr', 'it', 'de', 'ro', 'pt'];
+  var SUPPORTED_LANGS = ['en', 'es', 'ca', 'fr', 'it', 'de', 'ro', 'pt', 'pl', 'zh', 'ja', 'da', 'ar'];
+  var RTL_LANGS = ['ar'];
 
   function dict() {
     return window.XOW_I18N || {};
@@ -66,6 +67,11 @@
     });
 
     document.documentElement.lang = lang;
+    // Flexbox/grid main axes and default text alignment are already direction-aware per the
+    // CSS spec, so this one attribute mirrors most of the layout for Arabic for free. It does
+    // NOT cover every physical left/right value (e.g. icons that imply a direction) -- that's
+    // a design pass of its own, not attempted here.
+    document.documentElement.dir = RTL_LANGS.indexOf(lang) !== -1 ? 'rtl' : 'ltr';
     var langSelect = document.getElementById('langSelect');
     if (langSelect) langSelect.value = lang;
   }
