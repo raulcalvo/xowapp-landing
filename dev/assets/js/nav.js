@@ -50,7 +50,7 @@
           '</a>' +
         '</nav>' +
         '<div class="xow-header-controls">' +
-          '<div class="xow-nav-pickers">' +
+          '<div class="xow-nav-pickers" id="xowNavPickers">' +
             '<div class="picker-container">' +
               '<svg class="icon"><use href="#i-dark_mode"></use></svg>' +
               '<select class="picker-select" id="themeSelect">' +

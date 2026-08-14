@@ -1,8 +1,8 @@
-// XowApp public website — floating "donate" button.
-// Fixed top-right button (below the theme/language pickers) linking to donar.html, with a
-// rotating emoji (persisted across navigation via localStorage) and an occasional "wiggle"
-// animation. Hidden on donar.html itself via `[data-page="donar"] .xow-fab { display: none }`
-// in theme.css.
+// XowApp public website — "donate" button.
+// Inline button in the header's picker row (right of the language picker) linking to
+// donar.html, with a rotating emoji (persisted across navigation via localStorage) and an
+// occasional "wiggle" animation. Hidden on donar.html itself via
+// `[data-page="donar"] .xow-fab { display: none }` in theme.css.
 (function () {
   var EMOJIS = ['☕', '🍕', '❤️', '🚀', '🤝', '🎁', '🐷'];
   var KEY_CURRENT = 'xow_donation_emoji_current';
@@ -137,7 +137,11 @@
       }
     });
 
-    document.body.appendChild(buttonEl);
+    // Mount next to the language picker inside the header (nav.js gives that row a stable id);
+    // fall back to document.body if the header hasn't rendered that far for some reason, so
+    // this degrades gracefully instead of losing the button entirely.
+    var mountPoint = document.getElementById('xowNavPickers') || document.body;
+    mountPoint.appendChild(buttonEl);
 
     var state = readState();
     render(state.current);
