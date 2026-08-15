@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://pocketbase.raulcalvo.com; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-ancestors 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://pocketbase.raulcalvo.com; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-src https://personal-web.raulcalvo.workers.dev; frame-ancestors 'none'">
   <title id="pageTitle" data-i18n-key="about_title">XowApp</title>
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +21,13 @@
         <section class="xow-section xow-card xow-about-header">
           <div class="xow-kicker xow-center" id="about_kicker"></div>
 
-          <img class="xow-avatar-photo" src="assets/img/raul-calvo.jpg" data-i18n-key="about_photo_alt" data-i18n-attr="alt,title" alt="">
+          <iframe
+            class="xow-avatar-embed"
+            src="https://personal-web.raulcalvo.workers.dev/embed.html"
+            loading="lazy"
+            data-i18n-key="about_photo_alt" data-i18n-attr="title"
+            title="Raúl Calvo">
+          </iframe>
 
           <h1 class="xow-title-sm" id="about_title"></h1>
           <p class="xow-subtitle xow-center xow-lead" id="about_name"></p>

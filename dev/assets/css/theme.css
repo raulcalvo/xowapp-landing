@@ -827,6 +827,15 @@ a:hover {
   border: 2px solid var(--border-color);
 }
 
+.xow-avatar-embed {
+  display: block;
+  width: 100%;
+  height: 220px;
+  margin: 0 auto 18px;
+  border: 0;
+  background: transparent;
+}
+
 .xow-about-header {
   text-align: center;
 }
