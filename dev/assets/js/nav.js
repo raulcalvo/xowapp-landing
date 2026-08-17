@@ -6,11 +6,12 @@
 // embedded <script> tags, so this is compliant, not just "workaround-compliant").
 (function () {
   var NAV_LINKS = [
-    { page: 'index', href: 'index.html', key: 'nav_home' },
-    { page: 'about', href: 'about.html', key: 'nav_about' },
-    { page: 'historia', href: 'historia.html', key: 'nav_story' },
-    { page: 'vision', href: 'vision.html', key: 'nav_vision' },
-    { page: 'transparencia', href: 'transparencia.html', key: 'nav_transparency' },
+    { page: 'index', href: 'index.html', key: 'nav_home', icon: 'home' },
+    { page: 'como-funciona', href: 'como-funciona.html', key: 'nav_how', icon: 'schema' },
+    { page: 'about', href: 'about.html', key: 'nav_about', icon: 'person' },
+    { page: 'historia', href: 'historia.html', key: 'nav_story', icon: 'menu_book' },
+    { page: 'vision', href: 'vision.html', key: 'nav_vision', icon: 'lightbulb' },
+    { page: 'transparencia', href: 'transparencia.html', key: 'nav_transparency', icon: 'shield' },
     { page: 'donar', href: 'donar.html', key: 'nav_donate', cta: true },
   ];
 
@@ -30,20 +31,22 @@
     pl: 'PL', zh: 'ZH', ja: 'JA', da: 'DA', ar: 'AR',
   };
 
-  // Same breakpoint theme.css uses to collapse the section nav into the hamburger dropdown
-  // (".xow-nav" no longer fits the header row) -- the two pickers compact at the same point:
-  // the language picker's options switch from full names to LANG_CODES above (a real DOM text
-  // swap, so the native dropdown itself also lists the short codes once compact -- there's no
-  // way to keep the closed box compact while the open dropdown stays full-text on a native
-  // <select>), and the theme picker goes icon-only via a pure CSS rule (see theme.css).
-  var NAV_COMPACT_QUERY = '(max-width: 1280px)';
+  var NAV_COMPACT_QUERY = '(max-width: 1200px)';
 
   function headerMarkup(currentPage) {
     var links = NAV_LINKS.map(function (link) {
       var classes = ['xow-nav-link'];
       if (link.cta) classes.push('xow-nav-cta');
       if (link.page === currentPage) classes.push('is-active');
-      return '<a class="' + classes.join(' ') + '" href="' + link.href + '" id="' + link.key + '"></a>';
+      var iconHtml = (link.icon && !link.cta)
+        ? '<span class="xow-nav-icon"><svg class="icon"><use href="#i-' + link.icon + '"></use></svg></span>'
+        : '';
+      return (
+        '<a class="' + classes.join(' ') + '" href="' + link.href + '" data-i18n-key="' + link.key + '" data-i18n-attr="title,aria-label" data-i18n-text="false">' +
+          iconHtml +
+          '<span class="xow-nav-text" id="' + link.key + '"></span>' +
+        '</a>'
+      );
     }).join('');
 
     var langOptions = window.XowI18n.SUPPORTED_LANGS.map(function (code) {

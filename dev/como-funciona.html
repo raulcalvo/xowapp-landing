@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://pocketbase.raulcalvo.com; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-ancestors 'none'">
+  <title id="pageTitle" data-i18n-key="deepdive_title">XowApp</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/theme.css">
+</head>
+<body data-page="como-funciona">
+  <div class="xow-page">
+    <div id="xow-nav-root"></div>
+
+    <main class="xow-main">
+      <div class="xow-container">
+
+        <!-- Header -->
+        <section class="xow-section xow-center">
+          <div class="xow-kicker xow-center" id="deepdive_kicker"></div>
+          <h1 class="xow-title" id="deepdive_title"></h1>
+          <p class="xow-subtitle xow-lead" id="deepdive_intro"></p>
+        </section>
+
+        <!-- Fundamental concepts: Showing vs Sharing, Album types, Social interactions, and Local AI/Biometrics -->
+        <section class="xow-section">
+          <div class="xow-concepts-grid">
+            <div class="xow-concept-card">
+              <div class="xow-concept-header">
+                <div class="xow-concept-icon">
+                  <svg class="icon"><use href="#i-visibility_off"></use></svg>
+                </div>
+                <h3 id="deepdive_concept_showing_title"></h3>
+              </div>
+              <p id="deepdive_concept_showing_body"></p>
+            </div>
+
+            <div class="xow-concept-card">
+              <div class="xow-concept-header">
+                <div class="xow-concept-icon">
+                  <svg class="icon"><use href="#i-groups"></use></svg>
+                </div>
+                <h3 id="deepdive_concept_albums_title"></h3>
+              </div>
+              <p id="deepdive_concept_albums_body"></p>
+            </div>
+
+            <div class="xow-concept-card">
+              <div class="xow-concept-header">
+                <div class="xow-concept-icon">
+                  <svg class="icon"><use href="#i-chat"></use></svg>
+                </div>
+                <h3 id="deepdive_concept_social_title"></h3>
+              </div>
+              <p id="deepdive_concept_social_body"></p>
+            </div>
+
+            <div class="xow-concept-card">
+              <div class="xow-concept-header">
+                <div class="xow-concept-icon">
+                  <svg class="icon"><use href="#i-fingerprint"></use></svg>
+                </div>
+                <h3 id="deepdive_concept_security_title"></h3>
+              </div>
+              <p id="deepdive_concept_security_body"></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4 Step-by-Step Use Cases -->
+        <section class="xow-section xow-usecases-section">
+          <div class="xow-usecases-header">
+            <div class="xow-kicker xow-center" id="usecases_kicker"></div>
+            <h2 class="xow-title-sm" id="usecases_title"></h2>
+          </div>
+
+          <!-- Character introduction card -->
+          <div class="xow-characters-card">
+            <div class="xow-characters-title">
+              <svg class="icon"><use href="#i-groups"></use></svg>
+              <span id="characters_title"></span>
+            </div>
+            <div class="xow-characters-grid">
+              <div class="xow-character-item">
+                <div class="xow-character-avatar">
+                  <svg class="icon"><use href="#i-face_woman"></use></svg>
+                </div>
+                <div class="xow-character-info">
+                  <span class="xow-character-name" id="char_woman_name"></span>
+                  <span class="xow-character-role" id="char_woman_role"></span>
+                </div>
+              </div>
+              <div class="xow-character-item">
+                <div class="xow-character-avatar is-man">
+                  <svg class="icon"><use href="#i-face_man"></use></svg>
+                </div>
+                <div class="xow-character-info">
+                  <span class="xow-character-name" id="char_man_name"></span>
+                  <span class="xow-character-role" id="char_man_role"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="xow-usecases-list">
+            <!-- Step 1: Create account without personal data -->
+            <div class="xow-usecase-card">
+              <div class="xow-usecase-top">
+                <div class="xow-usecase-identity">
+                  <div class="xow-usecase-icon-box">
+                    <svg class="icon"><use href="#i-person"></use></svg>
+                  </div>
+                  <div class="xow-usecase-meta">
+                    <h3 id="usecase1_title"></h3>
+                  </div>
+                </div>
+                <span class="xow-badge" id="usecase1_badge"></span>
+              </div>
+              <p class="xow-usecase-body" id="usecase1_body"></p>
+
+              <!-- Flow Diagram Step 1 -->
+              <div class="xow-flow-diagram">
+                <div class="xow-flow-step">
+                  <div class="xow-flow-step-icon is-woman">
+                    <svg class="icon"><use href="#i-face_woman"></use></svg>
+                  </div>
+                  <div class="xow-flow-step-title" id="usecase1_flow_step1_title"></div>
+                  <div class="xow-flow-step-desc" id="usecase1_flow_step1_desc"></div>
+                </div>
+                <div class="xow-flow-arrow">
+                  <svg class="icon icon-desktop"><use href="#i-arrow_forward"></use></svg>
+                  <svg class="icon icon-mobile"><use href="#i-arrow_down"></use></svg>
+                </div>
+                <div class="xow-flow-step">
+                  <div class="xow-flow-step-icon">
+                    <svg class="icon"><use href="#i-shield"></use></svg>
+                  </div>
+                  <div class="xow-flow-step-title" id="usecase1_flow_step2_title"></div>
+                  <div class="xow-flow-step-desc" id="usecase1_flow_step2_desc"></div>
+                </div>
+                <div class="xow-flow-arrow">
+                  <svg class="icon icon-desktop"><use href="#i-arrow_forward"></use></svg>
+                  <svg class="icon icon-mobile"><use href="#i-arrow_down"></use></svg>
+                </div>
+                <div class="xow-flow-step">
+                  <div class="xow-flow-step-icon">
+                    <svg class="icon"><use href="#i-visibility_off"></use></svg>
+                  </div>
+                  <div class="xow-flow-step-title" id="usecase1_flow_step3_title"></div>
+                  <div class="xow-flow-step-desc" id="usecase1_flow_step3_desc"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2: Connect with friend/family -->
+            <div class="xow-usecase-card">
+              <div class="xow-usecase-top">
+                <div class="xow-usecase-identity">
+                  <div class="xow-usecase-icon-box">
+                    <svg class="icon"><use href="#i-link"></use></svg>
+                  </div>
+                  <div class="xow-usecase-meta">
+                    <h3 id="usecase2_title"></h3>
+                  </div>
+                </div>
+                <span class="xow-badge" id="usecase2_badge"></span>
+              </div>
+              <p class="xow-usecase-body" id="usecase2_body"></p>
+
+              <!-- Flow Diagram Step 2 -->
+              <div class="xow-flow-diagram">
+                <div class="xow-flow-step">
+                  <div class="xow-flow-step-icon is-pair">
+                    <svg class="icon"><use href="#i-face_woman"></use></svg>
+                    <svg class="icon"><use href="#i-face_man"></use></svg>
+                  </div>
+                  <div class="xow-flow-step-title" id="usecase2_flow_step1_title"></div>
+                  <div class="xow-flow-step-desc" id="usecase2_flow_step1_desc"></div>
+                </div>
+                <div class="xow-flow-arrow">
+                  <svg class="icon icon-desktop"><use href="#i-arrow_forward"></use></svg>
+                  <svg class="icon icon-mobile"><use href="#i-arrow_down"></use></svg>
+                </div>
+                <div class="xow-flow-step">
+                  <div class="xow-flow-step-icon">
+                    <svg class="icon"><use href="#i-link"></use></svg>
+                  </div>
+                  <div class="xow-flow-step-title" id="usecase2_flow_step2_title"></div>
+                  <div class="xow-flow-step-desc" id="usecase2_flow_step2_desc"></div>
+                </div>
+                <div class="xow-flow-arrow">
+                  <svg class="icon icon-desktop"><use href="#i-arrow_forward"></use></svg>
+                  <svg class="icon icon-mobile"><use href="#i-arrow_down"></use></svg>
+                </div>
+                <div class="xow-flow-step">
+                  <div class="xow-flow-step-icon">
+                    <svg class="icon"><use href="#i-lock"></use></svg>
+                  </div>
+                  <div class="xow-flow-step-title" id="usecase2_flow_step3_title"></div>
+                  <div class="xow-flow-step-desc" id="usecase2_flow_step3_desc"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3: Send photo/video to an album -->
+            <div class="xow-usecase-card">
+              <div class="xow-usecase-top">
+                <div class="xow-usecase-identity">
+                  <div class="xow-usecase-icon-box">
+                    <svg class="icon"><use href="#i-photo_library"></use></svg>
+                  </div>
+                  <div class="xow-usecase-meta">
+                    <h3 id="usecase3_title"></h3>
+                  </div>
+                </div>
+                <span class="xow-badge" id="usecase3_badge"></span>
+              </div>
+              <p class="xow-usecase-body" id="usecase3_body"></p>
+
+              <!-- Flow Diagram Step 3 -->
+              <div class="xow-flow-diagram">
+                <div class="xow-flow-step">
+                  <div class="xow-flow-step-icon is-woman">
+                    <svg class="icon"><use href="#i-face_woman"></use></svg>
+                  </div>
+                  <div class="xow-flow-step-title" id="usecase3_flow_step1_title"></div>
+                  <div class="xow-flow-step-desc" id="usecase3_flow_step1_desc"></div>
+                </div>
+                <div class="xow-flow-arrow">
+                  <svg class="icon icon-desktop"><use href="#i-arrow_forward"></use></svg>
+                  <svg class="icon icon-mobile"><use href="#i-arrow_down"></use></svg>
+                </div>
+                <div class="xow-flow-step">
+                  <div class="xow-flow-step-icon">
+                    <svg class="icon"><use href="#i-cloud_off"></use></svg>
+                  </div>
+                  <div class="xow-flow-step-title" id="usecase3_flow_step2_title"></div>
+                  <div class="xow-flow-step-desc" id="usecase3_flow_step2_desc"></div>
+                </div>
+                <div class="xow-flow-arrow">
+                  <svg class="icon icon-desktop"><use href="#i-arrow_forward"></use></svg>
+                  <svg class="icon icon-mobile"><use href="#i-arrow_down"></use></svg>
+                </div>
+                <div class="xow-flow-step">
+                  <div class="xow-flow-step-icon is-man">
+                    <svg class="icon"><use href="#i-face_man"></use></svg>
+                  </div>
+                  <div class="xow-flow-step-title" id="usecase3_flow_step3_title"></div>
+                  <div class="xow-flow-step-desc" id="usecase3_flow_step3_desc"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 4: Synchronized deletion -->
+            <div class="xow-usecase-card">
+              <div class="xow-usecase-top">
+                <div class="xow-usecase-identity">
+                  <div class="xow-usecase-icon-box">
+                    <svg class="icon"><use href="#i-delete"></use></svg>
+                  </div>
+                  <div class="xow-usecase-meta">
+                    <h3 id="usecase4_title"></h3>
+                  </div>
+                </div>
+                <span class="xow-badge" id="usecase4_badge"></span>
+              </div>
+              <p class="xow-usecase-body" id="usecase4_body"></p>
+
+              <!-- Flow Diagram Step 4 -->
+              <div class="xow-flow-diagram">
+                <div class="xow-flow-step">
+                  <div class="xow-flow-step-icon is-woman">
+                    <svg class="icon"><use href="#i-face_woman"></use></svg>
+                  </div>
+                  <div class="xow-flow-step-title" id="usecase4_flow_step1_title"></div>
+                  <div class="xow-flow-step-desc" id="usecase4_flow_step1_desc"></div>
+                </div>
+                <div class="xow-flow-arrow">
+                  <svg class="icon icon-desktop"><use href="#i-arrow_forward"></use></svg>
+                  <svg class="icon icon-mobile"><use href="#i-arrow_down"></use></svg>
+                </div>
+                <div class="xow-flow-step">
+                  <div class="xow-flow-step-icon">
+                    <svg class="icon"><use href="#i-sync_alt"></use></svg>
+                  </div>
+                  <div class="xow-flow-step-title" id="usecase4_flow_step2_title"></div>
+                  <div class="xow-flow-step-desc" id="usecase4_flow_step2_desc"></div>
+                </div>
+                <div class="xow-flow-arrow">
+                  <svg class="icon icon-desktop"><use href="#i-arrow_forward"></use></svg>
+                  <svg class="icon icon-mobile"><use href="#i-arrow_down"></use></svg>
+                </div>
+                <div class="xow-flow-step">
+                  <div class="xow-flow-step-icon is-man">
+                    <svg class="icon"><use href="#i-face_man"></use></svg>
+                  </div>
+                  <div class="xow-flow-step-title" id="usecase4_flow_step3_title"></div>
+                  <div class="xow-flow-step-desc" id="usecase4_flow_step3_desc"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Note on Google Sign-In & Zero Knowledge -->
+          <div class="xow-footnote-card">
+            <svg class="icon"><use href="#i-shield"></use></svg>
+            <p id="usecase1_footnote"></p>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <div id="xow-footer-root"></div>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/i18n-data.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/nav.js"></script>
+  <script src="assets/js/donate-fab.js"></script>
+</body>
+</html>
