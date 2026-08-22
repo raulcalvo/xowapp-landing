@@ -48,6 +48,7 @@
     account_circle: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="9.7" r="3.2"/><path d="M5.8 18.3a6.6 6.6 0 0 1 12.4 0"/>',
     logout: '<path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3"/><path d="M15.5 16.5L21 12l-5.5-4.5"/><path d="M21 12H9"/>',
     warning: '<path d="M12 3.2L21.5 20H2.5L12 3.2z"/><path d="M12 9.5v4.6"/><circle cx="12" cy="17.3" r="0.9"/>',
+    info: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="8" r="0.9"/><path d="M11 11h1.4v6H11"/>',
   };
 
   function buildSpriteMarkup() {

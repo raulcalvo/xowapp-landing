@@ -31,7 +31,13 @@
 
           <div class="xow-profile-field">
             <div class="xow-profile-field-label" id="profile_email_label"></div>
-            <div class="xow-profile-field-value" id="profileEmailValue"></div>
+            <div class="xow-profile-field-value-row">
+              <span class="xow-profile-field-value" id="profileEmailValue"></span>
+              <button type="button" class="xow-info-btn" id="profileEmailInfoBtn" aria-expanded="false" aria-describedby="profileEmailInfoBubble">
+                <svg class="icon"><use href="#i-info"></use></svg>
+                <span class="xow-tooltip-bubble" role="tooltip" id="profileEmailInfoBubble"></span>
+              </button>
+            </div>
           </div>
 
           <div class="xow-profile-field">
@@ -50,10 +56,10 @@
               <span id="profile_delete_button"></span>
             </button>
           </div>
+        </section>
 
-          <p style="margin-top: 24px;">
-            <a href="index.html" id="profile_back_link"></a>
-          </p>
+        <section class="xow-section xow-center">
+          <a class="btn btn-secondary" href="index.html" id="profile_back_link"></a>
         </section>
 
       </div>

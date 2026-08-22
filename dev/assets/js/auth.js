@@ -194,6 +194,12 @@
             pbAvatarUrl: pbAvatarUrl,
             displayName: displayName,
             email: email,
+            // The account's real profile data, as stored in PocketBase -- pbName is the
+            // display name the person set in the app (NOT Google's account name), pbHandle
+            // is the public @handle they claimed during onboarding (users.handle). Shown on
+            // perfil.html; may be empty if the account exists but never finished onboarding.
+            pbName: record.name || '',
+            pbHandle: record.handle || '',
             exp: exp,
           };
           saveSession(session);

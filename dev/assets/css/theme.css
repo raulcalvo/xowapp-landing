@@ -1955,6 +1955,88 @@ a:hover {
   display: inline-block;
 }
 
+.xow-profile-field-value-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.xow-info-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.xow-info-btn:hover,
+.xow-info-btn:focus-visible {
+  color: var(--teal-accent);
+}
+
+.xow-info-btn .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.xow-tooltip-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 9px);
+  transform: translateX(-50%) translateY(4px);
+  width: max-content;
+  max-width: 260px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.45;
+  color: var(--text-main);
+  text-align: left;
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 20;
+}
+
+.xow-info-btn:hover .xow-tooltip-bubble,
+.xow-info-btn:focus-visible .xow-tooltip-bubble,
+.xow-info-btn.is-open .xow-tooltip-bubble {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+@media (max-width: 480px) {
+  .xow-tooltip-bubble {
+    left: 0;
+    transform: translateX(0) translateY(4px);
+    max-width: calc(100vw - 88px);
+  }
+
+  .xow-info-btn:hover .xow-tooltip-bubble,
+  .xow-info-btn:focus-visible .xow-tooltip-bubble,
+  .xow-info-btn.is-open .xow-tooltip-bubble {
+    transform: translateX(0) translateY(0);
+  }
+}
+
 .xow-danger-zone {
   margin-top: 32px;
   padding: 20px;

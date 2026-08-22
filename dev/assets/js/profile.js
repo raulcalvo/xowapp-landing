@@ -62,16 +62,46 @@
     var nameValue = document.getElementById('profileNameValue');
     var emailValue = document.getElementById('profileEmailValue');
     var userIdValue = document.getElementById('profileUserIdValue');
+    var infoBubble = document.getElementById('profileEmailInfoBubble');
+    var infoBtn = document.getElementById('profileEmailInfoBtn');
 
     if (avatarWrap) avatarWrap.appendChild(buildAvatarNode(session, 'avatar-lg'));
-    // All three of these come straight from the Google ID token / the session object --
-    // textContent only, never innerHTML, even though the values are already sanitized by
-    // JSON.parse upstream.
-    if (nameValue) nameValue.textContent = session.displayName || '—';
+    // textContent only, never innerHTML -- even though these are already sanitized by
+    // JSON.parse upstream, nothing here should ever be trusted as markup.
+    // Name and "user id" (the public @handle) come from the PocketBase record itself --
+    // the account's real profile data, NOT the Google account's own name -- so this
+    // reflects whatever the person set up in the app, not what Google knows about them.
+    if (nameValue) nameValue.textContent = session.pbName || '—';
     if (emailValue) emailValue.textContent = session.email || '—';
-    if (userIdValue) userIdValue.textContent = session.userId || '—';
+    if (userIdValue) userIdValue.textContent = session.pbHandle ? ('@' + session.pbHandle) : '—';
+    if (infoBubble) infoBubble.textContent = translate('profile_email_info_tooltip');
+    if (infoBtn) infoBtn.setAttribute('aria-label', translate('profile_email_info_tooltip'));
 
     if (card) card.hidden = false;
+  }
+
+  // The info bubble opens on hover/focus via CSS alone (see .xow-info-btn:hover /
+  // :focus-visible in theme.css) -- this wiring only covers touch, where there is no
+  // hover: tap toggles an .is-open class, tapping elsewhere or Escape closes it.
+  function wireEmailInfoTooltip() {
+    var btn = document.getElementById('profileEmailInfoBtn');
+    if (!btn) return;
+
+    function close() {
+      btn.classList.remove('is-open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var willOpen = !btn.classList.contains('is-open');
+      btn.classList.toggle('is-open', willOpen);
+      btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+    document.addEventListener('click', close);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') close();
+    });
   }
 
   function expectedConfirmValue() {
@@ -165,6 +195,7 @@
 
     renderProfile();
     wireDeleteModal();
+    wireEmailInfoTooltip();
 
     document.addEventListener('xow:authchange', function () {
       if (!window.XowAuth.getSession()) {
