@@ -106,8 +106,16 @@
     scheduleWiggle();
   }
 
+  // Session-only flag set by landing.html (the entry point linked from the mobile app) --
+  // see the comment there and the matching helper in nav.js. Suppresses this button for the
+  // rest of the tab's session so a page opened from an in-app link never shows a donate CTA.
+  function isDonateHidden() {
+    try { return sessionStorage.getItem('xow_hide_donate') === '1'; } catch (e) { return false; }
+  }
+
   function inject() {
     if (document.body.getAttribute('data-page') === 'donar') return;
+    if (isDonateHidden()) return;
     if (document.getElementById('xowDonateFab')) return;
 
     buttonEl = document.createElement('a');

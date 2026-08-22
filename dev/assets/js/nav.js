@@ -33,8 +33,19 @@
 
   var NAV_COMPACT_QUERY = '(max-width: 1200px)';
 
+  // Session-only flag set by landing.html (the entry point linked from the mobile app) --
+  // see the comment there. When set, every donate/support prompt on the site (this nav's
+  // own "Donar" CTA, the header FAB in donate-fab.js, and any [data-donate-cta] element on
+  // the current page) stays hidden for the rest of this browser tab's session, so a page
+  // opened from an in-app link never surfaces an alternative-payment call to action --
+  // App Store/Play Store review guidelines restrict exactly that.
+  function isDonateHidden() {
+    try { return sessionStorage.getItem('xow_hide_donate') === '1'; } catch (e) { return false; }
+  }
+
   function headerMarkup(currentPage) {
-    var links = NAV_LINKS.map(function (link) {
+    var visibleNavLinks = isDonateHidden() ? NAV_LINKS.filter(function (l) { return !l.cta; }) : NAV_LINKS;
+    var links = visibleNavLinks.map(function (link) {
       var classes = ['xow-nav-link'];
       if (link.cta) classes.push('xow-nav-cta');
       if (link.page === currentPage) classes.push('is-active');
@@ -171,6 +182,14 @@
     // attributes) exists in the DOM — i18n.js may have already run once before this.
     if (window.XowI18n) {
       window.XowI18n.applyTranslations(window.XowI18n.getBrowserLanguage());
+    }
+
+    // Content-level donate CTAs elsewhere on the page (about.html's funding blurb,
+    // transparencia.html's closing CTA) -- the nav's own "Donar" link is already filtered
+    // out of headerMarkup() above; this catches the rest, wherever a page marks one.
+    if (isDonateHidden()) {
+      var ctas = document.querySelectorAll('[data-donate-cta]');
+      for (var i = 0; i < ctas.length; i++) ctas[i].hidden = true;
     }
   }
 

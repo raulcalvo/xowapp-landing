@@ -239,10 +239,18 @@
         google.accounts.id.renderButton(container, {
           type: 'standard',
           theme: 'outline',
-          size: 'large',
+          size: 'medium',
           shape: 'pill',
           text: 'signin_with',
           logo_alignment: 'left',
+          // GIS renders the button at its own natural width unless told otherwise, which for
+          // "Sign in with Google" easily exceeds 300px in several supported languages --
+          // comically oversized inside the ~268px-wide dropdown (.xow-user-dropdown is 300px
+          // minus its 16px/side padding). Google only accepts a literal pixel number here (no
+          // %, no responsive sizing) and requires 200-400; 230 is the widest value that still
+          // leaves breathing room inside that content area on the narrowest dropdown width
+          // (.xow-user-dropdown's own max-width: calc(100vw - 2rem) at a 320px viewport).
+          width: 230,
         });
         if (callbacks.onRendered) callbacks.onRendered();
       })
