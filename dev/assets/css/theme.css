@@ -1822,9 +1822,21 @@ a:hover {
 .xow-gsi-slot {
   min-height: 40px;
   width: 100%;
+  max-width: 230px;
+  margin: 0 auto;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Google's own button/iframe sizing (width: 230 passed to renderButton() in auth.js) can take
+   a moment to settle -- there's a brief instant where GIS paints an oversized placeholder
+   before swapping in the actual "Sign in with Google" pill at its configured size. Capping
+   this slot at the same 230px and clipping overflow means that transient frame gets contained
+   instead of visibly ballooning past the dropdown's edge. */
+.xow-gsi-slot iframe {
+  max-width: 100%;
 }
 
 .xow-user-login-heading {

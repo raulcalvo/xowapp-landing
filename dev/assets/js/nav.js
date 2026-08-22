@@ -33,8 +33,8 @@
 
   var NAV_COMPACT_QUERY = '(max-width: 1200px)';
 
-  // Session-only flag set by landing.html (the entry point linked from the mobile app) --
-  // see the comment there. When set, every donate/support prompt on the site (this nav's
+  // Session-only flag set by app-entry.js (?ref=app -- the entry point linked from the mobile
+  // app). When set, every donate/support prompt on the site (this nav's
   // own "Donar" CTA, the header FAB in donate-fab.js, and any [data-donate-cta] element on
   // the current page) stays hidden for the rest of this browser tab's session, so a page
   // opened from an in-app link never surfaces an alternative-payment call to action --
