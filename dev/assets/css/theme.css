@@ -1681,3 +1681,429 @@ a:hover {
   line-height: 1.6;
   margin: 0;
 }
+
+/* ------------------------------------------------------------------ */
+/* Header — account avatar + dropdown (public/assets/js/user-menu.js)  */
+/* ------------------------------------------------------------------ */
+
+.xow-user-menu {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.xow-user-avatar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--select-bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: border-color 0.2s ease, transform 0.15s ease;
+}
+
+.xow-user-avatar-btn:hover {
+  border-color: var(--teal-accent);
+  transform: scale(1.06);
+}
+
+.xow-user-avatar-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.xow-avatar-guest-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.xow-avatar-guest-icon .icon {
+  width: 19px;
+  height: 19px;
+}
+
+.xow-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.xow-avatar-img.avatar-sm {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+}
+
+.xow-avatar-img.avatar-md {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+}
+
+.xow-avatar-img.avatar-lg {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+}
+
+.xow-avatar-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.xow-avatar-initials.avatar-sm {
+  width: 34px;
+  height: 34px;
+  font-size: 14px;
+}
+
+.xow-avatar-initials.avatar-md {
+  width: 46px;
+  height: 46px;
+  font-size: 17px;
+}
+
+.xow-avatar-initials.avatar-lg {
+  width: 88px;
+  height: 88px;
+  font-size: 32px;
+}
+
+/* Right-anchored so it never overflows past the header on narrow viewports; width capped to
+   the viewport (minus a little breathing room) rather than a fixed px so it can never force
+   horizontal scroll on small phones. */
+.xow-user-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 30;
+  width: 300px;
+  max-width: calc(100vw - 2rem);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  animation: fadeIn 0.15s ease;
+}
+
+.xow-user-dropdown[hidden] {
+  display: none;
+}
+
+.xow-user-dropdown-guest {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.xow-gsi-slot {
+  min-height: 40px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.xow-user-login-heading {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--heading-color);
+}
+
+.xow-user-signup-notice {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.xow-user-auth-error {
+  margin: 0;
+  font-size: 12.5px;
+  color: #f87171;
+}
+
+.xow-user-auth-error[hidden] {
+  display: none;
+}
+
+.xow-user-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.xow-user-dropdown-email {
+  font-size: 13px;
+  color: var(--text-main);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.xow-user-dropdown-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+  text-align: left;
+  cursor: pointer;
+}
+
+.xow-user-dropdown-link:hover {
+  background: var(--box-bg);
+  text-decoration: none;
+}
+
+.xow-user-dropdown-link .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--teal-accent);
+  flex-shrink: 0;
+}
+
+.xow-user-dropdown-logout {
+  color: #f87171;
+}
+
+.xow-user-dropdown-logout .icon {
+  color: #f87171;
+}
+
+@media (max-width: 480px) {
+  .xow-user-dropdown {
+    width: calc(100vw - 2rem);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Profile page (public/perfil.html)                                   */
+/* ------------------------------------------------------------------ */
+
+.xow-profile-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.xow-profile-avatar-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.xow-profile-field {
+  margin: 16px 0;
+}
+
+.xow-profile-field-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.xow-profile-field-value {
+  font-size: 15.5px;
+  color: var(--text-main);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.xow-profile-field-value.is-mono {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 14px;
+  background: var(--select-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: inline-block;
+}
+
+.xow-danger-zone {
+  margin-top: 32px;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: rgba(248, 113, 113, 0.06);
+}
+
+.xow-danger-zone-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #f87171;
+  margin-bottom: 8px;
+}
+
+.xow-danger-zone-title .icon {
+  width: 20px;
+  height: 20px;
+  color: #f87171;
+}
+
+.xow-danger-zone-desc {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+
+.btn-danger {
+  background: #f87171;
+  color: #3b0a0a;
+}
+
+.btn-danger:hover {
+  color: #3b0a0a;
+  opacity: 0.92;
+}
+
+/* ------------------------------------------------------------------ */
+/* Confirmation modal (account deletion)                               */
+/* ------------------------------------------------------------------ */
+
+.xow-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(2, 6, 23, 0.6);
+}
+
+.xow-modal-overlay[hidden] {
+  display: none;
+}
+
+.xow-modal {
+  width: 100%;
+  max-width: 460px;
+  max-height: 90dvh;
+  overflow-y: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 26px;
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.4);
+}
+
+.xow-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--heading-color);
+  margin-bottom: 12px;
+}
+
+.xow-modal-title .icon {
+  width: 22px;
+  height: 22px;
+  color: #f87171;
+  flex-shrink: 0;
+}
+
+.xow-modal-body {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+.xow-modal-confirm-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.xow-modal-confirm-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--select-bg);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  margin-bottom: 12px;
+}
+
+.xow-modal-confirm-input:focus {
+  border-color: #f87171;
+}
+
+.xow-modal-error {
+  color: #f87171;
+  font-size: 13px;
+  margin: -4px 0 14px;
+  min-height: 1em;
+}
+
+.xow-modal-error:empty {
+  display: none;
+}
+
+.xow-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .xow-modal {
+    padding: 20px;
+  }
+
+  .xow-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .xow-modal-actions .btn {
+    width: 100%;
+  }
+}

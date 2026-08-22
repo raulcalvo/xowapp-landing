@@ -45,6 +45,9 @@
     menu_book: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
     lightbulb: '<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>',
     schema: '<rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="9" y="14" width="6" height="6" rx="1.5"/><path d="M7 10v1.5a1.5 1.5 0 0 0 1.5 1.5h1m6-3v1.5a1.5 1.5 0 0 1-1.5 1.5h-1"/>',
+    account_circle: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="9.7" r="3.2"/><path d="M5.8 18.3a6.6 6.6 0 0 1 12.4 0"/>',
+    logout: '<path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3"/><path d="M15.5 16.5L21 12l-5.5-4.5"/><path d="M21 12H9"/>',
+    warning: '<path d="M12 3.2L21.5 20H2.5L12 3.2z"/><path d="M12 9.5v4.6"/><circle cx="12" cy="17.3" r="0.9"/>',
   };
 
   function buildSpriteMarkup() {
