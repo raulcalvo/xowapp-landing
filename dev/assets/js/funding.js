@@ -133,6 +133,7 @@
             order: Number(p.order) || (idx + 1),
             monthlyCostEur: Number(p.monthly_cost_eur) || 0,
             bucketEur: Number(p.bucket_eur) || 0,
+            expenses: Array.isArray(p.expenses) ? p.expenses : [],
           };
         }) : MOCK_PHASES;
         var totalRaisedEur = Number(record.total_raised_eur) || 0;
@@ -147,6 +148,16 @@
       .catch(function () {
         return mockResult();
       });
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   function formatEur(n, lang) {
@@ -207,11 +218,40 @@
       html += '<button type="button" class="xow-phase-toggle">' +
         '<svg class="icon icon-sm"><use href="#i-open_in_new"></use></svg>' +
         t('transparencia_expand_cta') + '</button>';
-      html += '<div class="xow-phase-detail">' +
-        formatEur(status.allocatedEur, lang) + ' / ' + formatEur(status.phase.bucketEur, lang) +
-        (status.phase.monthlyCostEur > 0 ? ' · ' + formatEur(status.phase.monthlyCostEur, lang) + '/mo' : '') +
-        '</div>';
-      html += '</div>';
+
+      var exps = status.phase.expenses || [];
+      html += '<div class="xow-phase-detail">';
+      html += '  <div class="xow-phase-breakdown-summary">';
+      html += '    <div class="xow-phase-breakdown-metric"><span>' + t('transparencia_breakdown_allocated_label') + ':</span> <strong>' + formatEur(status.allocatedEur, lang) + '</strong></div>';
+      html += '    <div class="xow-phase-breakdown-metric"><span>' + t('transparencia_breakdown_target_label') + ':</span> <strong>' + formatEur(status.phase.bucketEur, lang) + '</strong></div>';
+      if (status.phase.monthlyCostEur > 0) {
+        html += '    <div class="xow-phase-breakdown-metric"><span>' + t('transparencia_breakdown_monthly') + ':</span> <strong>' + formatEur(status.phase.monthlyCostEur, lang) + '/mes</strong></div>';
+      }
+      html += '  </div>';
+
+      if (exps && exps.length > 0) {
+        html += '  <div class="xow-phase-expenses-box">';
+        html += '    <div class="xow-phase-expenses-header">' + t('transparencia_breakdown_title') + '</div>';
+        html += '    <div class="xow-phase-expenses-list">';
+        exps.forEach(function (exp) {
+          var isMonthly = exp.type === 'monthly';
+          var typeLabel = isMonthly ? t('transparencia_breakdown_monthly') : t('transparencia_breakdown_oneoff');
+          var badgeCls = isMonthly ? 'xow-badge xow-badge-monthly' : 'xow-badge xow-badge-oneoff';
+          var amountStr = formatEur(exp.amount_eur, lang) + (isMonthly ? '/mes' : '');
+          html += '      <div class="xow-phase-expense-item">';
+          html += '        <span class="xow-phase-expense-name">' + escapeHtml(exp.concept || 'Gasto operativo') + '</span>';
+          html += '        <span class="' + badgeCls + '">' + typeLabel + '</span>';
+          html += '        <span class="xow-phase-expense-amount">' + amountStr + '</span>';
+          html += '      </div>';
+        });
+        html += '    </div>';
+        html += '  </div>';
+      } else {
+        html += '  <div class="xow-phase-expenses-empty">' + t('transparencia_breakdown_no_expenses') + '</div>';
+      }
+
+      html += '</div>'; // .xow-phase-detail
+      html += '</div>'; // .xow-phase-card
     });
 
     container.innerHTML = html;

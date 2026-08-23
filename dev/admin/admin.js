@@ -436,6 +436,19 @@
       var m = (phaseMonthly[ph.id] || 0) + (ph.key && ph.key !== ph.id ? (phaseMonthly[ph.key] || 0) : 0);
       var o = (phaseOneOff[ph.id] || 0) + (ph.key && ph.key !== ph.id ? (phaseOneOff[ph.key] || 0) : 0);
       var bucket = (m * 12) + o;
+
+      var phaseExpensesList = (st.expenses || []).filter(function (exp) {
+        if (exp.is_active === false) return false;
+        var phases = Array.isArray(exp.applicable_phases) ? exp.applicable_phases : [];
+        return phases.indexOf(ph.id) !== -1 || (ph.key && phases.indexOf(ph.key) !== -1);
+      }).map(function (exp) {
+        return {
+          concept: exp.concept || '',
+          amount_eur: Number(exp.amount_eur) || 0,
+          type: exp.type || 'monthly',
+        };
+      });
+
       return {
         id: ph.id,
         key: ph.key || ph.id || ('phase_' + (idx + 1)),
@@ -444,6 +457,7 @@
         order: Number(ph.order) || (idx + 1),
         monthlyCostEur: m,
         bucketEur: bucket,
+        expenses: phaseExpensesList,
       };
     });
 
@@ -842,6 +856,7 @@
           progress: st.progress,
           state: st.state,
           funded_until: st.fundedUntil ? st.fundedUntil.toISOString() : null,
+          expenses: st.phase.expenses || [],
         };
       }),
       is_placeholder: false,

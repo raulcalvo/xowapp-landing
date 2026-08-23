@@ -1115,8 +1115,8 @@ a:hover {
 
 .xow-phase-detail {
   display: none;
-  margin-top: 12px;
-  padding-top: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
   border-top: 1px dashed var(--border-color);
   font-size: 13.5px;
   color: var(--text-muted);
@@ -1124,6 +1124,94 @@ a:hover {
 
 .xow-phase-card.is-expanded .xow-phase-detail {
   display: block;
+}
+
+.xow-phase-breakdown-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--text-main);
+}
+
+.xow-phase-breakdown-metric strong {
+  color: var(--teal-accent);
+}
+
+.xow-phase-expenses-box {
+  margin-top: 10px;
+}
+
+.xow-phase-expenses-header {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.xow-phase-expenses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.xow-phase-expense-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.xow-phase-expense-name {
+  flex: 1;
+  font-weight: 500;
+  color: var(--text-main);
+  word-break: break-word;
+}
+
+.xow-badge-monthly {
+  color: var(--indigo-accent);
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.xow-badge-oneoff {
+  color: var(--teal-accent);
+  background: rgba(3, 218, 197, 0.12);
+  border: 1px solid rgba(3, 218, 197, 0.25);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.xow-phase-expense-amount {
+  font-weight: 700;
+  color: var(--teal-accent);
+  white-space: nowrap;
+}
+
+.xow-phase-expenses-empty {
+  padding: 10px;
+  font-style: italic;
+  font-size: 12.5px;
+  color: var(--text-muted);
 }
 
 /* ------------------------------------------------------------------ */
