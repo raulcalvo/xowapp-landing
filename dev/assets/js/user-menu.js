@@ -155,8 +155,16 @@
   function openDropdown() {
     if (isOpen) return;
     isOpen = true;
-    renderDropdownContent();
+    // Make the dropdown visible BEFORE rendering its content, not after: Google's
+    // renderButton() measures the container's actual width to decide how to draw the
+    // button, and while dropdownEl is still `hidden` (display:none) that width reads as 0.
+    // With no usable width it falls back to a compact icon-only square, then re-measures
+    // and repaints the real horizontal pill once the dropdown actually becomes visible --
+    // which is exactly the square-then-morph (and sometimes clipped mid-transition) flash
+    // reported. Rendering into an already-visible, already-laid-out container avoids the
+    // whole two-stage render.
     dropdownEl.hidden = false;
+    renderDropdownContent();
     toggleEl.setAttribute('aria-expanded', 'true');
     document.addEventListener('click', onDocumentClick, true);
     document.addEventListener('keydown', onDocumentKeydown, true);
