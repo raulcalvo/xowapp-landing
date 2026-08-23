@@ -383,28 +383,28 @@
           });
         }
       } else {
-        // one_off
+        // one_off: always adds to phase target bucket
         phases.forEach(function (p) {
           if (phaseOneOff[p] !== undefined) phaseOneOff[p] += amt;
         });
+        // Only counts as already spent if it has an explicit payment date <= now
         if (exp.payment_date) {
           var pDate = parseDateParts(exp.payment_date);
           if (pDate <= now) totalSpentOneOff += amt;
-        } else {
-          totalSpentOneOff += amt;
         }
       }
     });
 
-    // 3. Defaults if no specific active expenses configured
-    var p1Monthly = phaseMonthly.survival > 0 ? phaseMonthly.survival : 300;
-    var p1Bucket = (p1Monthly * 24) + phaseOneOff.survival;
+    // 3. Dynamic target (bucket) calculation based purely on configured active expenses.
+    // As defined: each phase target is 1 year (12 months) of its monthly expenses + one-off expenses for that phase.
+    var p1Monthly = phaseMonthly.survival;
+    var p1Bucket = (p1Monthly * 12) + phaseOneOff.survival;
 
-    var p2Monthly = phaseMonthly.infra > 0 ? phaseMonthly.infra : 800;
-    var p2Bucket = (p2Monthly * 24) + phaseOneOff.infra;
+    var p2Monthly = phaseMonthly.infra;
+    var p2Bucket = (p2Monthly * 12) + phaseOneOff.infra;
 
     var p3Monthly = phaseMonthly.pro;
-    var p3Bucket = phaseOneOff.pro > 0 ? phaseOneOff.pro : 15000;
+    var p3Bucket = (p3Monthly * 12) + phaseOneOff.pro;
 
     var phases = [
       { key: 'survival', monthlyCostEur: p1Monthly, bucketEur: p1Bucket },
@@ -412,7 +412,7 @@
       { key: 'pro', monthlyCostEur: p3Monthly, bucketEur: p3Bucket },
     ];
 
-    // 4. Spent to date
+    // 4. Spent to date (monthly costs accrued since project_start_date + paid one-off costs)
     var startDate = (st.settings && st.settings.project_start_date)
       ? parseDateParts(st.settings.project_start_date)
       : new Date(2026, 0, 1);
@@ -424,8 +424,9 @@
     var totalSpent = (totalActiveMonthly * monthsPassed) + totalSpentOneOff;
     var netBalance = Math.max(0, totalNet - totalSpent);
 
-    // 5. Cascade assignment
-    var phaseStatuses = computeFundingStatus(phases, totalNet, now);
+    // 5. Cascade assignment based on current available net money in cash (netBalance).
+    // As time passes and expenses are consumed, netBalance decreases and phases roll back if no new income arrives.
+    var phaseStatuses = computeFundingStatus(phases, netBalance, now);
 
     // 6. Active runway calculation
     var activePhaseStatus = phaseStatuses.find(function (s) { return s.state === 'active'; });
@@ -433,7 +434,8 @@
       ? activePhaseStatus.phase.monthlyCostEur
       : totalActiveMonthly;
 
-    var runwayMonths = activeMonthlyCost > 0 ? Math.floor(netBalance / activeMonthlyCost) : 0;
+    var activeAllocated = activePhaseStatus ? activePhaseStatus.allocatedEur : netBalance;
+    var runwayMonths = activeMonthlyCost > 0 ? Math.floor(activeAllocated / activeMonthlyCost) : 0;
     var runwayDate = activeMonthlyCost > 0 ? addMonthsClamped(now, runwayMonths) : null;
 
     return {
