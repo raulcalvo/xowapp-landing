@@ -1835,23 +1835,29 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Stays invisible until auth.js's revealWhenReady() adds .is-ready (see the JS comment for
-     why: Google's own renderButton() iframe goes through its own internal loading state --
-     a compact placeholder icon -- before it settles on the actual "Sign in with Google" pill,
-     independent of this container's size/visibility. Fading it in only once that has settled
-     means visitors only ever see the final button, never the placeholder.
-     Deliberately NOT constrained with max-width/overflow:hidden here (an earlier version of
-     this rule was) -- Google's own iframe can render a couple of pixels wider than the exact
-     `width: 230` passed to renderButton() in auth.js (box-shadow/focus-ring allowance), and
-     clipping at exactly 230px was cutting real text off the right edge of the final button,
-     not just containing the transient placeholder. The dropdown itself (268px content area
-     inside .xow-user-dropdown's padding) has enough room either way. */
+  /* Stays invisible AND capped at 230px/clipped until auth.js's revealWhenReady() adds
+     .is-ready (see the JS comment for why: Google's own renderButton() iframe goes through
+     its own internal loading state -- a compact placeholder, or a larger one still, before it
+     settles on the actual "Sign in with Google" pill -- independent of this container's own
+     size/visibility). Capping the box during that phase (not just hiding it with opacity)
+     stops the surrounding dropdown from visibly growing/shrinking as that placeholder's own
+     size changes -- opacity alone hides the pixels but does not stop the invisible box from
+     still occupying whatever space its content currently wants. */
   opacity: 0;
+  max-width: 230px;
+  overflow: hidden;
   transition: opacity 0.12s ease;
 }
 
 .xow-gsi-slot.is-ready {
   opacity: 1;
+  /* Lifted only once the real button has settled -- Google's iframe can render a couple of
+     pixels wider than the literal `width: 230` passed to renderButton() in auth.js (box-
+     shadow/focus-ring allowance), and keeping the 230px cap here would clip real text off the
+     right edge of the actual final button. The dropdown itself (268px content area inside
+     .xow-user-dropdown's padding) has enough room either way. */
+  max-width: none;
+  overflow: visible;
 }
 
 .xow-user-login-heading {

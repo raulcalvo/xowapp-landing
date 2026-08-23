@@ -276,6 +276,16 @@
           callback: function (response) { handleCredentialResponse(response, callbacks); },
           auto_select: false,
           itp_support: true,
+          // Chrome renders this button through FedCM (Federated Credential Management, a
+          // browser-native API) unless told not to -- that's the large "Google" chooser UI
+          // visitors reported flashing right as the dropdown opens, before it settles into
+          // our normal iframe-rendered pill. It's rendered by the browser itself, outside the
+          // page's DOM, so no CSS/JS on this page (the opacity gate above included) can touch
+          // it. This opts back into GIS's own classic iframe-only rendering, which is what
+          // that opacity gate is actually able to manage the reveal timing of. Only affects
+          // the button widget's own display -- unrelated to auto_select (already false) or
+          // One Tap (never used here).
+          use_fedcm_for_button: false,
         });
         container.textContent = '';
         container.classList.remove('is-ready');
