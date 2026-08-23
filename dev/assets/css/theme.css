@@ -2925,3 +2925,53 @@ a:hover {
     width: 100%;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Phase Multilingual Translation Tabs & Auto-translate UI            */
+/* ------------------------------------------------------------------ */
+
+.xow-lang-tabs-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.xow-lang-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.xow-lang-tab {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.xow-lang-tab:hover {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--text-main);
+}
+
+.xow-lang-tab.is-active {
+  background: rgba(3, 218, 197, 0.15);
+  border-color: var(--teal-accent);
+  color: var(--teal-accent);
+}
+
+.xow-lang-tab.has-content::after {
+  content: ' •';
+  color: var(--teal-accent);
+}
+

@@ -207,13 +207,28 @@
 
     result.statuses.forEach(function (status, idx) {
       var textKeys = PHASE_TEXT_KEYS[status.phase.key] || { name: '', desc: '' };
-      var name = status.phase.name || (textKeys.name ? t(textKeys.name) : ('Fase ' + (idx + 1)));
-      var desc = status.phase.desc || (textKeys.desc ? t(textKeys.desc) : '');
+
+      var nameVal = status.phase.name;
+      if (typeof nameVal === 'string' && nameVal.indexOf('{') === 0) {
+        try { nameVal = JSON.parse(nameVal); } catch (e) {}
+      }
+      var name = (typeof nameVal === 'object' && nameVal)
+        ? (nameVal[lang] || nameVal.es || nameVal.en || Object.values(nameVal)[0])
+        : (nameVal || (textKeys.name ? t(textKeys.name) : ('Fase ' + (idx + 1))));
+
+      var descVal = status.phase.desc || status.phase.description;
+      if (typeof descVal === 'string' && descVal.indexOf('{') === 0) {
+        try { descVal = JSON.parse(descVal); } catch (e) {}
+      }
+      var desc = (typeof descVal === 'object' && descVal)
+        ? (descVal[lang] || descVal.es || descVal.en || Object.values(descVal)[0])
+        : (descVal || (textKeys.desc ? t(textKeys.desc) : ''));
+
       var pct = Math.round(status.progress * 100);
 
       html += '<div class="xow-phase-card" data-phase-index="' + idx + '">';
       html += '<div class="xow-phase-head">';
-      html += '<div><div class="xow-phase-name">' + name + '</div><div class="xow-phase-desc">' + desc + '</div></div>';
+      html += '<div><div class="xow-phase-name">' + escapeHtml(name) + '</div><div class="xow-phase-desc">' + escapeHtml(desc) + '</div></div>';
       html += badgeMarkup(status.state, lang);
       html += '</div>';
       html += '<div class="xow-progress-track"><div class="xow-progress-fill" data-progress-pct="' + pct + '"></div></div>';

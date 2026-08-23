@@ -463,19 +463,36 @@
       <form id="formPhase" novalidate>
         <input type="hidden" id="phaseEditId" name="id">
 
+        <!-- Selector de pestañas de idioma y botón de auto-traducción -->
+        <div class="xow-lang-tabs-container">
+          <div class="xow-lang-tabs" id="phaseLangTabs">
+            <button type="button" class="xow-lang-tab is-active" data-phase-lang="es">🇪🇸 ES</button>
+            <button type="button" class="xow-lang-tab" data-phase-lang="en">🇬🇧 EN</button>
+            <button type="button" class="xow-lang-tab" data-phase-lang="ca">🇦🇩 CA</button>
+            <button type="button" class="xow-lang-tab" data-phase-lang="fr">🇫🇷 FR</button>
+            <button type="button" class="xow-lang-tab" data-phase-lang="it">🇮🇹 IT</button>
+            <button type="button" class="xow-lang-tab" data-phase-lang="de">🇩🇪 DE</button>
+            <button type="button" class="xow-lang-tab" data-phase-lang="ro">🇷🇴 RO</button>
+            <button type="button" class="xow-lang-tab" data-phase-lang="pt">🇵🇹 PT</button>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="btnAutoTranslatePhase" title="Auto-traducir con PocketBase a los 8 idiomas">
+            <span id="btnAutoTranslateText">✨ Auto-traducir con IA</span>
+          </button>
+        </div>
+
         <div class="xow-form-grid-2">
           <div class="xow-form-group">
             <label for="phaseOrder" id="lblPhaseOrder">Orden en la Cascada *</label>
             <input type="number" id="phaseOrder" name="order" min="1" max="99" value="1" required>
           </div>
           <div class="xow-form-group">
-            <label for="phaseName" id="lblPhaseName">Nombre de la Fase *</label>
+            <label for="phaseName" id="lblPhaseName">Nombre de la Fase (<span id="phaseActiveLangBadge">ES</span>) *</label>
             <input type="text" id="phaseName" name="name" placeholder="Ej. Fase 1: Supervivencia" required>
           </div>
         </div>
 
         <div class="xow-form-group">
-          <label for="phaseDesc" id="lblPhaseDesc">Descripción</label>
+          <label for="phaseDesc" id="lblPhaseDesc">Descripción (<span id="phaseActiveLangDescBadge">ES</span>)</label>
           <textarea id="phaseDesc" name="description" rows="3" placeholder="Ej. Servidores básicos, dominio y mantenimiento"></textarea>
         </div>
 
