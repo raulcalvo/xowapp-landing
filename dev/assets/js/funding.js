@@ -124,9 +124,13 @@
         if (!items.length) return mockResult();
 
         var record = items[0];
-        var phases = Array.isArray(record.phases) ? record.phases.map(function (p) {
+        var phases = Array.isArray(record.phases) ? record.phases.map(function (p, idx) {
           return {
-            key: p.key,
+            id: p.id,
+            key: p.key || ('phase_' + (idx + 1)),
+            name: p.name,
+            desc: p.desc || p.description,
+            order: Number(p.order) || (idx + 1),
             monthlyCostEur: Number(p.monthly_cost_eur) || 0,
             bucketEur: Number(p.bucket_eur) || 0,
           };
@@ -182,9 +186,9 @@
     html += '</div>';
 
     result.statuses.forEach(function (status, idx) {
-      var textKeys = PHASE_TEXT_KEYS[status.phase.key] || PHASE_TEXT_KEYS.survival;
-      var name = t(textKeys.name);
-      var desc = t(textKeys.desc);
+      var textKeys = PHASE_TEXT_KEYS[status.phase.key] || { name: '', desc: '' };
+      var name = status.phase.name || (textKeys.name ? t(textKeys.name) : ('Fase ' + (idx + 1)));
+      var desc = status.phase.desc || (textKeys.desc ? t(textKeys.desc) : '');
       var pct = Math.round(status.progress * 100);
 
       html += '<div class="xow-phase-card" data-phase-index="' + idx + '">';

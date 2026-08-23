@@ -123,6 +123,10 @@
           <svg class="icon icon-sm"><use href="#i-receipt_long"></use></svg>
           <span id="admin_tab_expenses">Gastos</span>
         </button>
+        <button type="button" class="xow-admin-tab-btn" role="tab" aria-selected="false" data-tab="phases" id="tabBtnPhases">
+          <svg class="icon icon-sm"><use href="#i-schema"></use></svg>
+          <span id="admin_tab_phases">Fases</span>
+        </button>
         <button type="button" class="xow-admin-tab-btn" role="tab" aria-selected="false" data-tab="incomes" id="tabBtnIncomes">
           <svg class="icon icon-sm"><use href="#i-payments"></use></svg>
           <span id="admin_tab_incomes">Ingresos y Donaciones</span>
@@ -164,6 +168,40 @@
           <div class="xow-table-empty" id="expensesEmptyState" hidden>
             <svg class="icon"><use href="#i-receipt_long"></use></svg>
             <p id="admin_no_expenses">No hay gastos registrados todavía.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Phases Panel -->
+      <div class="xow-admin-tab-panel" id="panelPhases" role="tabpanel">
+        <div class="xow-admin-toolbar">
+          <h3 class="xow-admin-section-title" style="margin-bottom: 0;" id="phasesPanelTitle">Fases del Proyecto</h3>
+          <button type="button" class="btn btn-primary btn-sm" id="btnOpenAddPhaseModal">
+            <svg class="icon icon-sm"><use href="#i-add"></use></svg>
+            <span id="admin_btn_add_phase">+ Añadir Fase</span>
+          </button>
+        </div>
+        <div class="xow-admin-table-card">
+          <div class="xow-admin-table-scroll">
+            <table class="xow-admin-table" id="phasesTable">
+              <thead>
+                <tr>
+                  <th id="thPhaseOrder">Orden</th>
+                  <th id="thPhaseName">Nombre de la Fase</th>
+                  <th id="thPhaseDesc">Descripción</th>
+                  <th id="thPhaseMonthly">Coste Mensual</th>
+                  <th id="thPhaseTarget">Meta Anual (Bucket)</th>
+                  <th id="thPhaseActions">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="phasesTableBody">
+                <!-- Rows rendered via admin.js -->
+              </tbody>
+            </table>
+          </div>
+          <div class="xow-table-empty" id="phasesEmptyState" hidden>
+            <svg class="icon"><use href="#i-schema"></use></svg>
+            <p id="admin_phases_empty">No hay fases configuradas aún. Crea una para comenzar.</p>
           </div>
         </div>
       </div>
@@ -295,19 +333,8 @@
 
         <div class="xow-form-group">
           <label id="lblExpPhases">Fases aplicables</label>
-          <div class="xow-checkbox-group">
-            <label class="xow-checkbox-pill">
-              <input type="checkbox" name="applicable_phases" value="survival" checked>
-              <span>Fase 1: Supervivencia</span>
-            </label>
-            <label class="xow-checkbox-pill">
-              <input type="checkbox" name="applicable_phases" value="infra">
-              <span>Fase 2: Infraestructura</span>
-            </label>
-            <label class="xow-checkbox-pill">
-              <input type="checkbox" name="applicable_phases" value="pro">
-              <span>Fase 3: Profesionalización</span>
-            </label>
+          <div class="xow-checkbox-group" id="expPhasesCheckboxGroup">
+            <!-- Dynamically populated checkboxes for phases -->
           </div>
         </div>
 
@@ -418,6 +445,43 @@
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
           <button type="button" class="btn btn-secondary" id="btnCancelIncome">Cancelar</button>
           <button type="submit" class="btn btn-primary" id="btnSaveIncome">Guardar Ingreso</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Create/Edit Phase -->
+  <div class="xow-modal-backdrop" id="modalPhaseBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalPhaseTitle">
+    <div class="xow-modal-card">
+      <div class="xow-modal-header">
+        <h3 class="xow-modal-title" id="modalPhaseTitle">Añadir Fase</h3>
+        <button type="button" class="xow-modal-close" id="btnClosePhaseModal" aria-label="Cerrar">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+
+      <form id="formPhase" novalidate>
+        <input type="hidden" id="phaseEditId" name="id">
+
+        <div class="xow-form-grid-2">
+          <div class="xow-form-group">
+            <label for="phaseOrder" id="lblPhaseOrder">Orden en la Cascada *</label>
+            <input type="number" id="phaseOrder" name="order" min="1" max="99" value="1" required>
+          </div>
+          <div class="xow-form-group">
+            <label for="phaseName" id="lblPhaseName">Nombre de la Fase *</label>
+            <input type="text" id="phaseName" name="name" placeholder="Ej. Fase 1: Supervivencia" required>
+          </div>
+        </div>
+
+        <div class="xow-form-group">
+          <label for="phaseDesc" id="lblPhaseDesc">Descripción</label>
+          <textarea id="phaseDesc" name="description" rows="3" placeholder="Ej. Servidores básicos, dominio y mantenimiento"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" id="btnCancelPhase">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSavePhase">Guardar Fase</button>
         </div>
       </form>
     </div>

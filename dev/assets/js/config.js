@@ -18,6 +18,7 @@
     pocketbaseUrl: isDev ? 'https://dev.pocketbase.xowapp.com' : 'https://pocketbase.raulcalvo.com',
     fundingCollection: 'funding_public_status',
     fundingSettingsCollection: 'funding_settings',
+    fundingPhasesCollection: 'funding_phases',
     fundingExpensesCollection: 'funding_expenses',
     fundingIncomesCollection: 'funding_incomes',
     adminCollection: 'web_admins',

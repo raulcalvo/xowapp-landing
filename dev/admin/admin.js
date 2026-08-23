@@ -57,6 +57,7 @@
   var pb = (typeof PocketBase !== 'undefined') ? new PocketBase(cfg.pocketbaseUrl || '', new InMemoryAuthStore()) : null;
 
   var SETTINGS_COLLECTION = cfg.fundingSettingsCollection || 'funding_settings';
+  var PHASES_COLLECTION = cfg.fundingPhasesCollection || 'funding_phases';
   var EXPENSES_COLLECTION = cfg.fundingExpensesCollection || 'funding_expenses';
   var INCOMES_COLLECTION = cfg.fundingIncomesCollection || 'funding_incomes';
   var PUBLIC_STATUS_COLLECTION = cfg.fundingCollection || 'funding_public_status';
@@ -75,10 +76,11 @@
       tax_rate_pct: 19.0,
       currency: 'EUR',
     },
+    phases: [],
     expenses: [],
     incomes: [],
     publicStatusRecord: null,
-    deleteTarget: null, // { type: 'expense'|'income', id: string, name: string }
+    deleteTarget: null, // { type: 'expense'|'income'|'phase', id: string, name: string }
     isSyncing: false,
   };
 
@@ -112,16 +114,23 @@
     kpiRunwayValue: doc.getElementById('kpiRunwayValue'),
     kpiRunwaySub: doc.getElementById('kpiRunwaySub'),
 
-    // Phases
+    // Phases Visualizer
     adminPhasesContainer: doc.getElementById('adminPhasesContainer'),
 
     // Tabs
     tabBtnExpenses: doc.getElementById('tabBtnExpenses'),
+    tabBtnPhases: doc.getElementById('tabBtnPhases'),
     tabBtnIncomes: doc.getElementById('tabBtnIncomes'),
     tabBtnSettings: doc.getElementById('tabBtnSettings'),
     panelExpenses: doc.getElementById('panelExpenses'),
+    panelPhases: doc.getElementById('panelPhases'),
     panelIncomes: doc.getElementById('panelIncomes'),
     panelSettings: doc.getElementById('panelSettings'),
+
+    // Phases Table
+    phasesTableBody: doc.getElementById('phasesTableBody'),
+    phasesEmptyState: doc.getElementById('phasesEmptyState'),
+    btnOpenAddPhaseModal: doc.getElementById('btnOpenAddPhaseModal'),
 
     // Expenses Table
     expensesTableBody: doc.getElementById('expensesTableBody'),
@@ -144,6 +153,17 @@
     setTaxRate: doc.getElementById('setTaxRate'),
     btnSaveSettings: doc.getElementById('btnSaveSettings'),
 
+    // Phase Modal
+    modalPhaseBackdrop: doc.getElementById('modalPhaseBackdrop'),
+    modalPhaseTitle: doc.getElementById('modalPhaseTitle'),
+    btnClosePhaseModal: doc.getElementById('btnClosePhaseModal'),
+    btnCancelPhase: doc.getElementById('btnCancelPhase'),
+    formPhase: doc.getElementById('formPhase'),
+    phaseEditId: doc.getElementById('phaseEditId'),
+    phaseOrder: doc.getElementById('phaseOrder'),
+    phaseName: doc.getElementById('phaseName'),
+    phaseDesc: doc.getElementById('phaseDesc'),
+
     // Expense Modal
     modalExpenseBackdrop: doc.getElementById('modalExpenseBackdrop'),
     modalExpenseTitle: doc.getElementById('modalExpenseTitle'),
@@ -154,6 +174,7 @@
     expConcept: doc.getElementById('expConcept'),
     expAmount: doc.getElementById('expAmount'),
     expType: doc.getElementById('expType'),
+    expPhasesCheckboxGroup: doc.getElementById('expPhasesCheckboxGroup'),
     expDate: doc.getElementById('expDate'),
     expIsActive: doc.getElementById('expIsActive'),
     expNotes: doc.getElementById('expNotes'),
@@ -364,16 +385,30 @@
       totalTaxes += Number(inc.tax_amount_eur) || 0;
     });
 
-    // 2. Expenses breakdown by phase
-    var phaseMonthly = { survival: 0, infra: 0, pro: 0 };
-    var phaseOneOff = { survival: 0, infra: 0, pro: 0 };
+    // 2. Base phases list (generic, sorted by order)
+    var rawPhases = (st.phases && st.phases.length) ? st.phases.slice() : [
+      { id: 'survival', key: 'survival', name: 'Fase 1: Supervivencia', description: 'Servidores básicos y mantenimiento', order: 1 },
+      { id: 'infra', key: 'infra', name: 'Fase 2: Infraestructura', description: 'Almacenamiento escalable R2 y monitorización', order: 2 },
+      { id: 'pro', key: 'pro', name: 'Fase 3: Profesionalización', description: 'Equipo dedicado, RGPD y registro de marca', order: 3 },
+    ];
+    rawPhases.sort(function (a, b) { return (Number(a.order) || 1) - (Number(b.order) || 1); });
+
+    var phaseMonthly = {};
+    var phaseOneOff = {};
+    rawPhases.forEach(function (ph) {
+      phaseMonthly[ph.id] = 0;
+      if (ph.key) phaseMonthly[ph.key] = 0;
+      phaseOneOff[ph.id] = 0;
+      if (ph.key) phaseOneOff[ph.key] = 0;
+    });
+
     var totalActiveMonthly = 0;
     var totalSpentOneOff = 0;
 
     (st.expenses || []).forEach(function (exp) {
       var amt = Number(exp.amount_eur) || 0;
       var isActive = exp.is_active !== false;
-      var phases = Array.isArray(exp.applicable_phases) ? exp.applicable_phases : ['survival'];
+      var phases = Array.isArray(exp.applicable_phases) ? exp.applicable_phases : (rawPhases[0] ? [rawPhases[0].id] : []);
 
       if (exp.type === 'monthly') {
         if (isActive) {
@@ -396,21 +431,21 @@
     });
 
     // 3. Dynamic target (bucket) calculation based purely on configured active expenses.
-    // As defined: each phase target is 1 year (12 months) of its monthly expenses + one-off expenses for that phase.
-    var p1Monthly = phaseMonthly.survival;
-    var p1Bucket = (p1Monthly * 12) + phaseOneOff.survival;
-
-    var p2Monthly = phaseMonthly.infra;
-    var p2Bucket = (p2Monthly * 12) + phaseOneOff.infra;
-
-    var p3Monthly = phaseMonthly.pro;
-    var p3Bucket = (p3Monthly * 12) + phaseOneOff.pro;
-
-    var phases = [
-      { key: 'survival', monthlyCostEur: p1Monthly, bucketEur: p1Bucket },
-      { key: 'infra', monthlyCostEur: p2Monthly, bucketEur: p2Bucket },
-      { key: 'pro', monthlyCostEur: p3Monthly, bucketEur: p3Bucket },
-    ];
+    // Each phase target is 1 year (12 months) of its monthly expenses + one-off expenses for that phase.
+    var computedPhases = rawPhases.map(function (ph, idx) {
+      var m = (phaseMonthly[ph.id] || 0) + (ph.key && ph.key !== ph.id ? (phaseMonthly[ph.key] || 0) : 0);
+      var o = (phaseOneOff[ph.id] || 0) + (ph.key && ph.key !== ph.id ? (phaseOneOff[ph.key] || 0) : 0);
+      var bucket = (m * 12) + o;
+      return {
+        id: ph.id,
+        key: ph.key || ph.id || ('phase_' + (idx + 1)),
+        name: ph.name || ('Fase ' + (idx + 1)),
+        desc: ph.description || ph.desc || '',
+        order: Number(ph.order) || (idx + 1),
+        monthlyCostEur: m,
+        bucketEur: bucket,
+      };
+    });
 
     // 4. Spent to date (monthly costs accrued since project_start_date + paid one-off costs)
     var startDate = (st.settings && st.settings.project_start_date)
@@ -425,8 +460,7 @@
     var netBalance = Math.max(0, totalNet - totalSpent);
 
     // 5. Cascade assignment based on current available net money in cash (netBalance).
-    // As time passes and expenses are consumed, netBalance decreases and phases roll back if no new income arrives.
-    var phaseStatuses = computeFundingStatus(phases, netBalance, now);
+    var phaseStatuses = computeFundingStatus(computedPhases, netBalance, now);
 
     // 6. Active runway calculation
     var activePhaseStatus = phaseStatuses.find(function (s) { return s.state === 'active'; });
@@ -446,7 +480,7 @@
       totalSpent: totalSpent,
       netBalance: netBalance,
       totalActiveMonthly: totalActiveMonthly,
-      phases: phases,
+      phases: computedPhases,
       phaseStatuses: phaseStatuses,
       activeMonthlyCost: activeMonthlyCost,
       runwayMonths: runwayMonths,
@@ -475,10 +509,7 @@
 
     // 2. Phases Cards
     var phasesHtml = '';
-    agg.phaseStatuses.forEach(function (st, idx) {
-      var phaseKey = st.phase.key;
-      var nameKey = 'admin_phase_' + (idx + 1) + '_name';
-      var descKey = 'admin_phase_' + (idx + 1) + '_desc';
+    agg.phaseStatuses.forEach(function (st) {
       var badgeKey = 'admin_badge_' + st.state;
       var pct = Math.round(st.progress * 100);
 
@@ -490,8 +521,10 @@
       phasesHtml += '<div class="xow-admin-phase-card ' + st.state + '">';
       phasesHtml += '  <div class="xow-admin-phase-head">';
       phasesHtml += '    <div>';
-      phasesHtml += '      <div class="xow-admin-phase-name">' + t(nameKey) + '</div>';
-      phasesHtml += '      <div class="xow-admin-phase-desc">' + t(descKey) + '</div>';
+      phasesHtml += '      <div class="xow-admin-phase-name">' + escapeHtml(st.phase.name) + '</div>';
+      if (st.phase.desc) {
+        phasesHtml += '      <div class="xow-admin-phase-desc">' + escapeHtml(st.phase.desc) + '</div>';
+      }
       phasesHtml += '    </div>';
       phasesHtml += '    <span class="xow-badge ' + badgeClass + '">';
       phasesHtml += '      <svg class="icon icon-sm"><use href="#i-' + badgeIcon + '"></use></svg>';
@@ -519,16 +552,19 @@
     });
     el.adminPhasesContainer.innerHTML = phasesHtml;
 
-    // 3. Expenses Table
-    renderExpensesTable();
+    // 3. Phases Table
+    renderPhasesTable(agg);
 
-    // 4. Incomes Table
+    // 4. Expenses Table
+    renderExpensesTable(agg);
+
+    // 5. Incomes Table
     renderIncomesTable();
 
-    // 5. Settings Form inputs
+    // 6. Settings Form inputs
     renderSettingsForm();
 
-    // 6. Last sync badge
+    // 7. Last sync badge
     if (state.publicStatusRecord) {
       var d = new Date(state.publicStatusRecord.updated || state.publicStatusRecord.created);
       el.lastSyncStatusText.textContent = t('admin_last_sync') + ': ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' (' + d.toLocaleDateString() + ')';
@@ -537,7 +573,41 @@
     }
   }
 
-  function renderExpensesTable() {
+  function renderPhasesTable(agg) {
+    if (!el.phasesTableBody) return;
+    var phases = (agg && agg.phases) ? agg.phases : (state.phases || []);
+    if (!phases.length) {
+      el.phasesTableBody.innerHTML = '';
+      if (el.phasesEmptyState) el.phasesEmptyState.hidden = false;
+      return;
+    }
+    if (el.phasesEmptyState) el.phasesEmptyState.hidden = true;
+
+    var rows = '';
+    phases.forEach(function (ph) {
+      rows += '<tr>';
+      rows += '  <td><span class="xow-badge" style="font-weight: 700;">#' + (ph.order || 1) + '</span></td>';
+      rows += '  <td><strong>' + escapeHtml(ph.name || '-') + '</strong></td>';
+      rows += '  <td><span style="color: var(--text-muted); font-size: 13px;">' + escapeHtml(ph.desc || ph.description || '-') + '</span></td>';
+      rows += '  <td class="cell-num">' + formatEur(ph.monthlyCostEur || 0) + '/mes</td>';
+      rows += '  <td class="cell-num" style="color: var(--teal-accent); font-weight: 700;">' + formatEur(ph.bucketEur || 0) + '</td>';
+      rows += '  <td>';
+      rows += '    <div class="cell-actions">';
+      rows += '      <button type="button" class="xow-btn-icon" data-phase-edit-id="' + ph.id + '" title="' + t('admin_btn_edit') + '">';
+      rows += '        <svg class="icon icon-sm"><use href="#i-edit"></use></svg>';
+      rows += '      </button>';
+      rows += '      <button type="button" class="xow-btn-icon danger" data-phase-delete-id="' + ph.id + '" title="' + t('admin_btn_delete') + '">';
+      rows += '        <svg class="icon icon-sm"><use href="#i-delete"></use></svg>';
+      rows += '      </button>';
+      rows += '    </div>';
+      rows += '  </td>';
+      rows += '</tr>';
+    });
+    el.phasesTableBody.innerHTML = rows;
+  }
+
+  function renderExpensesTable(agg) {
+    if (!el.expensesTableBody) return;
     if (!state.expenses.length) {
       el.expensesTableBody.innerHTML = '';
       el.expensesEmptyState.hidden = false;
@@ -545,12 +615,19 @@
     }
     el.expensesEmptyState.hidden = true;
 
+    var phasesMap = {};
+    var currentPhases = (agg && agg.phases) ? agg.phases : (state.phases || []);
+    currentPhases.forEach(function (p) {
+      phasesMap[p.id] = p.name;
+      if (p.key) phasesMap[p.key] = p.name;
+    });
+
     var rows = '';
     state.expenses.forEach(function (exp) {
       var phases = Array.isArray(exp.applicable_phases) ? exp.applicable_phases : ['survival'];
       var phaseBadges = phases.map(function (p) {
-        var lbl = p === 'survival' ? 'Fase 1' : p === 'infra' ? 'Fase 2' : 'Fase 3';
-        return '<span class="xow-badge" style="font-size: 11px; padding: 2px 6px;">' + lbl + '</span>';
+        var lbl = phasesMap[p] || (p === 'survival' ? 'Fase 1' : p === 'infra' ? 'Fase 2' : p === 'pro' ? 'Fase 3' : p);
+        return '<span class="xow-badge" style="font-size: 11px; padding: 2px 6px;">' + escapeHtml(lbl) + '</span>';
       }).join(' ');
 
       var typeBadge = exp.type === 'monthly'
@@ -590,6 +667,7 @@
   }
 
   function renderIncomesTable() {
+    if (!el.incomesTableBody) return;
     if (!state.incomes.length) {
       el.incomesTableBody.innerHTML = '';
       el.incomesEmptyState.hidden = false;
@@ -643,8 +721,29 @@
     if (el.setTaxRate) el.setTaxRate.value = s.tax_rate_pct != null ? s.tax_rate_pct : 19.0;
   }
 
+  function renderExpensePhaseCheckboxes(selectedPhases) {
+    if (!el.expPhasesCheckboxGroup) return;
+    var phases = (state.phases && state.phases.length) ? state.phases.slice() : [
+      { id: 'survival', key: 'survival', name: 'Fase 1: Supervivencia', order: 1 },
+      { id: 'infra', key: 'infra', name: 'Fase 2: Infraestructura', order: 2 },
+      { id: 'pro', key: 'pro', name: 'Fase 3: Profesionalización', order: 3 },
+    ];
+    phases.sort(function (a, b) { return (Number(a.order) || 1) - (Number(b.order) || 1); });
+
+    var selected = Array.isArray(selectedPhases) ? selectedPhases : [phases[0].id];
+    var html = '';
+    phases.forEach(function (ph) {
+      var isChecked = selected.indexOf(ph.id) !== -1 || (ph.key && selected.indexOf(ph.key) !== -1);
+      html += '<label class="xow-checkbox-pill">';
+      html += '  <input type="checkbox" name="applicable_phases" value="' + ph.id + '" ' + (isChecked ? 'checked' : '') + '>';
+      html += '  <span>' + escapeHtml(ph.name) + '</span>';
+      html += '</label>';
+    });
+    el.expPhasesCheckboxGroup.innerHTML = html;
+  }
+
   function escapeHtml(str) {
-    return String(str)
+    return String(str || '')
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
@@ -662,6 +761,23 @@
         }
       })
       .catch(function () { /* use default settings */ });
+
+    var pPhases = pb.collection(PHASES_COLLECTION).getFullList({ sort: 'order,created' })
+      .then(function (list) {
+        if (list && list.length) {
+          state.phases = list;
+        } else {
+          // If collection is empty, seed defaults
+          return seedDefaultPhases();
+        }
+      })
+      .catch(function () {
+        state.phases = [
+          { id: 'survival', key: 'survival', name: 'Fase 1: Supervivencia', description: 'Servidores básicos y mantenimiento', order: 1 },
+          { id: 'infra', key: 'infra', name: 'Fase 2: Infraestructura', description: 'Almacenamiento escalable R2 y monitorización', order: 2 },
+          { id: 'pro', key: 'pro', name: 'Fase 3: Profesionalización', description: 'Equipo dedicado, RGPD y registro de marca', order: 3 },
+        ];
+      });
 
     var pExpenses = pb.collection(EXPENSES_COLLECTION).getFullList({ sort: '-created' })
       .then(function (list) {
@@ -681,7 +797,7 @@
       })
       .catch(function () { state.publicStatusRecord = null; });
 
-    return Promise.all([pSettings, pExpenses, pIncomes, pPublic])
+    return Promise.all([pSettings, pPhases, pExpenses, pIncomes, pPublic])
       .then(function () {
         renderDashboard();
       })
@@ -689,6 +805,20 @@
         console.error('Error loading admin data:', err);
         showToast('Error cargando los datos de PocketBase', 'error');
       });
+  }
+
+  function seedDefaultPhases() {
+    var defaults = [
+      { name: 'Fase 1: Supervivencia', description: 'Servidores básicos, dominio y mantenimiento', order: 1, key: 'survival', is_active: true },
+      { name: 'Fase 2: Infraestructura', description: 'Almacenamiento escalable R2/Minio y monitorización', order: 2, key: 'infra', is_active: true },
+      { name: 'Fase 3: Profesionalización', description: 'Equipo dedicado, RGPD, registro de marca y asesoría', order: 3, key: 'pro', is_active: true },
+    ];
+    var promises = defaults.map(function (item) {
+      return pb.collection(PHASES_COLLECTION).create(item).catch(function () { return item; });
+    });
+    return Promise.all(promises).then(function (createdList) {
+      state.phases = createdList;
+    });
   }
 
   function syncAndPublish() {
@@ -699,11 +829,19 @@
     var agg = computeFinancialAggregation();
     var payload = {
       total_raised_eur: agg.totalNet,
-      phases: agg.phases.map(function (p) {
+      phases: agg.phaseStatuses.map(function (st) {
         return {
-          key: p.key,
-          monthly_cost_eur: p.monthlyCostEur,
-          bucket_eur: p.bucketEur,
+          id: st.phase.id,
+          key: st.phase.key,
+          name: st.phase.name,
+          desc: st.phase.desc,
+          order: st.phase.order,
+          monthly_cost_eur: st.phase.monthlyCostEur,
+          bucket_eur: st.phase.bucketEur,
+          allocated_eur: st.allocatedEur,
+          progress: st.progress,
+          state: st.state,
+          funded_until: st.fundedUntil ? st.fundedUntil.toISOString() : null,
         };
       }),
       is_placeholder: false,
@@ -751,8 +889,31 @@
   }
 
   // ------------------------------------------------------------------
-  // Modal Handlers (Expenses & Incomes & Delete)
+  // Modal Handlers (Phases & Expenses & Incomes & Delete)
   // ------------------------------------------------------------------
+  function openPhaseModal(phase) {
+    if (!el.formPhase) return;
+    el.formPhase.reset();
+    if (phase) {
+      el.modalPhaseTitle.textContent = t('admin_modal_phase_edit');
+      el.phaseEditId.value = phase.id;
+      el.phaseOrder.value = phase.order || 1;
+      el.phaseName.value = phase.name || '';
+      el.phaseDesc.value = phase.description || phase.desc || '';
+    } else {
+      el.modalPhaseTitle.textContent = t('admin_modal_phase_create');
+      el.phaseEditId.value = '';
+      el.phaseOrder.value = (state.phases.length + 1);
+      el.phaseName.value = '';
+      el.phaseDesc.value = '';
+    }
+    el.modalPhaseBackdrop.classList.add('open');
+  }
+
+  function closePhaseModal() {
+    if (el.modalPhaseBackdrop) el.modalPhaseBackdrop.classList.remove('open');
+  }
+
   function openExpenseModal(expense) {
     el.formExpense.reset();
     if (expense) {
@@ -764,19 +925,13 @@
       el.expDate.value = expense.payment_date || '';
       el.expIsActive.checked = expense.is_active !== false;
       el.expNotes.value = expense.notes || '';
-
-      var phases = Array.isArray(expense.applicable_phases) ? expense.applicable_phases : ['survival'];
-      document.querySelectorAll('#formExpense input[name="applicable_phases"]').forEach(function (cb) {
-        cb.checked = phases.indexOf(cb.value) !== -1;
-      });
+      renderExpensePhaseCheckboxes(expense.applicable_phases);
     } else {
       el.modalExpenseTitle.textContent = t('admin_modal_expense_create');
       el.expenseEditId.value = '';
       el.expDate.value = new Date().toISOString().slice(0, 10);
       el.expIsActive.checked = true;
-      document.querySelectorAll('#formExpense input[name="applicable_phases"]').forEach(function (cb) {
-        cb.checked = cb.value === 'survival';
-      });
+      renderExpensePhaseCheckboxes(null);
     }
     el.modalExpenseBackdrop.classList.add('open');
   }
@@ -860,8 +1015,8 @@
     });
 
     // 3. Tabs Switching
-    var tabButtons = [el.tabBtnExpenses, el.tabBtnIncomes, el.tabBtnSettings];
-    var tabPanels = [el.panelExpenses, el.panelIncomes, el.panelSettings];
+    var tabButtons = [el.tabBtnExpenses, el.tabBtnPhases, el.tabBtnIncomes, el.tabBtnSettings].filter(Boolean);
+    var tabPanels = [el.panelExpenses, el.panelPhases, el.panelIncomes, el.panelSettings].filter(Boolean);
 
     tabButtons.forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -879,6 +1034,12 @@
     });
 
     // 4. Modal Open/Close Buttons
+    if (el.btnOpenAddPhaseModal) {
+      el.btnOpenAddPhaseModal.addEventListener('click', function () { openPhaseModal(null); });
+    }
+    if (el.btnClosePhaseModal) el.btnClosePhaseModal.addEventListener('click', closePhaseModal);
+    if (el.btnCancelPhase) el.btnCancelPhase.addEventListener('click', closePhaseModal);
+
     el.btnOpenAddExpenseModal.addEventListener('click', function () { openExpenseModal(null); });
     el.btnCloseExpenseModal.addEventListener('click', closeExpenseModal);
     el.btnCancelExpense.addEventListener('click', closeExpenseModal);
@@ -893,7 +1054,43 @@
     el.incGross.addEventListener('input', updateIncomeModalCalc);
     el.incSource.addEventListener('change', updateIncomeModalCalc);
 
-    // 6. Expense Form Submit (Create / Update)
+    // 6. Phase Form Submit (Create / Update)
+    if (el.formPhase) {
+      el.formPhase.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var id = el.phaseEditId.value;
+        var data = {
+          order: Number(el.phaseOrder.value) || 1,
+          name: el.phaseName.value.trim(),
+          description: el.phaseDesc.value.trim(),
+          is_active: true,
+        };
+
+        var promise = id
+          ? pb.collection(PHASES_COLLECTION).update(id, data)
+          : pb.collection(PHASES_COLLECTION).create(data);
+
+        promise
+          .then(function (record) {
+            if (id) {
+              var idx = state.phases.findIndex(function (x) { return x.id === id; });
+              if (idx !== -1) state.phases[idx] = record;
+            } else {
+              state.phases.push(record);
+            }
+            state.phases.sort(function (a, b) { return (Number(a.order) || 1) - (Number(b.order) || 1); });
+            closePhaseModal();
+            renderDashboard();
+            showToast('Fase guardada con éxito', 'success');
+          })
+          .catch(function (err) {
+            console.error('Save phase failed:', err);
+            showToast('Error al guardar la fase', 'error');
+          });
+      });
+    }
+
+    // 7. Expense Form Submit (Create / Update)
     el.formExpense.addEventListener('submit', function (e) {
       e.preventDefault();
       var id = el.expenseEditId.value;
@@ -934,7 +1131,7 @@
         });
     });
 
-    // 7. Income Form Submit (Create / Update)
+    // 8. Income Form Submit (Create / Update)
     el.formIncome.addEventListener('submit', function (e) {
       e.preventDefault();
       var id = el.incomeEditId.value;
@@ -977,16 +1174,20 @@
         });
     });
 
-    // 8. Delete Confirmation Execution
+    // 9. Delete Confirmation Execution
     el.btnConfirmDelete.addEventListener('click', function () {
       if (!state.deleteTarget) return;
       var target = state.deleteTarget;
-      var col = target.type === 'expense' ? EXPENSES_COLLECTION : INCOMES_COLLECTION;
+      var col = target.type === 'expense' ? EXPENSES_COLLECTION
+        : target.type === 'phase' ? PHASES_COLLECTION
+        : INCOMES_COLLECTION;
 
       pb.collection(col).delete(target.id)
         .then(function () {
           if (target.type === 'expense') {
             state.expenses = state.expenses.filter(function (x) { return x.id !== target.id; });
+          } else if (target.type === 'phase') {
+            state.phases = state.phases.filter(function (x) { return x.id !== target.id; });
           } else {
             state.incomes = state.incomes.filter(function (x) { return x.id !== target.id; });
           }
@@ -1000,7 +1201,7 @@
         });
     });
 
-    // 9. Settings Form Submit
+    // 10. Settings Form Submit
     el.adminSettingsForm.addEventListener('submit', function (e) {
       e.preventDefault();
       var data = {
@@ -1029,10 +1230,31 @@
         });
     });
 
-    // 10. Sync & Publish Button
+    // 11. Sync & Publish Button
     el.btnSyncPublic.addEventListener('click', syncAndPublish);
 
-    // 11. Table Delegated Actions (Edit, Delete, Toggle Active)
+    // 12. Phases Table Actions (Edit, Delete)
+    if (el.phasesTableBody) {
+      el.phasesTableBody.addEventListener('click', function (e) {
+        var editBtn = e.target.closest('[data-phase-edit-id]');
+        if (editBtn) {
+          var editId = editBtn.getAttribute('data-phase-edit-id');
+          var phase = state.phases.find(function (x) { return x.id === editId; });
+          if (phase) openPhaseModal(phase);
+          return;
+        }
+
+        var delBtn = e.target.closest('[data-phase-delete-id]');
+        if (delBtn) {
+          var delId = delBtn.getAttribute('data-phase-delete-id');
+          var delPhase = state.phases.find(function (x) { return x.id === delId; });
+          if (delPhase) openDeleteModal('phase', delId, delPhase.name);
+          return;
+        }
+      });
+    }
+
+    // 13. Expenses Table Actions (Edit, Delete, Toggle Active)
     el.expensesTableBody.addEventListener('click', function (e) {
       var editBtn = e.target.closest('[data-expense-edit-id]');
       if (editBtn) {
@@ -1071,6 +1293,7 @@
       }
     });
 
+    // 14. Incomes Table Actions (Edit, Delete)
     el.incomesTableBody.addEventListener('click', function (e) {
       var editBtn = e.target.closest('[data-income-edit-id]');
       if (editBtn) {
