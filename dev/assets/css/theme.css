@@ -1831,30 +1831,27 @@ a:hover {
 .xow-gsi-slot {
   min-height: 40px;
   width: 100%;
-  max-width: 230px;
   margin: 0 auto;
-  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   /* Stays invisible until auth.js's revealWhenReady() adds .is-ready (see the JS comment for
      why: Google's own renderButton() iframe goes through its own internal loading state --
      a compact placeholder icon -- before it settles on the actual "Sign in with Google" pill,
-     independent of this container's size/visibility. Fading it in only once that iframe has
-     finished loading means visitors only ever see the final button, never the placeholder. */
+     independent of this container's size/visibility. Fading it in only once that has settled
+     means visitors only ever see the final button, never the placeholder.
+     Deliberately NOT constrained with max-width/overflow:hidden here (an earlier version of
+     this rule was) -- Google's own iframe can render a couple of pixels wider than the exact
+     `width: 230` passed to renderButton() in auth.js (box-shadow/focus-ring allowance), and
+     clipping at exactly 230px was cutting real text off the right edge of the final button,
+     not just containing the transient placeholder. The dropdown itself (268px content area
+     inside .xow-user-dropdown's padding) has enough room either way. */
   opacity: 0;
   transition: opacity 0.12s ease;
 }
 
 .xow-gsi-slot.is-ready {
   opacity: 1;
-}
-
-/* Belt-and-braces containment for whatever sliver of the placeholder state slips through
-   before .is-ready lands (e.g. the 1s fallback timer in revealWhenReady()) -- clips it to the
-   slot instead of letting it balloon past the dropdown's edge. */
-.xow-gsi-slot iframe {
-  max-width: 100%;
 }
 
 .xow-user-login-heading {

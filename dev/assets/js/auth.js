@@ -217,32 +217,43 @@
       });
   }
 
-  var GSI_REVEAL_FALLBACK_MS = 1000;
+  // The iframe's own `load` event turned out to fire on its initial (still placeholder) paint,
+  // not once GIS has settled on the final "Sign in with Google" pill -- that settling happens
+  // via an async re-render *inside* the already-loaded iframe document (a follow-up fetch/
+  // postMessage round trip), which does not raise a second `load` on the outer element. So
+  // `load` alone is too early: gating on it by itself reproduced the exact same flash, just
+  // now happening while the slot was already opacity:1. Revealing only once BOTH `load` has
+  // fired AND a minimum dwell time has passed gives that internal re-render time to finish
+  // first in the common case, while the fallback timer still guarantees a reveal if `load`
+  // never fires at all.
+  var GSI_MIN_REVEAL_DELAY_MS = 350;
+  var GSI_REVEAL_FALLBACK_MS = 1500;
 
-  // Google's renderButton() goes through its own internal loading sequence inside the iframe
-  // it inserts -- a compact placeholder (the "square G" visitors reported) before it settles
-  // on the real "Sign in with Google" pill -- independent of whether `container` itself is
-  // already visible/laid-out (that part is handled by user-menu.js's openDropdown ordering).
-  // There's no official "the real button is ready" callback from GIS, so this watches for the
-  // iframe it inserts and waits for that iframe's own `load` event as the closest available
-  // signal, keeping the slot at opacity:0 (see .xow-gsi-slot in theme.css) until then so
-  // visitors only ever see the final button. A fallback timer guarantees the slot still
-  // reveals itself even if the iframe never appears or never fires `load` for some reason.
   function revealWhenReady(container) {
     var revealed = false;
+    var minDelayElapsed = false;
+    var loaded = false;
     function reveal() {
       if (revealed) return;
       revealed = true;
       container.classList.add('is-ready');
     }
+    function maybeReveal() {
+      if (minDelayElapsed && loaded) reveal();
+    }
+    setTimeout(function () {
+      minDelayElapsed = true;
+      maybeReveal();
+    }, GSI_MIN_REVEAL_DELAY_MS);
     var fallbackTimer = setTimeout(reveal, GSI_REVEAL_FALLBACK_MS);
     var observer = new MutationObserver(function () {
       var iframe = container.querySelector('iframe');
       if (!iframe) return;
       observer.disconnect();
       iframe.addEventListener('load', function () {
+        loaded = true;
         clearTimeout(fallbackTimer);
-        reveal();
+        maybeReveal();
       }, { once: true });
     });
     observer.observe(container, { childList: true, subtree: true });
