@@ -1829,35 +1829,43 @@ a:hover {
 }
 
 .xow-gsi-slot {
-  min-height: 40px;
+  /* Fixed, not min-height: reports so far described a square placeholder that is visibly
+     TALLER than the real button (roughly as tall as the slot is wide) before it collapses
+     down to the real ~40px pill -- min-height doesn't stop a taller child from growing this
+     box, only a hard height + vertical clip does. Google's own "medium" size button is always
+     ~40px tall regardless of locale/content (unlike its width, which varies with the sign-in
+     text length), so this is safe to fix permanently, not just during the loading phase. */
+  height: 40px;
   width: 100%;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Stays invisible AND capped at 230px/clipped until auth.js's revealWhenReady() adds
-     .is-ready (see the JS comment for why: Google's own renderButton() iframe goes through
-     its own internal loading state -- a compact placeholder, or a larger one still, before it
-     settles on the actual "Sign in with Google" pill -- independent of this container's own
-     size/visibility). Capping the box during that phase (not just hiding it with opacity)
-     stops the surrounding dropdown from visibly growing/shrinking as that placeholder's own
-     size changes -- opacity alone hides the pixels but does not stop the invisible box from
-     still occupying whatever space its content currently wants. */
+  overflow-y: hidden;
+  /* Stays invisible AND width-capped/clipped until auth.js's revealWhenReady() adds .is-ready
+     (see the JS comment for why: Google's own renderButton() iframe goes through its own
+     internal loading state before it settles on the actual "Sign in with Google" pill,
+     independent of this container's own size/visibility). Capping the box during that phase
+     (not just hiding it with opacity) stops the surrounding dropdown from visibly growing/
+     shrinking sideways as that placeholder's own width changes -- opacity alone hides the
+     pixels but does not stop the invisible box from still occupying whatever space its
+     content currently wants. */
   opacity: 0;
   max-width: 230px;
-  overflow: hidden;
+  overflow-x: hidden;
   transition: opacity 0.12s ease;
 }
 
 .xow-gsi-slot.is-ready {
   opacity: 1;
-  /* Lifted only once the real button has settled -- Google's iframe can render a couple of
-     pixels wider than the literal `width: 230` passed to renderButton() in auth.js (box-
-     shadow/focus-ring allowance), and keeping the 230px cap here would clip real text off the
-     right edge of the actual final button. The dropdown itself (268px content area inside
-     .xow-user-dropdown's padding) has enough room either way. */
+  /* Width cap lifted only once the real button has settled -- Google's iframe can render a
+     couple of pixels wider than the literal `width: 230` passed to renderButton() in auth.js
+     (box-shadow/focus-ring allowance), and keeping the 230px cap here would clip real text off
+     the right edge of the actual final button. The dropdown itself (268px content area inside
+     .xow-user-dropdown's padding) has enough room either way. Height stays fixed/clipped
+     always -- see the height comment above, this is the real button's own natural height. */
   max-width: none;
-  overflow: visible;
+  overflow-x: visible;
 }
 
 .xow-user-login-heading {
