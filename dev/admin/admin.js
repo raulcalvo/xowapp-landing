@@ -565,11 +565,11 @@
       var badgeIcon = st.state === 'covered' ? 'check_circle' : 'schedule';
 
       var phName = (typeof st.phase.name === 'object' && st.phase.name)
-        ? (st.phase.name.es || st.phase.name.en || Object.values(st.phase.name)[0] || '-')
+        ? (st.phase.name.es || st.phase.name.en || firstNonEmptyTranslation(st.phase.name) || '-')
         : (st.phase.name || '-');
 
       var phDesc = (typeof st.phase.desc === 'object' && st.phase.desc)
-        ? (st.phase.desc.es || st.phase.desc.en || Object.values(st.phase.desc)[0] || '')
+        ? (st.phase.desc.es || st.phase.desc.en || firstNonEmptyTranslation(st.phase.desc) || '')
         : (st.phase.desc || st.phase.description || '');
 
       phasesHtml += '<div class="xow-admin-phase-card ' + st.state + '">';
@@ -642,8 +642,8 @@
       var nameObj = (typeof ph.name === 'object' && ph.name) ? ph.name : parseI18nField(ph.name);
       var descObj = (typeof ph.desc === 'object' && ph.desc) ? ph.desc : ((typeof ph.description === 'object' && ph.description) ? ph.description : parseI18nField(ph.description || ph.desc));
 
-      var nameText = (nameObj && (nameObj.es || nameObj.en || Object.values(nameObj)[0])) || ph.name || '-';
-      var descText = (descObj && (descObj.es || descObj.en || Object.values(descObj)[0])) || ph.description || ph.desc || '-';
+      var nameText = (nameObj && (nameObj.es || nameObj.en || firstNonEmptyTranslation(nameObj))) || ph.name || '-';
+      var descText = (descObj && (descObj.es || descObj.en || firstNonEmptyTranslation(descObj))) || ph.description || ph.desc || '-';
 
       var langCount = Object.keys(nameObj || {}).length;
       var langBadge = langCount > 1 ? ' <span class="xow-badge" style="font-size:11px; padding: 2px 6px;">' + langCount + ' idiomas</span>' : '';
@@ -957,6 +957,36 @@
   // ------------------------------------------------------------------
   var currentPhaseLang = 'es';
   var phaseTranslations = { name: {}, description: {} };
+  // Stable identifier for the phase being edited, independent of the UI language tab. Kept
+  // separate from `phaseTranslations` because it must survive even when every visible name
+  // input is blank (see openPhaseModal / the phase form submit handler below). Without this,
+  // every admin-created/edited phase lost its `key` on save (the payload never included one),
+  // so both the public website and the app fell back to the phase's raw PocketBase record id
+  // as its "name" -- the reported unreadable code that doesn't change with language.
+  var currentPhaseKey = '';
+
+  // Finds the first genuinely non-empty translation in an i18n map, in insertion order.
+  // Object.values(map)[0] is NOT good enough here: a partially-filled map (e.g. some languages
+  // saved as an empty string by a failed/partial auto-translate) can have its *first* key be
+  // empty while a later one holds real text, which silently produced blank-content saves.
+  function firstNonEmptyTranslation(map) {
+    if (!map) return '';
+    var found = Object.keys(map).map(function (k) { return map[k]; }).find(function (v) {
+      return !!(v && String(v).trim());
+    });
+    return found || '';
+  }
+
+  // Deterministic, human-readable slug for a phase's `key` field, derived from its name so it
+  // stays stable across re-saves (unlike falling back to the auto-generated record id).
+  function slugifyPhaseKey(text) {
+    var base = String(text || '')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '') // strip accents
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '');
+    return base || '';
+  }
 
   function parseI18nField(field) {
     if (!field) return {};
@@ -1029,6 +1059,10 @@
         name: Object.assign({}, nameMap),
         description: Object.assign({}, descMap),
       };
+      // Preserve the phase's existing key so re-saving it doesn't lose it. If it never had
+      // one (legacy data from before keys were tracked), leave it blank -- the submit handler
+      // below derives a stable slug from the name instead of falling back to the record id.
+      currentPhaseKey = (phase.key && String(phase.key).trim()) || '';
     } else {
       el.modalPhaseTitle.textContent = t('admin_modal_phase_create');
       el.phaseEditId.value = '';
@@ -1037,6 +1071,7 @@
         name: {},
         description: {},
       };
+      currentPhaseKey = '';
     }
 
     updatePhaseLangUI();
@@ -1338,8 +1373,17 @@
           phaseTranslations.description[currentPhaseLang] = currentInputDesc;
         }
 
-        var primaryName = phaseTranslations.name[currentPhaseLang] || phaseTranslations.name.es || phaseTranslations.name.en || (Object.values(phaseTranslations.name)[0] || currentInputName);
-        var primaryDesc = phaseTranslations.description[currentPhaseLang] || phaseTranslations.description.es || phaseTranslations.description.en || (Object.values(phaseTranslations.description)[0] || currentInputDesc);
+        // firstNonEmptyTranslation (not Object.values(...)[0]) because a partially-filled map
+        // can have an empty string as its *first* key (e.g. left behind by a failed per-language
+        // translation call) while a later key holds the real text -- picking index 0 blindly
+        // was how a phase could end up saved with no readable name in any language.
+        var primaryName = phaseTranslations.name[currentPhaseLang] || phaseTranslations.name.es || phaseTranslations.name.en || firstNonEmptyTranslation(phaseTranslations.name) || currentInputName;
+        var primaryDesc = phaseTranslations.description[currentPhaseLang] || phaseTranslations.description.es || phaseTranslations.description.en || firstNonEmptyTranslation(phaseTranslations.description) || currentInputDesc;
+
+        if (!primaryName) {
+          showToast('La fase necesita un nombre en al menos un idioma antes de guardar', 'error');
+          return;
+        }
 
         // Si solo se introdujo en 1 idioma o faltan otros, poblar los 8 idiomas con el texto introducido
         TARGET_LANGS.forEach(function (lang) {
@@ -1354,10 +1398,18 @@
         var namePayload = JSON.stringify(phaseTranslations.name);
         var descPayload = JSON.stringify(phaseTranslations.description);
 
+        // Always send a stable, human-derived key: preserve the one the phase already had
+        // (set when opening the edit modal), or derive a fresh slug from its name. Without
+        // this, every admin-saved phase left `key` unset, so both the public website and the
+        // app fell back to the phase's raw PocketBase record id as its displayed "name".
+        var phaseKey = currentPhaseKey || slugifyPhaseKey(primaryName) || ('phase_' + Date.now().toString(36));
+        currentPhaseKey = phaseKey;
+
         var data = {
           order: Number(el.phaseOrder.value) || 1,
           name: namePayload,
           description: descPayload,
+          key: phaseKey,
           is_active: true,
         };
 
@@ -1640,6 +1692,8 @@
     addMonthsClamped: addMonthsClamped,
     clamp01: clamp01,
     state: state,
+    firstNonEmptyTranslation: firstNonEmptyTranslation,
+    slugifyPhaseKey: slugifyPhaseKey,
   };
 
   if (typeof window !== 'undefined') {
