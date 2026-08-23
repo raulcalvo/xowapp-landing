@@ -209,20 +209,32 @@
       var textKeys = PHASE_TEXT_KEYS[status.phase.key] || { name: '', desc: '' };
 
       var nameVal = status.phase.name;
-      if (typeof nameVal === 'string' && nameVal.indexOf('{') === 0) {
+      if (typeof nameVal === 'string' && nameVal.trim().indexOf('{') === 0) {
         try { nameVal = JSON.parse(nameVal); } catch (e) {}
       }
-      var name = (typeof nameVal === 'object' && nameVal)
-        ? (nameVal[lang] || nameVal.es || nameVal.en || Object.values(nameVal)[0])
-        : (nameVal || (textKeys.name ? t(textKeys.name) : ('Fase ' + (idx + 1))));
+      var name = '';
+      if (typeof nameVal === 'object' && nameVal !== null) {
+        name = nameVal[lang] || nameVal.es || nameVal.en || Object.values(nameVal).find(function (v) { return !!(v && String(v).trim()); }) || '';
+      } else if (typeof nameVal === 'string' && nameVal.trim()) {
+        name = nameVal.trim();
+      }
+      if (!name) {
+        name = (textKeys.name ? t(textKeys.name) : '') || status.phase.key || ('Fase ' + (idx + 1));
+      }
 
       var descVal = status.phase.desc || status.phase.description;
-      if (typeof descVal === 'string' && descVal.indexOf('{') === 0) {
+      if (typeof descVal === 'string' && descVal.trim().indexOf('{') === 0) {
         try { descVal = JSON.parse(descVal); } catch (e) {}
       }
-      var desc = (typeof descVal === 'object' && descVal)
-        ? (descVal[lang] || descVal.es || descVal.en || Object.values(descVal)[0])
-        : (descVal || (textKeys.desc ? t(textKeys.desc) : ''));
+      var desc = '';
+      if (typeof descVal === 'object' && descVal !== null) {
+        desc = descVal[lang] || descVal.es || descVal.en || Object.values(descVal).find(function (v) { return !!(v && String(v).trim()); }) || '';
+      } else if (typeof descVal === 'string' && descVal.trim()) {
+        desc = descVal.trim();
+      }
+      if (!desc && textKeys.desc) {
+        desc = t(textKeys.desc) || '';
+      }
 
       var pct = Math.round(status.progress * 100);
 

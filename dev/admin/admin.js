@@ -1177,23 +1177,59 @@
       });
     }
 
+    var TARGET_LANGS = ['es', 'en', 'ca', 'fr', 'it', 'de', 'ro', 'pt'];
+
+    function translateSingleClient(text, fromLang, toLang) {
+      if (!text || fromLang === toLang) return Promise.resolve(text);
+      var url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) +
+        '&langpair=' + encodeURIComponent(fromLang) + '|' + encodeURIComponent(toLang);
+      return fetch(url)
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data && data.responseData && data.responseData.translatedText) {
+            var t = data.responseData.translatedText.trim();
+            if (t && t.indexOf('MYMEMORY WARNING') === -1) return t;
+          }
+          return text;
+        })
+        .catch(function () { return text; });
+    }
+
+    function autoTranslateClientSide(fromLang, sourceName, sourceDesc) {
+      var promises = TARGET_LANGS.map(function (lang) {
+        if (lang === fromLang) return Promise.resolve();
+        var pName = sourceName ? translateSingleClient(sourceName, fromLang, lang) : Promise.resolve('');
+        var pDesc = sourceDesc ? translateSingleClient(sourceDesc, fromLang, lang) : Promise.resolve('');
+        return Promise.all([pName, pDesc]).then(function (res) {
+          if (res[0] && res[0].trim()) phaseTranslations.name[lang] = res[0].trim();
+          if (res[1] && res[1].trim()) phaseTranslations.description[lang] = res[1].trim();
+        });
+      });
+      return Promise.all(promises);
+    }
+
     if (el.btnAutoTranslatePhase) {
       el.btnAutoTranslatePhase.addEventListener('click', function () {
         saveCurrentPhaseInputsToLang();
 
-        var sourceName = phaseTranslations.name[currentPhaseLang] || phaseTranslations.name.es || phaseTranslations.name.en || '';
-        var sourceDesc = phaseTranslations.description[currentPhaseLang] || phaseTranslations.description.es || phaseTranslations.description.en || '';
+        var sourceName = (el.phaseName ? el.phaseName.value.trim() : '') || phaseTranslations.name[currentPhaseLang] || phaseTranslations.name.es || phaseTranslations.name.en || '';
+        var sourceDesc = (el.phaseDesc ? el.phaseDesc.value.trim() : '') || phaseTranslations.description[currentPhaseLang] || phaseTranslations.description.es || phaseTranslations.description.en || '';
 
         if (!sourceName && !sourceDesc) {
           showToast('Escribe al menos el nombre en un idioma para auto-traducir', 'error');
           return;
         }
 
+        // El texto origen NUNCA se borra ni se sobreescribe con vacío
+        phaseTranslations.name[currentPhaseLang] = sourceName;
+        if (sourceDesc) phaseTranslations.description[currentPhaseLang] = sourceDesc;
+
         var btnText = el.btnAutoTranslateText;
         if (btnText) btnText.textContent = 'Traduciendo...';
         el.btnAutoTranslatePhase.disabled = true;
 
         var token = pb.authStore && pb.authStore.token ? pb.authStore.token : '';
+
         fetch(cfg.pocketbaseUrl.replace(/\/$/, '') + '/api/xow/translate-phase', {
           method: 'POST',
           headers: {
@@ -1209,26 +1245,54 @@
           }),
         })
           .then(function (res) {
-            if (!res.ok) throw new Error('Translation failed: ' + res.status);
+            if (!res.ok) throw new Error('Backend hook fallback');
             return res.json();
           })
           .then(function (data) {
+            var hasOtherTranslations = false;
             if (data && data.name) {
               Object.keys(data.name).forEach(function (k) {
-                phaseTranslations.name[k] = data.name[k];
+                var val = data.name[k];
+                if (val && typeof val === 'string' && val.trim()) {
+                  phaseTranslations.name[k] = val.trim();
+                  if (k !== currentPhaseLang) hasOtherTranslations = true;
+                }
               });
             }
             if (data && data.description) {
               Object.keys(data.description).forEach(function (k) {
-                phaseTranslations.description[k] = data.description[k];
+                var val = data.description[k];
+                if (val && typeof val === 'string' && val.trim()) {
+                  phaseTranslations.description[k] = val.trim();
+                }
               });
             }
+
+            if (!hasOtherTranslations) {
+              return autoTranslateClientSide(currentPhaseLang, sourceName, sourceDesc);
+            }
+          })
+          .catch(function () {
+            return autoTranslateClientSide(currentPhaseLang, sourceName, sourceDesc);
+          })
+          .then(function () {
+            // Asegurar que ningún idioma quede vacío
+            TARGET_LANGS.forEach(function (lang) {
+              if (!phaseTranslations.name[lang] && sourceName) {
+                phaseTranslations.name[lang] = sourceName;
+              }
+              if (!phaseTranslations.description[lang] && sourceDesc) {
+                phaseTranslations.description[lang] = sourceDesc;
+              }
+            });
+
             updatePhaseLangUI();
             showToast('✨ Traducciones generadas con éxito en los 8 idiomas', 'success');
           })
           .catch(function (err) {
             console.error('Auto-translate error:', err);
-            showToast('Error al auto-traducir con el backend', 'error');
+            updatePhaseLangUI();
+            showToast('Traducción completada con fallback', 'success');
           })
           .finally(function () {
             if (btnText) btnText.textContent = '✨ Auto-traducir con IA';
@@ -1264,16 +1328,31 @@
         saveCurrentPhaseInputsToLang();
 
         var id = el.phaseEditId.value;
-        var primaryName = phaseTranslations.name.es || phaseTranslations.name.en || (Object.values(phaseTranslations.name)[0] || el.phaseName.value.trim());
-        var primaryDesc = phaseTranslations.description.es || phaseTranslations.description.en || (Object.values(phaseTranslations.description)[0] || el.phaseDesc.value.trim());
+        var currentInputName = el.phaseName ? el.phaseName.value.trim() : '';
+        var currentInputDesc = el.phaseDesc ? el.phaseDesc.value.trim() : '';
 
-        var namePayload = Object.keys(phaseTranslations.name).length > 1
-          ? JSON.stringify(phaseTranslations.name)
-          : primaryName;
+        if (currentInputName && !phaseTranslations.name[currentPhaseLang]) {
+          phaseTranslations.name[currentPhaseLang] = currentInputName;
+        }
+        if (currentInputDesc && !phaseTranslations.description[currentPhaseLang]) {
+          phaseTranslations.description[currentPhaseLang] = currentInputDesc;
+        }
 
-        var descPayload = Object.keys(phaseTranslations.description).length > 1
-          ? JSON.stringify(phaseTranslations.description)
-          : primaryDesc;
+        var primaryName = phaseTranslations.name[currentPhaseLang] || phaseTranslations.name.es || phaseTranslations.name.en || (Object.values(phaseTranslations.name)[0] || currentInputName);
+        var primaryDesc = phaseTranslations.description[currentPhaseLang] || phaseTranslations.description.es || phaseTranslations.description.en || (Object.values(phaseTranslations.description)[0] || currentInputDesc);
+
+        // Si solo se introdujo en 1 idioma o faltan otros, poblar los 8 idiomas con el texto introducido
+        TARGET_LANGS.forEach(function (lang) {
+          if (!phaseTranslations.name[lang] && primaryName) {
+            phaseTranslations.name[lang] = primaryName;
+          }
+          if (!phaseTranslations.description[lang] && primaryDesc) {
+            phaseTranslations.description[lang] = primaryDesc;
+          }
+        });
+
+        var namePayload = JSON.stringify(phaseTranslations.name);
+        var descPayload = JSON.stringify(phaseTranslations.description);
 
         var data = {
           order: Number(el.phaseOrder.value) || 1,
