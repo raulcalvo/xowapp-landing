@@ -112,7 +112,7 @@
       return Promise.resolve(mockResult());
     }
     var url = cfg.pocketbaseUrl.replace(/\/$/, '') +
-      '/api/collections/' + encodeURIComponent(cfg.fundingCollection) + '/records?perPage=1';
+      '/api/collections/' + encodeURIComponent(cfg.fundingCollection) + '/records?perPage=1&sort=-created';
 
     return fetchWithTimeout(url, FETCH_TIMEOUT_MS)
       .then(function (res) {
@@ -124,7 +124,16 @@
         if (!items.length) return mockResult();
 
         var record = items[0];
-        var phases = Array.isArray(record.phases) ? record.phases.map(function (p, idx) {
+        var rawPhases = record.phases;
+        if (typeof rawPhases === 'string') {
+          try { rawPhases = JSON.parse(rawPhases); } catch (e) { rawPhases = []; }
+        }
+
+        var phases = Array.isArray(rawPhases) && rawPhases.length ? rawPhases.map(function (p, idx) {
+          var pExps = p.expenses;
+          if (typeof pExps === 'string') {
+            try { pExps = JSON.parse(pExps); } catch (e) { pExps = []; }
+          }
           return {
             id: p.id,
             key: p.key || ('phase_' + (idx + 1)),
@@ -133,7 +142,7 @@
             order: Number(p.order) || (idx + 1),
             monthlyCostEur: Number(p.monthly_cost_eur) || 0,
             bucketEur: Number(p.bucket_eur) || 0,
-            expenses: Array.isArray(p.expenses) ? p.expenses : [],
+            expenses: Array.isArray(pExps) ? pExps : [],
           };
         }) : MOCK_PHASES;
         var totalRaisedEur = Number(record.total_raised_eur) || 0;

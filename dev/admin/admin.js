@@ -393,13 +393,34 @@
     ];
     rawPhases.sort(function (a, b) { return (Number(a.order) || 1) - (Number(b.order) || 1); });
 
+    function getApplicablePhases(exp) {
+      var p = exp && exp.applicable_phases;
+      if (Array.isArray(p)) return p;
+      if (typeof p === 'string' && p.trim()) {
+        try {
+          var parsed = JSON.parse(p);
+          if (Array.isArray(parsed)) return parsed;
+          return [p.trim()];
+        } catch (e) {
+          return [p.trim()];
+        }
+      }
+      return rawPhases[0] ? [rawPhases[0].id] : [];
+    }
+
+    function expenseAppliesToPhase(exp, ph) {
+      var phases = getApplicablePhases(exp);
+      if (!phases.length) return false;
+      return phases.indexOf(ph.id) !== -1 ||
+             (ph.key && phases.indexOf(ph.key) !== -1) ||
+             (ph.name && phases.indexOf(ph.name) !== -1);
+    }
+
     var phaseMonthly = {};
     var phaseOneOff = {};
     rawPhases.forEach(function (ph) {
       phaseMonthly[ph.id] = 0;
-      if (ph.key) phaseMonthly[ph.key] = 0;
       phaseOneOff[ph.id] = 0;
-      if (ph.key) phaseOneOff[ph.key] = 0;
     });
 
     var totalActiveMonthly = 0;
@@ -408,21 +429,22 @@
     (st.expenses || []).forEach(function (exp) {
       var amt = Number(exp.amount_eur) || 0;
       var isActive = exp.is_active !== false;
-      var phases = Array.isArray(exp.applicable_phases) ? exp.applicable_phases : (rawPhases[0] ? [rawPhases[0].id] : []);
+
+      rawPhases.forEach(function (ph) {
+        if (expenseAppliesToPhase(exp, ph)) {
+          if (exp.type === 'monthly') {
+            if (isActive) {
+              phaseMonthly[ph.id] += amt;
+            }
+          } else {
+            phaseOneOff[ph.id] += amt;
+          }
+        }
+      });
 
       if (exp.type === 'monthly') {
-        if (isActive) {
-          totalActiveMonthly += amt;
-          phases.forEach(function (p) {
-            if (phaseMonthly[p] !== undefined) phaseMonthly[p] += amt;
-          });
-        }
+        if (isActive) totalActiveMonthly += amt;
       } else {
-        // one_off: always adds to phase target bucket
-        phases.forEach(function (p) {
-          if (phaseOneOff[p] !== undefined) phaseOneOff[p] += amt;
-        });
-        // Only counts as already spent if it has an explicit payment date <= now
         if (exp.payment_date) {
           var pDate = parseDateParts(exp.payment_date);
           if (pDate <= now) totalSpentOneOff += amt;
@@ -433,14 +455,13 @@
     // 3. Dynamic target (bucket) calculation based purely on configured active expenses.
     // Each phase target is 1 year (12 months) of its monthly expenses + one-off expenses for that phase.
     var computedPhases = rawPhases.map(function (ph, idx) {
-      var m = (phaseMonthly[ph.id] || 0) + (ph.key && ph.key !== ph.id ? (phaseMonthly[ph.key] || 0) : 0);
-      var o = (phaseOneOff[ph.id] || 0) + (ph.key && ph.key !== ph.id ? (phaseOneOff[ph.key] || 0) : 0);
+      var m = phaseMonthly[ph.id] || 0;
+      var o = phaseOneOff[ph.id] || 0;
       var bucket = (m * 12) + o;
 
       var phaseExpensesList = (st.expenses || []).filter(function (exp) {
         if (exp.is_active === false) return false;
-        var phases = Array.isArray(exp.applicable_phases) ? exp.applicable_phases : [];
-        return phases.indexOf(ph.id) !== -1 || (ph.key && phases.indexOf(ph.key) !== -1);
+        return expenseAppliesToPhase(exp, ph);
       }).map(function (exp) {
         return {
           concept: exp.concept || '',
