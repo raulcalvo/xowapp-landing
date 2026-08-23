@@ -564,13 +564,8 @@
         : 'xow-badge-pending';
       var badgeIcon = st.state === 'covered' ? 'check_circle' : 'schedule';
 
-      var phName = (typeof st.phase.name === 'object' && st.phase.name)
-        ? (st.phase.name.es || st.phase.name.en || firstNonEmptyTranslation(st.phase.name) || '-')
-        : (st.phase.name || '-');
-
-      var phDesc = (typeof st.phase.desc === 'object' && st.phase.desc)
-        ? (st.phase.desc.es || st.phase.desc.en || firstNonEmptyTranslation(st.phase.desc) || '')
-        : (st.phase.desc || st.phase.description || '');
+      var phName = resolvePhaseText(st.phase.name, '-');
+      var phDesc = resolvePhaseText(st.phase.desc || st.phase.description, '');
 
       phasesHtml += '<div class="xow-admin-phase-card ' + st.state + '">';
       phasesHtml += '  <div class="xow-admin-phase-head">';
@@ -640,10 +635,9 @@
     var rows = '';
     phases.forEach(function (ph) {
       var nameObj = (typeof ph.name === 'object' && ph.name) ? ph.name : parseI18nField(ph.name);
-      var descObj = (typeof ph.desc === 'object' && ph.desc) ? ph.desc : ((typeof ph.description === 'object' && ph.description) ? ph.description : parseI18nField(ph.description || ph.desc));
 
-      var nameText = (nameObj && (nameObj.es || nameObj.en || firstNonEmptyTranslation(nameObj))) || ph.name || '-';
-      var descText = (descObj && (descObj.es || descObj.en || firstNonEmptyTranslation(descObj))) || ph.description || ph.desc || '-';
+      var nameText = resolvePhaseText(ph.name, '-');
+      var descText = resolvePhaseText(ph.description || ph.desc, '-');
 
       var langCount = Object.keys(nameObj || {}).length;
       var langBadge = langCount > 1 ? ' <span class="xow-badge" style="font-size:11px; padding: 2px 6px;">' + langCount + ' idiomas</span>' : '';
@@ -681,8 +675,13 @@
     var phasesMap = {};
     var currentPhases = (agg && agg.phases) ? agg.phases : (state.phases || []);
     currentPhases.forEach(function (p) {
-      phasesMap[p.id] = p.name;
-      if (p.key) phasesMap[p.key] = p.name;
+      // p.name is an i18n object here (agg.phases comes from computeFinancialAggregation),
+      // not a plain string -- resolve it to a displayable string, or the badge below would
+      // render the literal text "[object Object]" for every phase (via escapeHtml's implicit
+      // String() coercion).
+      var label = resolvePhaseText(p.name, p.key || p.id);
+      phasesMap[p.id] = label;
+      if (p.key) phasesMap[p.key] = label;
     });
 
     var rows = '';
@@ -986,6 +985,19 @@
       .replace(/[^a-z0-9]+/g, '_')
       .replace(/^_+|_+$/g, '');
     return base || '';
+  }
+
+  // Resolves a phase name/description field -- which can arrive as a plain string, an i18n
+  // object ({es:..., en:...}), or a JSON-encoded string of one, depending on where it came
+  // from -- to a single displayable string, never the raw object. Passing an object straight
+  // into escapeHtml()/string concatenation silently renders the literal text "[object Object]"
+  // instead of throwing, which is exactly how it reached the phases table, the summary cards,
+  // and the expenses table's phase badges (all three read fields that are already i18n objects
+  // once they come from computeFinancialAggregation's output, not raw PocketBase records).
+  function resolvePhaseText(field, fallback) {
+    var obj = (typeof field === 'object' && field !== null) ? field : parseI18nField(field);
+    var resolved = obj && (obj.es || obj.en || firstNonEmptyTranslation(obj));
+    return resolved || (fallback !== undefined ? fallback : '-');
   }
 
   function parseI18nField(field) {
@@ -1693,6 +1705,7 @@
     clamp01: clamp01,
     state: state,
     firstNonEmptyTranslation: firstNonEmptyTranslation,
+    resolvePhaseText: resolvePhaseText,
     slugifyPhaseKey: slugifyPhaseKey,
   };
 
