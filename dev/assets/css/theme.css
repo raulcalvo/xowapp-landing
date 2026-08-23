@@ -705,6 +705,15 @@ a:hover {
   width: 100%;
 }
 
+/* Same fight as the icon sprite / quote banner / dropdown fixes elsewhere in this file: .btn's
+   own `display: inline-flex` is an author rule, so it always beats the UA-only
+   `[hidden] { display: none }` default regardless of specificity or source order -- setting
+   .hidden = true in JS on a .btn-classed element (e.g. nav.js hiding a [data-donate-cta] CTA
+   for ?ref=app visitors) silently did nothing without this override. */
+.btn[hidden] {
+  display: none;
+}
+
 /* ------------------------------------------------------------------ */
 /* Forms (admin login)                                                  */
 /* ------------------------------------------------------------------ */
@@ -1828,13 +1837,22 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Stays invisible until auth.js's revealWhenReady() adds .is-ready (see the JS comment for
+     why: Google's own renderButton() iframe goes through its own internal loading state --
+     a compact placeholder icon -- before it settles on the actual "Sign in with Google" pill,
+     independent of this container's size/visibility. Fading it in only once that iframe has
+     finished loading means visitors only ever see the final button, never the placeholder. */
+  opacity: 0;
+  transition: opacity 0.12s ease;
 }
 
-/* Google's own button/iframe sizing (width: 230 passed to renderButton() in auth.js) can take
-   a moment to settle -- there's a brief instant where GIS paints an oversized placeholder
-   before swapping in the actual "Sign in with Google" pill at its configured size. Capping
-   this slot at the same 230px and clipping overflow means that transient frame gets contained
-   instead of visibly ballooning past the dropdown's edge. */
+.xow-gsi-slot.is-ready {
+  opacity: 1;
+}
+
+/* Belt-and-braces containment for whatever sliver of the placeholder state slips through
+   before .is-ready lands (e.g. the 1s fallback timer in revealWhenReady()) -- clips it to the
+   slot instead of letting it balloon past the dropdown's edge. */
 .xow-gsi-slot iframe {
   max-width: 100%;
 }
