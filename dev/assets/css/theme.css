@@ -1256,12 +1256,12 @@ a:hover {
 }
 
 /* ------------------------------------------------------------------ */
-/* Admin page                                                           */
+/* Admin page & Funding Management Dashboard                            */
 /* ------------------------------------------------------------------ */
 
 .xow-admin-shell {
-  max-width: 420px;
-  margin: 12vh auto 0;
+  max-width: 440px;
+  margin: 10vh auto 0;
   padding: 0 20px;
   position: relative;
   z-index: 1;
@@ -1276,8 +1276,608 @@ a:hover {
   margin-top: 20px;
 }
 
-.xow-admin-dashboard {
+.xow-admin-app {
+  max-width: 1240px;
+  margin: 32px auto;
+  padding: 0 24px 64px;
+  position: relative;
+  z-index: 1;
+}
+
+.xow-admin-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  margin-bottom: 28px;
+}
+
+.xow-admin-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.xow-admin-header-brand .xow-brand-logo {
+  margin: 0;
+}
+
+.xow-admin-header-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--heading-color);
+  line-height: 1.2;
+}
+
+.xow-admin-header-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.xow-admin-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.xow-admin-user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--box-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.xow-admin-user-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--teal-accent);
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* KPI Cards */
+.xow-admin-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.xow-admin-kpi-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.xow-admin-kpi-card:hover {
+  border-color: var(--teal-glow);
+  transform: translateY(-2px);
+}
+
+.xow-admin-kpi-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.xow-admin-kpi-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+}
+
+.xow-admin-kpi-icon {
+  color: var(--teal-accent);
+  width: 20px;
+  height: 20px;
+}
+
+.xow-admin-kpi-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--heading-color);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 6px;
+}
+
+.xow-admin-kpi-value.highlight {
+  color: var(--teal-accent);
+}
+
+.xow-admin-kpi-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Phases Visualizer */
+.xow-admin-section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--heading-color);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.xow-admin-phases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+  margin-bottom: 32px;
+}
+
+.xow-admin-phase-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.xow-admin-phase-card.covered {
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.xow-admin-phase-card.active {
+  border-color: var(--teal-accent);
+  box-shadow: 0 0 16px var(--teal-glow);
+}
+
+.xow-admin-phase-card.pending {
+  opacity: 0.85;
+}
+
+.xow-admin-phase-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.xow-admin-phase-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--heading-color);
+}
+
+.xow-admin-phase-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.xow-admin-phase-progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.xow-admin-phase-allocated {
+  font-weight: 700;
+  color: var(--teal-accent);
+}
+
+.xow-admin-phase-target {
+  color: var(--text-muted);
+}
+
+.xow-admin-phase-meta {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Tabs */
+.xow-admin-tabs-nav {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 24px;
+  padding-bottom: 2px;
+  overflow-x: auto;
+}
+
+.xow-admin-tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 10px 10px 0 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  position: relative;
+  white-space: nowrap;
+}
+
+.xow-admin-tab-btn:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.xow-admin-tab-btn.active {
+  color: var(--teal-accent);
+  background: var(--box-bg);
+}
+
+.xow-admin-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--teal-accent);
+  border-radius: 2px;
+}
+
+.xow-admin-tab-panel {
+  display: none;
+}
+
+.xow-admin-tab-panel.active {
+  display: block;
+}
+
+/* Tables & Toolbars */
+.xow-admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.xow-admin-table-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.xow-admin-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.xow-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13.5px;
+}
+
+.xow-admin-table th {
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.xow-admin-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+.xow-admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.xow-admin-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.xow-admin-table .cell-num {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.xow-admin-table .cell-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.xow-btn-icon {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.xow-btn-icon:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+  border-color: var(--teal-accent);
+}
+
+.xow-btn-icon.danger:hover {
+  color: #ef4444;
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.xow-table-empty {
+  padding: 48px 24px;
   text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.xow-table-empty .icon {
+  width: 36px;
+  height: 36px;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+
+/* Modals */
+.xow-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.xow-modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.xow-modal-card {
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 28px;
+  max-width: 580px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+  transform: translateY(12px) scale(0.98);
+  transition: transform 0.2s ease;
+}
+
+.xow-modal-backdrop.open .xow-modal-card {
+  transform: translateY(0) scale(1);
+}
+
+.xow-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.xow-modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--heading-color);
+}
+
+.xow-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.xow-modal-close:hover {
+  color: var(--text-main);
+}
+
+.xow-calc-preview {
+  background: var(--box-bg);
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 16px 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.xow-calc-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.xow-calc-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.xow-calc-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--heading-color);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.xow-calc-val.net {
+  color: var(--teal-accent);
+  font-size: 17px;
+}
+
+.xow-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 580px) {
+  .xow-form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.xow-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.xow-checkbox-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.xow-checkbox-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.xow-checkbox-pill input[type="checkbox"] {
+  accent-color: var(--teal-accent);
+  cursor: pointer;
+}
+
+/* Toast */
+.xow-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.xow-toast {
+  background: #1e293b;
+  border: 1px solid var(--border-color);
+  color: #f8fafc;
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  pointer-events: auto;
+  animation: xowToastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.xow-toast.success {
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.xow-toast.success .icon {
+  color: #22c55e;
+}
+
+.xow-toast.error {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.xow-toast.error .icon {
+  color: #ef4444;
+}
+
+@keyframes xowToastIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.xow-admin-dashboard {
+  text-align: left;
 }
 
 .xow-admin-dashboard .xow-avatar-placeholder {

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://pocketbase.raulcalvo.com; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-ancestors 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://pocketbase.raulcalvo.com https://dev.pocketbase.xowapp.com; img-src 'self' data: https://pocketbase.raulcalvo.com https://dev.pocketbase.xowapp.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-ancestors 'none'">
   <title id="pageTitle" data-i18n-key="admin_title">XowApp Admin</title>
   <link rel="icon" type="image/png" href="../logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,8 +14,9 @@
 </head>
 <body data-page="admin">
   <div class="xow-page">
-    <div class="xow-admin-shell">
 
+    <!-- Login Card View -->
+    <div class="xow-admin-shell" id="adminLoginShell">
       <div class="xow-card" id="adminLoginCard">
         <img class="xow-brand-logo" src="../logo.png" alt="XowApp" width="40" height="40">
         <h1 class="xow-title-sm" id="admin_title"></h1>
@@ -34,19 +35,411 @@
           <button type="submit" class="btn btn-primary btn-block" id="admin_submit"></button>
         </form>
       </div>
+    </div>
 
-      <div class="xow-card xow-admin-dashboard" id="adminDashboardCard" hidden>
-        <div class="xow-avatar-placeholder" aria-hidden="true">XA</div>
-        <h1 class="xow-title-sm" id="admin_dashboard_title"></h1>
-        <p class="xow-subtitle xow-lead" id="adminWelcomeName"></p>
-        <p class="xow-subtitle xow-lead" id="admin_dashboard_placeholder"></p>
-        <button type="button" class="btn btn-secondary" id="adminLogoutBtn">
-          <span id="admin_logout"></span>
+    <!-- Full Funding Management Dashboard View -->
+    <div class="xow-admin-app" id="adminDashboardApp" hidden>
+      
+      <!-- Header -->
+      <header class="xow-admin-header">
+        <div class="xow-admin-header-brand">
+          <img class="xow-brand-logo" src="../logo.png" alt="XowApp" width="36" height="36">
+          <div>
+            <h1 class="xow-admin-header-title" id="admin_dashboard_title"></h1>
+            <p class="xow-admin-header-subtitle" id="lastSyncStatusText"></p>
+          </div>
+        </div>
+        <div class="xow-admin-header-actions">
+          <div class="xow-admin-user-chip">
+            <span class="xow-admin-user-avatar" id="adminUserAvatar">XA</span>
+            <span id="adminWelcomeName">Admin</span>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" id="btnSyncPublic">
+            <svg class="icon icon-sm"><use href="#i-refresh"></use></svg>
+            <span id="admin_sync_btn"></span>
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" id="adminLogoutBtn">
+            <svg class="icon icon-sm"><use href="#i-logout"></use></svg>
+            <span id="admin_logout"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- KPI Summary Cards -->
+      <section class="xow-admin-kpi-grid" aria-label="KPIs">
+        <!-- KPI 1: Gross Raised -->
+        <div class="xow-admin-kpi-card">
+          <div class="xow-admin-kpi-head">
+            <span class="xow-admin-kpi-label" id="admin_kpi_gross"></span>
+            <svg class="xow-admin-kpi-icon"><use href="#i-trending_up"></use></svg>
+          </div>
+          <div class="xow-admin-kpi-value" id="kpiGrossValue">0 €</div>
+          <div class="xow-admin-kpi-sub" id="admin_kpi_gross_sub"></div>
+        </div>
+
+        <!-- KPI 2: Net Balance -->
+        <div class="xow-admin-kpi-card">
+          <div class="xow-admin-kpi-head">
+            <span class="xow-admin-kpi-label" id="admin_kpi_net"></span>
+            <svg class="xow-admin-kpi-icon"><use href="#i-payments"></use></svg>
+          </div>
+          <div class="xow-admin-kpi-value highlight" id="kpiNetValue">0 €</div>
+          <div class="xow-admin-kpi-sub" id="admin_kpi_net_sub"></div>
+        </div>
+
+        <!-- KPI 3: Monthly Cost -->
+        <div class="xow-admin-kpi-card">
+          <div class="xow-admin-kpi-head">
+            <span class="xow-admin-kpi-label" id="admin_kpi_monthly_cost"></span>
+            <svg class="xow-admin-kpi-icon"><use href="#i-schedule"></use></svg>
+          </div>
+          <div class="xow-admin-kpi-value" id="kpiMonthlyCostValue">0 €/mes</div>
+          <div class="xow-admin-kpi-sub" id="admin_kpi_monthly_cost_sub"></div>
+        </div>
+
+        <!-- KPI 4: Runway / Funded Until -->
+        <div class="xow-admin-kpi-card">
+          <div class="xow-admin-kpi-head">
+            <span class="xow-admin-kpi-label" id="admin_kpi_runway"></span>
+            <svg class="xow-admin-kpi-icon"><use href="#i-volunteer_activism"></use></svg>
+          </div>
+          <div class="xow-admin-kpi-value" id="kpiRunwayValue">-</div>
+          <div class="xow-admin-kpi-sub" id="kpiRunwaySub">-</div>
+        </div>
+      </section>
+
+      <!-- Funding Phases Visualizer -->
+      <h2 class="xow-admin-section-title">
+        <svg class="icon icon-sm"><use href="#i-schema"></use></svg>
+        <span data-i18n-key="transparencia_phases_title">Fases de Financiación</span>
+      </h2>
+      <section class="xow-admin-phases-grid" id="adminPhasesContainer">
+        <!-- Dynamically rendered phase cards -->
+      </section>
+
+      <!-- Tabs Navigation -->
+      <nav class="xow-admin-tabs-nav" role="tablist">
+        <button type="button" class="xow-admin-tab-btn active" role="tab" aria-selected="true" data-tab="expenses" id="tabBtnExpenses">
+          <svg class="icon icon-sm"><use href="#i-receipt_long"></use></svg>
+          <span id="admin_tab_expenses">Gastos</span>
         </button>
+        <button type="button" class="xow-admin-tab-btn" role="tab" aria-selected="false" data-tab="incomes" id="tabBtnIncomes">
+          <svg class="icon icon-sm"><use href="#i-payments"></use></svg>
+          <span id="admin_tab_incomes">Ingresos y Donaciones</span>
+        </button>
+        <button type="button" class="xow-admin-tab-btn" role="tab" aria-selected="false" data-tab="settings" id="tabBtnSettings">
+          <svg class="icon icon-sm"><use href="#i-settings"></use></svg>
+          <span id="admin_tab_settings">Configuración</span>
+        </button>
+      </nav>
+
+      <!-- Tab 1: Expenses Panel -->
+      <div class="xow-admin-tab-panel active" id="panelExpenses" role="tabpanel">
+        <div class="xow-admin-toolbar">
+          <h3 class="xow-admin-section-title" style="margin-bottom: 0;" id="expensesPanelTitle">Listado de Gastos</h3>
+          <button type="button" class="btn btn-primary btn-sm" id="btnOpenAddExpenseModal">
+            <svg class="icon icon-sm"><use href="#i-add"></use></svg>
+            <span id="admin_btn_add_expense">+ Añadir Gasto</span>
+          </button>
+        </div>
+        <div class="xow-admin-table-card">
+          <div class="xow-admin-table-scroll">
+            <table class="xow-admin-table" id="expensesTable">
+              <thead>
+                <tr>
+                  <th id="thExpConcept">Concepto</th>
+                  <th id="thExpType">Tipo / Periodicidad</th>
+                  <th id="thExpPhases">Fases</th>
+                  <th id="thExpDate">Fecha</th>
+                  <th id="thExpAmount">Importe (€)</th>
+                  <th id="thExpStatus">Estado</th>
+                  <th id="thExpActions">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="expensesTableBody">
+                <!-- Rows rendered via admin.js -->
+              </tbody>
+            </table>
+          </div>
+          <div class="xow-table-empty" id="expensesEmptyState" hidden>
+            <svg class="icon"><use href="#i-receipt_long"></use></svg>
+            <p id="admin_no_expenses">No hay gastos registrados todavía.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Incomes Panel -->
+      <div class="xow-admin-tab-panel" id="panelIncomes" role="tabpanel">
+        <div class="xow-admin-toolbar">
+          <h3 class="xow-admin-section-title" style="margin-bottom: 0;" id="incomesPanelTitle">Listado de Ingresos y Donaciones</h3>
+          <button type="button" class="btn btn-primary btn-sm" id="btnOpenAddIncomeModal">
+            <svg class="icon icon-sm"><use href="#i-add"></use></svg>
+            <span id="admin_btn_add_income">+ Añadir Ingreso</span>
+          </button>
+        </div>
+        <div class="xow-admin-table-card">
+          <div class="xow-admin-table-scroll">
+            <table class="xow-admin-table" id="incomesTable">
+              <thead>
+                <tr>
+                  <th id="thIncDate">Fecha</th>
+                  <th id="thIncConcept">Concepto</th>
+                  <th id="thIncSource">Origen</th>
+                  <th id="thIncGross">Bruto (€)</th>
+                  <th id="thIncFee">Comisión (€)</th>
+                  <th id="thIncTax">Impuestos (€)</th>
+                  <th id="thIncNet">Neto (€)</th>
+                  <th id="thIncActions">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="incomesTableBody">
+                <!-- Rows rendered via admin.js -->
+              </tbody>
+            </table>
+          </div>
+          <div class="xow-table-empty" id="incomesEmptyState" hidden>
+            <svg class="icon"><use href="#i-payments"></use></svg>
+            <p id="admin_no_incomes">No hay ingresos registrados todavía.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Settings Panel -->
+      <div class="xow-admin-tab-panel" id="panelSettings" role="tabpanel">
+        <div class="xow-admin-table-card" style="padding: 24px; max-width: 680px;">
+          <h3 class="xow-title-sm" style="margin-bottom: 8px;" id="admin_settings_title">Configuración de Comisiones y Finanzas</h3>
+          <p class="xow-subtitle" style="margin-bottom: 24px;">Ajusta los porcentajes aplicados automáticamente al registrar ingresos y donaciones.</p>
+
+          <form id="adminSettingsForm" novalidate>
+            <div class="xow-form-grid-2">
+              <div class="xow-form-group">
+                <label for="setStartDate" id="admin_settings_start_date">Fecha de inicio del proyecto</label>
+                <input type="date" id="setStartDate" name="project_start_date" required>
+              </div>
+              <div class="xow-form-group">
+                <label for="setCurrency" id="admin_settings_currency">Moneda principal</label>
+                <input type="text" id="setCurrency" name="currency" value="EUR" required>
+              </div>
+            </div>
+
+            <div class="xow-form-grid-2">
+              <div class="xow-form-group">
+                <label for="setGoogleFee" id="admin_settings_google_fee">Comisión Google Play (%)</label>
+                <input type="number" id="setGoogleFee" name="google_fee_pct" step="0.1" min="0" max="100" value="15.0" required>
+              </div>
+              <div class="xow-form-group">
+                <label for="setAppleFee" id="admin_settings_apple_fee">Comisión Apple App Store (%)</label>
+                <input type="number" id="setAppleFee" name="apple_fee_pct" step="0.1" min="0" max="100" value="15.0" required>
+              </div>
+            </div>
+
+            <div class="xow-form-grid-2">
+              <div class="xow-form-group">
+                <label for="setStripePct" id="admin_settings_stripe_pct">Comisión variable Stripe Web (%)</label>
+                <input type="number" id="setStripePct" name="stripe_fee_pct" step="0.01" min="0" max="100" value="1.5" required>
+              </div>
+              <div class="xow-form-group">
+                <label for="setStripeFixed" id="admin_settings_stripe_fixed">Comisión fija Stripe Web (€)</label>
+                <input type="number" id="setStripeFixed" name="stripe_fee_fixed_eur" step="0.01" min="0" value="0.25" required>
+              </div>
+            </div>
+
+            <div class="xow-form-group">
+              <label for="setTaxRate" id="admin_settings_tax_rate">Retención / Impuestos IRPF (%)</label>
+              <input type="number" id="setTaxRate" name="tax_rate_pct" step="0.1" min="0" max="100" value="19.0" required>
+            </div>
+
+            <div style="margin-top: 24px;">
+              <button type="submit" class="btn btn-primary" id="btnSaveSettings">
+                <span id="admin_settings_save_btn">Guardar Configuración</span>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
 
     </div>
   </div>
+
+  <!-- Modal: Create/Edit Expense -->
+  <div class="xow-modal-backdrop" id="modalExpenseBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalExpenseTitle">
+    <div class="xow-modal-card">
+      <div class="xow-modal-header">
+        <h3 class="xow-modal-title" id="modalExpenseTitle">Añadir Gasto</h3>
+        <button type="button" class="xow-modal-close" id="btnCloseExpenseModal" aria-label="Cerrar">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+
+      <form id="formExpense" novalidate>
+        <input type="hidden" id="expenseEditId" name="id">
+
+        <div class="xow-form-group">
+          <label for="expConcept" id="lblExpConcept">Concepto *</label>
+          <input type="text" id="expConcept" name="concept" placeholder="Ej. Servidor Hetzner VPS" required>
+        </div>
+
+        <div class="xow-form-grid-2">
+          <div class="xow-form-group">
+            <label for="expAmount" id="lblExpAmount">Importe (€) *</label>
+            <input type="number" id="expAmount" name="amount_eur" step="0.01" min="0" placeholder="Ej. 150.00" required>
+          </div>
+          <div class="xow-form-group">
+            <label for="expType" id="lblExpType">Tipo *</label>
+            <select id="expType" name="type" required>
+              <option value="monthly">Mensual recurrente</option>
+              <option value="one_off">Puntual</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="xow-form-group">
+          <label id="lblExpPhases">Fases aplicables</label>
+          <div class="xow-checkbox-group">
+            <label class="xow-checkbox-pill">
+              <input type="checkbox" name="applicable_phases" value="survival" checked>
+              <span>Fase 1: Supervivencia</span>
+            </label>
+            <label class="xow-checkbox-pill">
+              <input type="checkbox" name="applicable_phases" value="infra">
+              <span>Fase 2: Infraestructura</span>
+            </label>
+            <label class="xow-checkbox-pill">
+              <input type="checkbox" name="applicable_phases" value="pro">
+              <span>Fase 3: Profesionalización</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="xow-form-grid-2">
+          <div class="xow-form-group">
+            <label for="expDate" id="lblExpDate">Fecha de pago / inicio</label>
+            <input type="date" id="expDate" name="payment_date">
+          </div>
+          <div class="xow-form-group" style="display: flex; align-items: flex-end; padding-bottom: 8px;">
+            <label class="xow-checkbox-pill" style="width: 100%; justify-content: center; padding: 10px;">
+              <input type="checkbox" id="expIsActive" name="is_active" checked>
+              <span id="lblExpIsActive">Gasto Activo</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="xow-form-group">
+          <label for="expNotes" id="lblExpNotes">Notas</label>
+          <textarea id="expNotes" name="notes" rows="2" placeholder="Detalles u observaciones"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" id="btnCancelExpense">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveExpense">Guardar Gasto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Create/Edit Income -->
+  <div class="xow-modal-backdrop" id="modalIncomeBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalIncomeTitle">
+    <div class="xow-modal-card">
+      <div class="xow-modal-header">
+        <h3 class="xow-modal-title" id="modalIncomeTitle">Añadir Ingreso</h3>
+        <button type="button" class="xow-modal-close" id="btnCloseIncomeModal" aria-label="Cerrar">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+
+      <form id="formIncome" novalidate>
+        <input type="hidden" id="incomeEditId" name="id">
+
+        <div class="xow-form-group">
+          <label for="incConcept" id="lblIncConcept">Concepto *</label>
+          <input type="text" id="incConcept" name="concept" placeholder="Ej. Aportación inicial o Donación consumible" required>
+        </div>
+
+        <div class="xow-form-grid-2">
+          <div class="xow-form-group">
+            <label for="incDate" id="lblIncDate">Fecha *</label>
+            <input type="date" id="incDate" name="date" required>
+          </div>
+          <div class="xow-form-group">
+            <label for="incSource" id="lblIncSource">Origen / Canal *</label>
+            <select id="incSource" name="source" required>
+              <option value="founder_investment">Inversión propia (Fondos propios)</option>
+              <option value="google_play">Google Play (IAP)</option>
+              <option value="apple_appstore">Apple App Store (IAP)</option>
+              <option value="stripe_web">Stripe Web</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="xow-form-group">
+          <label for="incGross" id="lblIncGross">Importe Bruto (€) *</label>
+          <input type="number" id="incGross" name="gross_amount_eur" step="0.01" min="0" placeholder="Ej. 1000.00" required>
+        </div>
+
+        <!-- Real-time Automatic Financial Calculation Preview -->
+        <div class="xow-calc-preview">
+          <div class="xow-calc-item">
+            <span class="xow-calc-label">Comisión</span>
+            <span class="xow-calc-val" id="calcPreviewFee">0.00 €</span>
+          </div>
+          <div class="xow-calc-item">
+            <span class="xow-calc-label">Impuestos (IRPF)</span>
+            <span class="xow-calc-val" id="calcPreviewTax">0.00 €</span>
+          </div>
+          <div class="xow-calc-item">
+            <span class="xow-calc-label">Neto en Caja</span>
+            <span class="xow-calc-val net" id="calcPreviewNet">0.00 €</span>
+          </div>
+        </div>
+
+        <!-- Hidden actual values to save -->
+        <input type="hidden" id="incFee" name="platform_fee_eur" value="0">
+        <input type="hidden" id="incTax" name="tax_amount_eur" value="0">
+        <input type="hidden" id="incNet" name="net_amount_eur" value="0">
+
+        <div class="xow-form-grid-2">
+          <div class="xow-form-group">
+            <label for="incExtId" id="lblIncExtId">ID / Referencia Externa</label>
+            <input type="text" id="incExtId" name="external_id" placeholder="Ej. ch_3M5x... o GPA.3321...">
+          </div>
+          <div class="xow-form-group" style="display: flex; align-items: flex-end; padding-bottom: 8px;">
+            <label class="xow-checkbox-pill" style="width: 100%; justify-content: center; padding: 10px;">
+              <input type="checkbox" id="incIsRecurring" name="is_recurring">
+              <span id="lblIncIsRecurring">Ingreso Recurrente</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="xow-form-group">
+          <label for="incNotes" id="lblIncNotes">Notas</label>
+          <textarea id="incNotes" name="notes" rows="2" placeholder="Observaciones contables"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" id="btnCancelIncome">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveIncome">Guardar Ingreso</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Delete Confirmation -->
+  <div class="xow-modal-backdrop" id="modalDeleteBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalDeleteTitle">
+    <div class="xow-modal-card" style="max-width: 420px; text-align: center;">
+      <div style="margin-bottom: 16px;">
+        <svg class="icon icon-lg" style="color: #ef4444; width: 44px; height: 44px;"><use href="#i-warning"></use></svg>
+      </div>
+      <h3 class="xow-modal-title" id="modalDeleteTitle" style="margin-bottom: 10px;">Eliminar registro</h3>
+      <p class="xow-subtitle" id="deleteConfirmMessage" style="margin-bottom: 24px;">¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.</p>
+      <div style="display: flex; justify-content: center; gap: 12px;">
+        <button type="button" class="btn btn-secondary" id="btnCancelDelete">Cancelar</button>
+        <button type="button" class="btn btn-primary" style="background: #ef4444; border-color: #ef4444;" id="btnConfirmDelete">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="xow-toast-container" id="toastContainer" aria-live="polite"></div>
 
   <script src="../assets/js/config.js"></script>
   <script src="../assets/js/icons.js"></script>
