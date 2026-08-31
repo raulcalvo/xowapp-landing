@@ -1557,7 +1557,12 @@
       })
       .catch(function (err) {
         console.error('Error loading reports:', err);
-        showToast('Error cargando denuncias de PocketBase', 'error');
+        var status = err && err.status;
+        if (status === 403) {
+          showToast('Error 403: web_admins no tiene permisos para listar la colección reports en PocketBase', 'error');
+        } else {
+          showToast('Error cargando denuncias de PocketBase: ' + ((err && err.message) || 'desconocido'), 'error');
+        }
       });
   }
 
@@ -1872,7 +1877,12 @@
         console.error('Error loading users:', err);
         state.users = [];
         renderUsersSection(0);
-        showToast('Error buscando usuarios en PocketBase', 'error');
+        var status = err && err.status;
+        if (status === 403) {
+          showToast('Error 403: web_admins no tiene permisos para listar la colección users en PocketBase', 'error');
+        } else {
+          showToast('Error buscando usuarios en PocketBase: ' + ((err && err.message) || 'desconocido'), 'error');
+        }
       });
   }
 
