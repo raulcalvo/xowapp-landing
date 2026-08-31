@@ -234,6 +234,7 @@
     analyticsChartContainer: doc.getElementById('analyticsChartContainer'),
     analyticsChartSvg: doc.getElementById('analyticsChartSvg'),
     chartTooltip: doc.getElementById('chartTooltip'),
+    btnGranularityHour: doc.getElementById('btnGranularityHour'),
     btnGranularityDay: doc.getElementById('btnGranularityDay'),
     btnGranularityWeek: doc.getElementById('btnGranularityWeek'),
     btnGranularityMonth: doc.getElementById('btnGranularityMonth'),
@@ -1433,7 +1434,18 @@
     var now = refDate ? new Date(refDate) : new Date();
     var buckets = [];
 
-    if (granularity === 'day') {
+    if (granularity === 'hour') {
+      for (var i = 23; i >= 0; i--) {
+        var d = new Date(now.getTime() - i * 3600000);
+        var yr = d.getFullYear();
+        var mo = String(d.getMonth() + 1).padStart(2, '0');
+        var da = String(d.getDate()).padStart(2, '0');
+        var hr = String(d.getHours()).padStart(2, '0');
+        var key = yr + '-' + mo + '-' + da + 'T' + hr;
+        var label = hr + ':00';
+        buckets.push({ key: key, label: label, date: d });
+      }
+    } else if (granularity === 'day') {
       for (var i = 29; i >= 0; i--) {
         var d = new Date(now.getTime() - i * 86400000);
         var key = d.toISOString().slice(0, 10);
@@ -1470,7 +1482,13 @@
     var d = new Date(dateString);
     if (isNaN(d.getTime())) return null;
 
-    if (granularity === 'day') {
+    if (granularity === 'hour') {
+      var yr = d.getFullYear();
+      var mo = String(d.getMonth() + 1).padStart(2, '0');
+      var da = String(d.getDate()).padStart(2, '0');
+      var hr = String(d.getHours()).padStart(2, '0');
+      return yr + '-' + mo + '-' + da + 'T' + hr;
+    } else if (granularity === 'day') {
       return d.toISOString().slice(0, 10);
     } else if (granularity === 'week') {
       return getYearWeekKey(d);
@@ -3459,7 +3477,7 @@
     }
 
     // 22. Analytics Dashboard & Granularity Events
-    var granButtons = [el.btnGranularityDay, el.btnGranularityWeek, el.btnGranularityMonth, el.btnGranularityYear].filter(Boolean);
+    var granButtons = [el.btnGranularityHour, el.btnGranularityDay, el.btnGranularityWeek, el.btnGranularityMonth, el.btnGranularityYear].filter(Boolean);
     granButtons.forEach(function (btn) {
       btn.addEventListener('click', function () {
         var g = btn.getAttribute('data-granularity');
