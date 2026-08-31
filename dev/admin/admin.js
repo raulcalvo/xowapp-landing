@@ -1370,9 +1370,18 @@
       tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
     });
 
-    if (el.secFunding) el.secFunding.hidden = (sectionName !== 'funding');
-    if (el.secReports) el.secReports.hidden = (sectionName !== 'reports');
-    if (el.secUsers) el.secUsers.hidden = (sectionName !== 'users');
+    if (el.secFunding) {
+      el.secFunding.hidden = (sectionName !== 'funding');
+      el.secFunding.classList.toggle('active', sectionName === 'funding');
+    }
+    if (el.secReports) {
+      el.secReports.hidden = (sectionName !== 'reports');
+      el.secReports.classList.toggle('active', sectionName === 'reports');
+    }
+    if (el.secUsers) {
+      el.secUsers.hidden = (sectionName !== 'users');
+      el.secUsers.classList.toggle('active', sectionName === 'users');
+    }
 
     if (sectionName === 'funding') {
       renderDashboard();

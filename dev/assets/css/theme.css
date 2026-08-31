@@ -1697,12 +1697,16 @@ a:hover {
 }
 
 .xow-admin-main-section {
-  display: none;
+  display: block;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.xow-admin-main-section[hidden] {
+  display: none !important;
 }
 
 .xow-admin-main-section.active {
   display: block;
-  animation: fadeIn 0.25s ease-out;
 }
 
 .xow-admin-tab-badge,
