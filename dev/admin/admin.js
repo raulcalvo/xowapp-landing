@@ -15,27 +15,63 @@
   }
 
   // ------------------------------------------------------------------
-  // In-Memory Auth Store (Session disappears upon tab closure)
+  // Session-Backed Auth Store (Preserves login on F5/refresh, wiped on tab close)
   // ------------------------------------------------------------------
-  function InMemoryAuthStore() {
+  var AUTH_STORAGE_KEY = 'xow_admin_auth';
+
+  function SessionAuthStore() {
     this._token = '';
     this._record = null;
     this._callbacks = [];
+    this._load();
   }
-  InMemoryAuthStore.prototype = {
+  SessionAuthStore.prototype = {
     get token() { return this._token; },
     get record() { return this._record; },
     get model() { return this._record; },
     get isValid() { return !!this._token; },
     get isSuperuser() { return false; },
+    _load: function () {
+      try {
+        if (typeof window !== 'undefined' && window.sessionStorage) {
+          var raw = window.sessionStorage.getItem(AUTH_STORAGE_KEY);
+          if (raw) {
+            var data = JSON.parse(raw);
+            this._token = data.token || '';
+            this._record = data.record || null;
+          }
+        }
+      } catch (e) {
+        this._token = '';
+        this._record = null;
+      }
+    },
     save: function (token, record) {
       this._token = token || '';
       this._record = record || null;
+      try {
+        if (typeof window !== 'undefined' && window.sessionStorage) {
+          if (this._token) {
+            window.sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({
+              token: this._token,
+              record: this._record,
+            }));
+          } else {
+            window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
+          }
+        }
+      } catch (e) {}
       this._trigger();
     },
     clear: function () {
       this._token = '';
       this._record = null;
+      try {
+        if (typeof window !== 'undefined' && window.sessionStorage) {
+          window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
+          window.sessionStorage.removeItem('xow_admin_active_section');
+        }
+      } catch (e) {}
       this._trigger();
     },
     onChange: function (callback, fireImmediately) {
@@ -54,7 +90,7 @@
   };
 
   var cfg = (typeof window !== 'undefined' && window.XOW_CONFIG) || {};
-  var pb = (typeof PocketBase !== 'undefined') ? new PocketBase(cfg.pocketbaseUrl || '', new InMemoryAuthStore()) : null;
+  var pb = (typeof PocketBase !== 'undefined') ? new PocketBase(cfg.pocketbaseUrl || '', new SessionAuthStore()) : null;
 
   var SETTINGS_COLLECTION = cfg.fundingSettingsCollection || 'funding_settings';
   var PHASES_COLLECTION = cfg.fundingPhasesCollection || 'funding_phases';
@@ -1314,7 +1350,17 @@
   // Main Module Navigation
   // ------------------------------------------------------------------
   function switchMainSection(sectionName) {
+    if (!sectionName) sectionName = 'funding';
     state.activeMainSection = sectionName;
+
+    try {
+      if (typeof window !== 'undefined') {
+        if (window.sessionStorage) window.sessionStorage.setItem('xow_admin_active_section', sectionName);
+        if (window.location.hash !== '#' + sectionName) {
+          history.replaceState(null, '', '#' + sectionName);
+        }
+      }
+    } catch (e) {}
 
     var navTabs = [el.tabNavFunding, el.tabNavReports, el.tabNavUsers].filter(Boolean);
     navTabs.forEach(function (tab) {
@@ -2877,7 +2923,21 @@
     el.adminWelcomeName.textContent = name;
     el.adminUserAvatar.textContent = name.slice(0, 2).toUpperCase();
 
+    var initialSection = 'funding';
+    try {
+      var hash = window.location.hash ? window.location.hash.slice(1).toLowerCase() : '';
+      if (hash === 'reports' || hash === 'users' || hash === 'funding') {
+        initialSection = hash;
+      } else if (window.sessionStorage) {
+        var savedSec = window.sessionStorage.getItem('xow_admin_active_section');
+        if (savedSec === 'reports' || savedSec === 'users' || savedSec === 'funding') {
+          initialSection = savedSec;
+        }
+      }
+    } catch (e) {}
+
     loadAllData();
+    switchMainSection(initialSection);
   }
 
   function showLoginView() {
@@ -2900,6 +2960,7 @@
     addMonthsClamped: addMonthsClamped,
     clamp01: clamp01,
     state: state,
+    SessionAuthStore: SessionAuthStore,
     firstNonEmptyTranslation: firstNonEmptyTranslation,
     resolvePhaseText: resolvePhaseText,
     slugifyPhaseKey: slugifyPhaseKey,
