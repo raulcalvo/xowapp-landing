@@ -37,7 +37,7 @@
       </div>
     </div>
 
-    <!-- Full Funding Management Dashboard View -->
+    <!-- Full Admin Dashboard View -->
     <div class="xow-admin-app" id="adminDashboardApp" hidden>
       
       <!-- Header -->
@@ -49,6 +49,24 @@
             <p class="xow-admin-header-subtitle" id="lastSyncStatusText"></p>
           </div>
         </div>
+
+        <!-- Main Module Navigation Tabs -->
+        <nav class="xow-admin-main-nav" role="tablist" aria-label="Secciones del Panel">
+          <button type="button" class="xow-admin-main-tab active" role="tab" aria-selected="true" data-main-section="funding" id="tabNavFunding">
+            <svg class="icon icon-sm"><use href="#i-payments"></use></svg>
+            <span data-i18n-key="admin_nav_funding">Financiación</span>
+          </button>
+          <button type="button" class="xow-admin-main-tab" role="tab" aria-selected="false" data-main-section="reports" id="tabNavReports">
+            <svg class="icon icon-sm"><use href="#i-flag"></use></svg>
+            <span data-i18n-key="admin_nav_reports">Denuncias (UGC)</span>
+            <span class="xow-admin-tab-badge" id="reportsPendingBadge" hidden>0</span>
+          </button>
+          <button type="button" class="xow-admin-main-tab" role="tab" aria-selected="false" data-main-section="users" id="tabNavUsers">
+            <svg class="icon icon-sm"><use href="#i-person_search"></use></svg>
+            <span data-i18n-key="admin_nav_users">Usuarios</span>
+          </button>
+        </nav>
+
         <div class="xow-admin-header-actions">
           <div class="xow-admin-user-chip">
             <span class="xow-admin-user-avatar" id="adminUserAvatar">XA</span>
@@ -65,6 +83,8 @@
         </div>
       </header>
 
+      <!-- Section 1: Funding Dashboard -->
+      <div class="xow-admin-main-section active" id="secFunding">
       <!-- KPI Summary Cards -->
       <section class="xow-admin-kpi-grid" aria-label="KPIs">
         <!-- KPI 1: Gross Raised -->
@@ -296,6 +316,265 @@
         </div>
       </div>
 
+      </div><!-- /secFunding -->
+
+      <!-- Section 2: Reports (UGC) Moderation -->
+      <div class="xow-admin-main-section" id="secReports" hidden>
+        
+        <!-- Reports KPI Cards -->
+        <section class="xow-admin-kpi-grid" aria-label="KPIs de Denuncias">
+          <!-- KPI 1: Total Reports -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_reports_kpi_total">Total Denuncias</span>
+              <svg class="xow-admin-kpi-icon"><use href="#i-flag"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value" id="kpiRepTotal">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiRepTotalSub">Histórico registrado</div>
+          </div>
+
+          <!-- KPI 2: Pending Review -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_reports_kpi_pending">Pendientes de Revisión</span>
+              <svg class="xow-admin-kpi-icon" style="color: #f59e0b;"><use href="#i-schedule"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value highlight-warning" id="kpiRepPending">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiRepPendingSub">Requieren atención</div>
+          </div>
+
+          <!-- KPI 3: Resolved / Action Taken -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_reports_kpi_resolved">Resueltas / Acción Tomada</span>
+              <svg class="xow-admin-kpi-icon" style="color: #10b981;"><use href="#i-check_circle"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value highlight" id="kpiRepResolved">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiRepResolvedSub">Acción o desestimadas</div>
+          </div>
+
+          <!-- KPI 4: SLA Compliance -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_reports_kpi_sla">Cumplimiento SLA (&lt;24h)</span>
+              <svg class="xow-admin-kpi-icon"><use href="#i-verified_user"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value" id="kpiRepSla">100%</div>
+            <div class="xow-admin-kpi-sub" id="kpiRepAvgTime">Tiempo medio: -</div>
+          </div>
+        </section>
+
+        <!-- Category & Content Breakdown Visualizer Grid -->
+        <div class="xow-reports-breakdown-grid">
+          <div class="xow-admin-table-card" style="padding: 16px;">
+            <h4 class="xow-admin-card-subtitle" data-i18n-key="admin_reports_category_breakdown">Desglose por Categoría de Abuso</h4>
+            <div class="xow-breakdown-chips" id="repCategoryChips">
+              <!-- Rendered via admin.js -->
+            </div>
+          </div>
+          <div class="xow-admin-table-card" style="padding: 16px;">
+            <h4 class="xow-admin-card-subtitle" data-i18n-key="admin_reports_content_breakdown">Desglose por Tipo de Contenido</h4>
+            <div class="xow-breakdown-chips" id="repContentChips">
+              <!-- Rendered via admin.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Reports Filter Toolbar -->
+        <div class="xow-admin-toolbar xow-reports-toolbar">
+          <div class="xow-filter-search-wrap">
+            <svg class="icon icon-sm xow-search-icon"><use href="#i-search"></use></svg>
+            <input type="search" class="xow-input-search" id="repSearchInput" placeholder="Buscar denuncias (ID, usuario, descripción)..." aria-label="Buscar denuncias">
+          </div>
+
+          <div class="xow-filter-group">
+            <select id="repStatusFilter" class="xow-select-sm" aria-label="Filtrar por estado">
+              <option value="">Estado: Todos</option>
+              <option value="pending">Pendientes</option>
+              <option value="in_review">En Revisión</option>
+              <option value="action_taken">Acción Tomada</option>
+              <option value="dismissed">Desestimadas</option>
+            </select>
+
+            <select id="repCategoryFilter" class="xow-select-sm" aria-label="Filtrar por categoría">
+              <option value="">Categoría: Todas</option>
+              <option value="spam">Spam / Publicidad</option>
+              <option value="harassment">Acoso / Odio</option>
+              <option value="inappropriate">Contenido Inapropiado</option>
+              <option value="impersonation">Suplantación</option>
+              <option value="other">Otros</option>
+            </select>
+
+            <select id="repContentFilter" class="xow-select-sm" aria-label="Filtrar por contenido">
+              <option value="">Tipo: Todos</option>
+              <option value="album">Álbum</option>
+              <option value="message">Mensaje / Chat</option>
+              <option value="user">Perfil / Usuario</option>
+              <option value="media">Foto / Vídeo</option>
+            </select>
+
+            <select id="repBlockedFilter" class="xow-select-sm" aria-label="Filtrar por bloqueo">
+              <option value="">Bloqueo: Todos</option>
+              <option value="true">Solo Bloqueados</option>
+              <option value="false">No Bloqueados</option>
+            </select>
+
+            <select id="repSortSelect" class="xow-select-sm" aria-label="Ordenar por">
+              <option value="created_desc">Más recientes primero</option>
+              <option value="created_asc">Más antiguas primero</option>
+              <option value="pending_first">Pendientes primero</option>
+            </select>
+
+            <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshReports" title="Refrescar denuncias">
+              <svg class="icon icon-sm"><use href="#i-refresh"></use></svg>
+              <span>Refrescar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Reports Interactive Table -->
+        <div class="xow-admin-table-card">
+          <div class="xow-admin-table-scroll">
+            <table class="xow-admin-table" id="reportsTable">
+              <thead>
+                <tr>
+                  <th id="thRepDate" data-i18n-key="admin_reports_col_date">Fecha / Hora</th>
+                  <th id="thRepContentType" data-i18n-key="admin_reports_col_content_type">Contenido</th>
+                  <th id="thRepCategory" data-i18n-key="admin_reports_col_category">Categoría</th>
+                  <th id="thRepReporter" data-i18n-key="admin_reports_col_reporter">Denunciante</th>
+                  <th id="thRepTarget" data-i18n-key="admin_reports_col_target">Denunciado</th>
+                  <th id="thRepStatus" data-i18n-key="admin_reports_col_status">Estado</th>
+                  <th id="thRepAction" data-i18n-key="admin_reports_col_action">Acción Tomada</th>
+                  <th id="thRepActions" data-i18n-key="admin_actions">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="reportsTableBody">
+                <!-- Rows rendered via admin.js -->
+              </tbody>
+            </table>
+          </div>
+          <div class="xow-table-empty" id="reportsEmptyState" hidden>
+            <svg class="icon"><use href="#i-flag"></use></svg>
+            <p data-i18n-key="admin_reports_empty">No se encontraron denuncias con los filtros seleccionados.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Section 3: User Management & Reserved Handles -->
+      <div class="xow-admin-main-section" id="secUsers" hidden>
+        
+        <!-- User Subnav Tabs -->
+        <nav class="xow-admin-tabs-nav" role="tablist">
+          <button type="button" class="xow-admin-tab-btn active" role="tab" aria-selected="true" data-user-tab="directory" id="tabBtnUserDirectory">
+            <svg class="icon icon-sm"><use href="#i-person_search"></use></svg>
+            <span data-i18n-key="admin_users_tab_directory">Búsqueda de Usuarios</span>
+          </button>
+          <button type="button" class="xow-admin-tab-btn" role="tab" aria-selected="false" data-user-tab="reserved" id="tabBtnUserReserved">
+            <svg class="icon icon-sm"><use href="#i-lock"></use></svg>
+            <span data-i18n-key="admin_users_tab_reserved">Handles Reservados</span>
+          </button>
+        </nav>
+
+        <!-- Subpanel 1: User Directory -->
+        <div class="xow-admin-tab-panel active" id="panelUserDirectory" role="tabpanel">
+          <div class="xow-admin-toolbar xow-users-toolbar">
+            <div class="xow-users-search-inputs">
+              <div class="xow-filter-search-wrap">
+                <svg class="icon icon-sm xow-search-icon"><use href="#i-search"></use></svg>
+                <input type="search" class="xow-input-search" id="userSearchHandleInput" placeholder="Buscar por @handle (contiene)..." aria-label="Buscar por handle">
+              </div>
+              <div class="xow-filter-search-wrap">
+                <svg class="icon icon-sm xow-search-icon"><use href="#i-person"></use></svg>
+                <input type="search" class="xow-input-search" id="userSearchNameInput" placeholder="Buscar por Nombre (contiene)..." aria-label="Buscar por nombre">
+              </div>
+            </div>
+
+            <div class="xow-filter-group">
+              <select id="userStatusFilter" class="xow-select-sm" aria-label="Estado de cuenta">
+                <option value="all">Todos los estados</option>
+                <option value="active">Solo Activos</option>
+                <option value="banned">Solo Baneados</option>
+              </select>
+
+              <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshUsers" title="Refrescar usuarios">
+                <svg class="icon icon-sm"><use href="#i-refresh"></use></svg>
+                <span>Refrescar</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="xow-admin-table-card">
+            <div class="xow-admin-table-scroll">
+              <table class="xow-admin-table" id="usersTable">
+                <thead>
+                  <tr>
+                    <th id="thUserAvatar">Usuario</th>
+                    <th id="thUserHandle">@handle</th>
+                    <th id="thUserTrust">Trust Score</th>
+                    <th id="thUserCreated">Registro</th>
+                    <th id="thUserLastSeen">Última Conexión</th>
+                    <th id="thUserStatus">Estado</th>
+                    <th id="thUserActions">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <!-- Rows rendered via admin.js -->
+                </tbody>
+              </table>
+            </div>
+            <div class="xow-table-empty" id="usersEmptyState" hidden>
+              <svg class="icon"><use href="#i-person_search"></use></svg>
+              <p data-i18n-key="admin_users_empty">No se encontraron usuarios coincidentes.</p>
+            </div>
+            <div class="xow-admin-table-footer" id="usersTableFooter">
+              <span id="usersCountLabel">Cargando usuarios...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subpanel 2: Reserved Handles -->
+        <div class="xow-admin-tab-panel" id="panelUserReserved" role="tabpanel">
+          <div class="xow-admin-toolbar">
+            <h3 class="xow-admin-section-title" style="margin-bottom: 0;" data-i18n-key="admin_reserved_title">Handles Reservados</h3>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshReserved">
+                <svg class="icon icon-sm"><use href="#i-refresh"></use></svg>
+                <span>Refrescar</span>
+              </button>
+              <button type="button" class="btn btn-primary btn-sm" id="btnOpenAddReservedModal">
+                <svg class="icon icon-sm"><use href="#i-add"></use></svg>
+                <span data-i18n-key="admin_reserved_btn_add">+ Añadir Handle Reservado</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="xow-admin-table-card">
+            <div class="xow-admin-table-scroll">
+              <table class="xow-admin-table" id="reservedHandlesTable">
+                <thead>
+                  <tr>
+                    <th id="thResHandle" data-i18n-key="admin_reserved_col_handle">Handle</th>
+                    <th id="thResReason" data-i18n-key="admin_reserved_col_reason">Motivo</th>
+                    <th id="thResCreatedBy" data-i18n-key="admin_reserved_col_by">Añadido Por</th>
+                    <th id="thResDate" data-i18n-key="admin_reserved_col_date">Fecha</th>
+                    <th id="thResActions" data-i18n-key="admin_actions">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="reservedHandlesTableBody">
+                  <!-- Rows rendered via admin.js -->
+                </tbody>
+              </table>
+            </div>
+            <div class="xow-table-empty" id="reservedEmptyState" hidden>
+              <svg class="icon"><use href="#i-lock"></use></svg>
+              <p data-i18n-key="admin_reserved_empty">No hay handles reservados en la base de datos.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   </div>
 
@@ -516,6 +795,251 @@
         <button type="button" class="btn btn-secondary" id="btnCancelDelete">Cancelar</button>
         <button type="button" class="btn btn-primary" style="background: #ef4444; border-color: #ef4444;" id="btnConfirmDelete">Eliminar</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal: Report Detail / Moderation Resolution -->
+  <div class="xow-modal-backdrop" id="modalReportDetailBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalReportDetailTitle">
+    <div class="xow-modal-card xow-modal-card-lg">
+      <div class="xow-modal-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <h3 class="xow-modal-title" id="modalReportDetailTitle" data-i18n-key="admin_reports_modal_title">Detalle y Moderación de Denuncia</h3>
+          <span class="xow-badge" id="modalRepStatusBadge">Pendiente</span>
+        </div>
+        <button type="button" class="xow-modal-close" id="btnCloseReportDetailModal" aria-label="Cerrar">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+
+      <div class="xow-report-detail-body">
+        <input type="hidden" id="repDetailId">
+
+        <!-- Report Info Meta Grid -->
+        <div class="xow-meta-grid">
+          <div class="xow-meta-item">
+            <span class="xow-meta-label">ID de Denuncia</span>
+            <span class="xow-meta-value font-mono" id="repDetailIdText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label">Fecha / Hora</span>
+            <span class="xow-meta-value" id="repDetailDateText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label">Tipo de Contenido</span>
+            <span class="xow-meta-value" id="repDetailContentTypeText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label">Categoría de Abuso</span>
+            <span class="xow-meta-value" id="repDetailCategoryText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label">Denunciante (Reporter)</span>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span class="xow-meta-value font-mono" id="repDetailReporterText">-</span>
+              <button type="button" class="btn btn-secondary btn-xs" id="btnViewReporterUser" title="Ver ficha del denunciante">
+                <svg class="icon icon-sm"><use href="#i-account_circle"></use></svg>
+              </button>
+            </div>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label">Usuario Denunciado (Target)</span>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span class="xow-meta-value font-mono" id="repDetailTargetText">-</span>
+              <button type="button" class="btn btn-secondary btn-xs" id="btnViewTargetUser" title="Ver ficha del denunciado">
+                <svg class="icon icon-sm"><use href="#i-account_circle"></use></svg>
+              </button>
+            </div>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label">ID de Álbum / Medio</span>
+            <span class="xow-meta-value font-mono" id="repDetailAlbumIdText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label">Bloqueo Inmediato Solicitado</span>
+            <span class="xow-meta-value" id="repDetailBlockedText">-</span>
+          </div>
+        </div>
+
+        <!-- Description Box -->
+        <div class="xow-form-group" style="margin-top: 16px;">
+          <label class="xow-label-static" data-i18n-key="admin_reports_description">Descripción del Denunciante</label>
+          <div class="xow-content-quote" id="repDetailDescriptionText">-</div>
+        </div>
+
+        <!-- Moderation Form Section -->
+        <div class="xow-mod-section">
+          <h4 class="xow-admin-card-subtitle" data-i18n-key="admin_reports_resolution">Resolución del Moderador</h4>
+          
+          <form id="formReportModeration" novalidate>
+            <div class="xow-form-grid-2">
+              <div class="xow-form-group">
+                <label for="repModStatus" data-i18n-key="admin_reports_filter_status">Estado de la Denuncia *</label>
+                <select id="repModStatus" name="status" required>
+                  <option value="pending">Pendiente</option>
+                  <option value="in_review">En Revisión</option>
+                  <option value="action_taken">Acción Tomada</option>
+                  <option value="dismissed">Desestimada</option>
+                </select>
+              </div>
+
+              <div class="xow-form-group">
+                <label for="repModAction" data-i18n-key="admin_reports_col_action">Acción Aplicada</label>
+                <select id="repModAction" name="action_taken">
+                  <option value="none">Ninguna</option>
+                  <option value="user_blocked">Usuario Bloqueado / Baneado</option>
+                  <option value="warning_issued">Advertencia Emitida</option>
+                  <option value="content_flagged">Contenido Marcado</option>
+                  <option value="dismissed">Desestimada</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="xow-form-group">
+              <label for="repModNotes" data-i18n-key="admin_reports_mod_notes">Notas internas de moderación</label>
+              <textarea id="repModNotes" name="moderation_notes" rows="3" placeholder="Motivo de la resolución o detalles de investigación interna..."></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 24px;">
+              <button type="button" class="btn btn-danger btn-sm" id="btnBanReportedUser">
+                <svg class="icon icon-sm"><use href="#i-block"></use></svg>
+                <span data-i18n-key="admin_reports_btn_ban_user">Bloquear / Banear Usuario Denunciado</span>
+              </button>
+
+              <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn btn-secondary" id="btnDismissReport">
+                  <span data-i18n-key="admin_reports_btn_dismiss">Desestimar</span>
+                </button>
+                <button type="submit" class="btn btn-primary" id="btnSaveReportResolution">
+                  <span data-i18n-key="admin_reports_btn_save_resolution">Guardar Resolución</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: User Profile & Moderation Detail -->
+  <div class="xow-modal-backdrop" id="modalUserDetailBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalUserDetailTitle">
+    <div class="xow-modal-card xow-modal-card-lg">
+      <div class="xow-modal-header">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div class="xow-user-avatar-lg" id="modalUserAvatar">U</div>
+          <div>
+            <h3 class="xow-modal-title" id="modalUserName" style="margin-bottom: 2px;">Nombre de Usuario</h3>
+            <p class="xow-subtitle" id="modalUserHandle" style="margin-bottom: 0;">@handle</p>
+          </div>
+          <span class="xow-badge" id="modalUserStatusBadge">Activo</span>
+        </div>
+        <button type="button" class="xow-modal-close" id="btnCloseUserDetailModal" aria-label="Cerrar">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+
+      <div class="xow-user-detail-body">
+        <input type="hidden" id="modalUserId">
+
+        <!-- User Metadata Grid -->
+        <div class="xow-meta-grid">
+          <div class="xow-meta-item">
+            <span class="xow-meta-label">ID PocketBase</span>
+            <span class="xow-meta-value font-mono" id="modalUserIdText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label">Nivel de Confianza (Trust Score)</span>
+            <span class="xow-meta-value highlight" id="modalUserTrustText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label">Idioma / Locale</span>
+            <span class="xow-meta-value" id="modalUserLocaleText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label">Versión de App</span>
+            <span class="xow-meta-value" id="modalUserVersionText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label">Fecha de Registro</span>
+            <span class="xow-meta-value" id="modalUserCreatedText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label">Última Conexión</span>
+            <span class="xow-meta-value" id="modalUserLastSeenText">-</span>
+          </div>
+        </div>
+
+        <!-- Ban Banner (if banned) -->
+        <div class="xow-ban-banner" id="modalUserBanBanner" hidden>
+          <svg class="icon icon-sm" style="color: #ef4444;"><use href="#i-block"></use></svg>
+          <div>
+            <strong>Cuenta Suspendida / Baneada</strong>
+            <p id="modalUserBanReasonText" style="margin-top: 2px; font-size: 13px;"></p>
+          </div>
+        </div>
+
+        <!-- Reports Received (Target) Accordion/Section -->
+        <div class="xow-user-history-section">
+          <div class="xow-user-history-head">
+            <h4 class="xow-admin-card-subtitle" style="margin: 0;" data-i18n-key="admin_users_reports_received">Denuncias Recibidas (como Denunciado)</h4>
+            <span class="xow-badge-count" id="modalUserReportsReceivedCount">0</span>
+          </div>
+          <div class="xow-history-list" id="modalUserReportsReceivedList">
+            <p class="xow-text-muted" style="font-size: 13px;">Sin denuncias registradas.</p>
+          </div>
+        </div>
+
+        <!-- Reports Made (Reporter) Section -->
+        <div class="xow-user-history-section">
+          <div class="xow-user-history-head">
+            <h4 class="xow-admin-card-subtitle" style="margin: 0;" data-i18n-key="admin_users_reports_made">Denuncias Realizadas (como Denunciante)</h4>
+            <span class="xow-badge-count" id="modalUserReportsMadeCount">0</span>
+          </div>
+          <div class="xow-history-list" id="modalUserReportsMadeList">
+            <p class="xow-text-muted" style="font-size: 13px;">Sin denuncias realizadas.</p>
+          </div>
+        </div>
+
+        <!-- User Action Footer -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+          <button type="button" class="btn btn-danger" id="btnToggleUserBan">
+            <svg class="icon icon-sm"><use href="#i-block"></use></svg>
+            <span id="btnToggleUserBanText">Suspender / Bloquear Cuenta</span>
+          </button>
+          <button type="button" class="btn btn-secondary" id="btnDismissUserDetail">Cerrar</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Reserved Handle -->
+  <div class="xow-modal-backdrop" id="modalReservedHandleBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalReservedHandleTitle">
+    <div class="xow-modal-card" style="max-width: 480px;">
+      <div class="xow-modal-header">
+        <h3 class="xow-modal-title" id="modalReservedHandleTitle" data-i18n-key="admin_reserved_modal_title">Añadir Handle Reservado</h3>
+        <button type="button" class="xow-modal-close" id="btnCloseReservedModal" aria-label="Cerrar">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+
+      <form id="formReservedHandle" novalidate>
+        <div class="xow-form-group">
+          <label for="reservedHandleInput" data-i18n-key="admin_reserved_input_handle">Handle (sin @) *</label>
+          <input type="text" id="reservedHandleInput" name="handle" placeholder="ej. soporte, oficial, xow_admin" required>
+          <p class="xow-form-hint">Letras minúsculas, números, guiones y guiones bajos (3-30 caracteres).</p>
+        </div>
+
+        <div class="xow-form-group">
+          <label for="reservedReasonInput" data-i18n-key="admin_reserved_input_reason">Motivo de la reserva</label>
+          <input type="text" id="reservedReasonInput" name="reason" placeholder="ej. Cuenta de sistema, marca protegida...">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+          <button type="button" class="btn btn-secondary" id="btnCancelReserved">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveReserved">Guardar Handle</button>
+        </div>
+      </form>
     </div>
   </div>
 

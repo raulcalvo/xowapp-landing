@@ -61,11 +61,15 @@
   var EXPENSES_COLLECTION = cfg.fundingExpensesCollection || 'funding_expenses';
   var INCOMES_COLLECTION = cfg.fundingIncomesCollection || 'funding_incomes';
   var PUBLIC_STATUS_COLLECTION = cfg.fundingCollection || 'funding_public_status';
+  var REPORTS_COLLECTION = 'reports';
+  var USERS_COLLECTION = 'users';
+  var RESERVED_HANDLES_COLLECTION = 'reserved_handles';
 
   // ------------------------------------------------------------------
   // State Management
   // ------------------------------------------------------------------
   var state = {
+    activeMainSection: 'funding',
     settings: {
       id: null,
       project_start_date: '2026-01-01',
@@ -82,6 +86,31 @@
     publicStatusRecord: null,
     deleteTarget: null, // { type: 'expense'|'income'|'phase', id: string, name: string }
     isSyncing: false,
+
+    // Reports Module State
+    reports: [],
+    reportsFilter: {
+      search: '',
+      status: '',
+      category: '',
+      content: '',
+      blocked: '',
+      sort: 'created_desc',
+    },
+    selectedReport: null,
+    reportsSubscribed: false,
+
+    // Users Module State
+    activeUserTab: 'directory',
+    users: [],
+    userSearchHandle: '',
+    userSearchName: '',
+    userStatusFilter: 'all',
+    selectedUser: null,
+    userReportsReceived: [],
+    userReportsMade: [],
+    reservedHandles: [],
+    selectedReservedHandle: null,
   };
 
   // ------------------------------------------------------------------
@@ -107,7 +136,16 @@
     adminLogoutBtn: doc.getElementById('adminLogoutBtn'),
     btnSyncPublic: doc.getElementById('btnSyncPublic'),
 
-    // KPIs
+    // Main Module Navigation
+    tabNavFunding: doc.getElementById('tabNavFunding'),
+    tabNavReports: doc.getElementById('tabNavReports'),
+    tabNavUsers: doc.getElementById('tabNavUsers'),
+    reportsPendingBadge: doc.getElementById('reportsPendingBadge'),
+    secFunding: doc.getElementById('secFunding'),
+    secReports: doc.getElementById('secReports'),
+    secUsers: doc.getElementById('secUsers'),
+
+    // Funding KPIs
     kpiGrossValue: doc.getElementById('kpiGrossValue'),
     kpiNetValue: doc.getElementById('kpiNetValue'),
     kpiMonthlyCostValue: doc.getElementById('kpiMonthlyCostValue'),
@@ -117,7 +155,7 @@
     // Phases Visualizer
     adminPhasesContainer: doc.getElementById('adminPhasesContainer'),
 
-    // Tabs
+    // Funding Tabs
     tabBtnExpenses: doc.getElementById('tabBtnExpenses'),
     tabBtnPhases: doc.getElementById('tabBtnPhases'),
     tabBtnIncomes: doc.getElementById('tabBtnIncomes'),
@@ -210,6 +248,102 @@
     btnCloseDeleteModal: doc.getElementById('btnCancelDelete'),
     btnConfirmDelete: doc.getElementById('btnConfirmDelete'),
     deleteConfirmMessage: doc.getElementById('deleteConfirmMessage'),
+
+    // Reports Module Elements
+    kpiRepTotal: doc.getElementById('kpiRepTotal'),
+    kpiRepTotalSub: doc.getElementById('kpiRepTotalSub'),
+    kpiRepPending: doc.getElementById('kpiRepPending'),
+    kpiRepPendingSub: doc.getElementById('kpiRepPendingSub'),
+    kpiRepResolved: doc.getElementById('kpiRepResolved'),
+    kpiRepResolvedSub: doc.getElementById('kpiRepResolvedSub'),
+    kpiRepSla: doc.getElementById('kpiRepSla'),
+    kpiRepAvgTime: doc.getElementById('kpiRepAvgTime'),
+    repCategoryChips: doc.getElementById('repCategoryChips'),
+    repContentChips: doc.getElementById('repContentChips'),
+    repSearchInput: doc.getElementById('repSearchInput'),
+    repStatusFilter: doc.getElementById('repStatusFilter'),
+    repCategoryFilter: doc.getElementById('repCategoryFilter'),
+    repContentFilter: doc.getElementById('repContentFilter'),
+    repBlockedFilter: doc.getElementById('repBlockedFilter'),
+    repSortSelect: doc.getElementById('repSortSelect'),
+    btnRefreshReports: doc.getElementById('btnRefreshReports'),
+    reportsTableBody: doc.getElementById('reportsTableBody'),
+    reportsEmptyState: doc.getElementById('reportsEmptyState'),
+
+    // Reports Detail Modal
+    modalReportDetailBackdrop: doc.getElementById('modalReportDetailBackdrop'),
+    modalReportDetailTitle: doc.getElementById('modalReportDetailTitle'),
+    modalRepStatusBadge: doc.getElementById('modalRepStatusBadge'),
+    btnCloseReportDetailModal: doc.getElementById('btnCloseReportDetailModal'),
+    repDetailId: doc.getElementById('repDetailId'),
+    repDetailIdText: doc.getElementById('repDetailIdText'),
+    repDetailDateText: doc.getElementById('repDetailDateText'),
+    repDetailContentTypeText: doc.getElementById('repDetailContentTypeText'),
+    repDetailCategoryText: doc.getElementById('repDetailCategoryText'),
+    repDetailReporterText: doc.getElementById('repDetailReporterText'),
+    repDetailTargetText: doc.getElementById('repDetailTargetText'),
+    btnViewReporterUser: doc.getElementById('btnViewReporterUser'),
+    btnViewTargetUser: doc.getElementById('btnViewTargetUser'),
+    repDetailAlbumIdText: doc.getElementById('repDetailAlbumIdText'),
+    repDetailBlockedText: doc.getElementById('repDetailBlockedText'),
+    repDetailDescriptionText: doc.getElementById('repDetailDescriptionText'),
+    formReportModeration: doc.getElementById('formReportModeration'),
+    repModStatus: doc.getElementById('repModStatus'),
+    repModAction: doc.getElementById('repModAction'),
+    repModNotes: doc.getElementById('repModNotes'),
+    btnBanReportedUser: doc.getElementById('btnBanReportedUser'),
+    btnDismissReport: doc.getElementById('btnDismissReport'),
+    btnSaveReportResolution: doc.getElementById('btnSaveReportResolution'),
+
+    // Users Module Elements
+    tabBtnUserDirectory: doc.getElementById('tabBtnUserDirectory'),
+    tabBtnUserReserved: doc.getElementById('tabBtnUserReserved'),
+    panelUserDirectory: doc.getElementById('panelUserDirectory'),
+    panelUserReserved: doc.getElementById('panelUserReserved'),
+    userSearchHandleInput: doc.getElementById('userSearchHandleInput'),
+    userSearchNameInput: doc.getElementById('userSearchNameInput'),
+    userStatusFilter: doc.getElementById('userStatusFilter'),
+    btnRefreshUsers: doc.getElementById('btnRefreshUsers'),
+    usersTableBody: doc.getElementById('usersTableBody'),
+    usersEmptyState: doc.getElementById('usersEmptyState'),
+    usersCountLabel: doc.getElementById('usersCountLabel'),
+
+    // User Profile Modal
+    modalUserDetailBackdrop: doc.getElementById('modalUserDetailBackdrop'),
+    modalUserAvatar: doc.getElementById('modalUserAvatar'),
+    modalUserName: doc.getElementById('modalUserName'),
+    modalUserHandle: doc.getElementById('modalUserHandle'),
+    modalUserStatusBadge: doc.getElementById('modalUserStatusBadge'),
+    btnCloseUserDetailModal: doc.getElementById('btnCloseUserDetailModal'),
+    modalUserId: doc.getElementById('modalUserId'),
+    modalUserIdText: doc.getElementById('modalUserIdText'),
+    modalUserTrustText: doc.getElementById('modalUserTrustText'),
+    modalUserLocaleText: doc.getElementById('modalUserLocaleText'),
+    modalUserVersionText: doc.getElementById('modalUserVersionText'),
+    modalUserCreatedText: doc.getElementById('modalUserCreatedText'),
+    modalUserLastSeenText: doc.getElementById('modalUserLastSeenText'),
+    modalUserBanBanner: doc.getElementById('modalUserBanBanner'),
+    modalUserBanReasonText: doc.getElementById('modalUserBanReasonText'),
+    modalUserReportsReceivedCount: doc.getElementById('modalUserReportsReceivedCount'),
+    modalUserReportsReceivedList: doc.getElementById('modalUserReportsReceivedList'),
+    modalUserReportsMadeCount: doc.getElementById('modalUserReportsMadeCount'),
+    modalUserReportsMadeList: doc.getElementById('modalUserReportsMadeList'),
+    btnToggleUserBan: doc.getElementById('btnToggleUserBan'),
+    btnToggleUserBanText: doc.getElementById('btnToggleUserBanText'),
+    btnDismissUserDetail: doc.getElementById('btnDismissUserDetail'),
+
+    // Reserved Handles Elements
+    btnRefreshReserved: doc.getElementById('btnRefreshReserved'),
+    btnOpenAddReservedModal: doc.getElementById('btnOpenAddReservedModal'),
+    reservedHandlesTableBody: doc.getElementById('reservedHandlesTableBody'),
+    reservedEmptyState: doc.getElementById('reservedEmptyState'),
+    modalReservedHandleBackdrop: doc.getElementById('modalReservedHandleBackdrop'),
+    btnCloseReservedModal: doc.getElementById('btnCloseReservedModal'),
+    formReservedHandle: doc.getElementById('formReservedHandle'),
+    reservedHandleInput: doc.getElementById('reservedHandleInput'),
+    reservedReasonInput: doc.getElementById('reservedReasonInput'),
+    btnCancelReserved: doc.getElementById('btnCancelReserved'),
+    btnSaveReserved: doc.getElementById('btnSaveReserved'),
 
     // Toast
     toastContainer: doc.getElementById('toastContainer'),
@@ -812,6 +946,14 @@
       .replace(/"/g, '&quot;');
   }
 
+  function escapePbFilter(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/\\/g, '\\\\')
+      .replace(/"/g, '\\"')
+      .replace(/'/g, "\\'");
+  }
+
   // ------------------------------------------------------------------
   // Data Fetching & Synchronization
   // ------------------------------------------------------------------
@@ -859,9 +1001,18 @@
       })
       .catch(function () { state.publicStatusRecord = null; });
 
-    return Promise.all([pSettings, pPhases, pExpenses, pIncomes, pPublic])
+    var pReports = loadReports().catch(function () { /* handled */ });
+
+    return Promise.all([pSettings, pPhases, pExpenses, pIncomes, pPublic, pReports])
       .then(function () {
-        renderDashboard();
+        if (state.activeMainSection === 'funding') {
+          renderDashboard();
+        } else if (state.activeMainSection === 'reports') {
+          renderReportsSection();
+        } else if (state.activeMainSection === 'users') {
+          if (state.activeUserTab === 'directory') loadUsers();
+          else loadReservedHandles();
+        }
       })
       .catch(function (err) {
         console.error('Error loading admin data:', err);
@@ -1157,6 +1308,825 @@
   function closeDeleteModal() {
     state.deleteTarget = null;
     el.modalDeleteBackdrop.classList.remove('open');
+  }
+
+  // ------------------------------------------------------------------
+  // Main Module Navigation
+  // ------------------------------------------------------------------
+  function switchMainSection(sectionName) {
+    state.activeMainSection = sectionName;
+
+    var navTabs = [el.tabNavFunding, el.tabNavReports, el.tabNavUsers].filter(Boolean);
+    navTabs.forEach(function (tab) {
+      var sec = tab.getAttribute('data-main-section');
+      var isActive = sec === sectionName;
+      tab.classList.toggle('active', isActive);
+      tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    if (el.secFunding) el.secFunding.hidden = (sectionName !== 'funding');
+    if (el.secReports) el.secReports.hidden = (sectionName !== 'reports');
+    if (el.secUsers) el.secUsers.hidden = (sectionName !== 'users');
+
+    if (sectionName === 'funding') {
+      renderDashboard();
+    } else if (sectionName === 'reports') {
+      loadReports();
+    } else if (sectionName === 'users') {
+      if (state.activeUserTab === 'directory') {
+        loadUsers();
+      } else {
+        loadReservedHandles();
+      }
+    }
+  }
+
+  function switchUserTab(tabName) {
+    state.activeUserTab = tabName;
+
+    var userTabs = [el.tabBtnUserDirectory, el.tabBtnUserReserved].filter(Boolean);
+    userTabs.forEach(function (tab) {
+      var t = tab.getAttribute('data-user-tab');
+      var isActive = t === tabName;
+      tab.classList.toggle('active', isActive);
+      tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    if (el.panelUserDirectory) el.panelUserDirectory.classList.toggle('active', tabName === 'directory');
+    if (el.panelUserReserved) el.panelUserReserved.classList.toggle('active', tabName === 'reserved');
+
+    if (tabName === 'directory') {
+      loadUsers();
+    } else {
+      loadReservedHandles();
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // Reports (UGC) Moderation Module
+  // ------------------------------------------------------------------
+  function calculateReportMetrics(reports) {
+    var total = (reports && reports.length) || 0;
+    var pending = 0;
+    var inReview = 0;
+    var actionTaken = 0;
+    var dismissed = 0;
+
+    var categoryCounts = {
+      spam: 0,
+      harassment: 0,
+      inappropriate: 0,
+      impersonation: 0,
+      other: 0,
+    };
+
+    var contentCounts = {
+      album: 0,
+      message: 0,
+      user: 0,
+      media: 0,
+    };
+
+    var totalDurationMs = 0;
+    var resolvedCountWithDates = 0;
+    var within24hCount = 0;
+
+    (reports || []).forEach(function (r) {
+      var st = (r.status || 'pending').toLowerCase();
+      if (st === 'pending') pending++;
+      else if (st === 'in_review') inReview++;
+      else if (st === 'action_taken') actionTaken++;
+      else if (st === 'dismissed') dismissed++;
+      else pending++;
+
+      var cat = (r.abuse_category || 'other').toLowerCase();
+      if (categoryCounts[cat] !== undefined) categoryCounts[cat]++;
+      else categoryCounts.other = (categoryCounts.other || 0) + 1;
+
+      var cnt = (r.content_type || 'album').toLowerCase();
+      if (contentCounts[cnt] !== undefined) contentCounts[cnt]++;
+      else contentCounts[cnt] = 1;
+
+      if (r.resolved_at && r.created) {
+        var tCreated = new Date(r.created).getTime();
+        var tResolved = new Date(r.resolved_at).getTime();
+        if (!isNaN(tCreated) && !isNaN(tResolved) && tResolved >= tCreated) {
+          var diff = tResolved - tCreated;
+          totalDurationMs += diff;
+          resolvedCountWithDates++;
+          if (diff <= 24 * 3600 * 1000) {
+            within24hCount++;
+          }
+        }
+      }
+    });
+
+    var resolvedTotal = actionTaken + dismissed;
+    var slaPct = resolvedCountWithDates > 0 ? (within24hCount / resolvedCountWithDates) * 100 : 100;
+    var avgTimeHours = resolvedCountWithDates > 0 ? (totalDurationMs / resolvedCountWithDates) / (3600 * 1000) : 0;
+
+    return {
+      total: total,
+      pending: pending,
+      inReview: inReview,
+      actionTaken: actionTaken,
+      dismissed: dismissed,
+      resolvedTotal: resolvedTotal,
+      categoryCounts: categoryCounts,
+      contentCounts: contentCounts,
+      slaPct: slaPct,
+      avgTimeHours: avgTimeHours,
+    };
+  }
+
+  function filterReports(reports, filter) {
+    if (!reports) return [];
+    var search = (filter.search || '').trim().toLowerCase();
+    var status = (filter.status || '').trim().toLowerCase();
+    var category = (filter.category || '').trim().toLowerCase();
+    var content = (filter.content || '').trim().toLowerCase();
+    var blocked = filter.blocked;
+    var sort = filter.sort || 'created_desc';
+
+    var filtered = reports.filter(function (r) {
+      var rStatus = (r.status || 'pending').toLowerCase();
+      if (status && rStatus !== status) return false;
+
+      var rCat = (r.abuse_category || 'other').toLowerCase();
+      if (category && rCat !== category) return false;
+
+      var rContent = (r.content_type || '').toLowerCase();
+      if (content && rContent !== content) return false;
+
+      if (blocked === 'true' && !r.is_blocked) return false;
+      if (blocked === 'false' && r.is_blocked) return false;
+
+      if (search) {
+        var str = [
+          r.id,
+          r.reporter_id,
+          r.target_user_id,
+          r.album_id,
+          r.description,
+          r.moderation_notes,
+        ].filter(Boolean).join(' ').toLowerCase();
+        if (str.indexOf(search) === -1) return false;
+      }
+
+      return true;
+    });
+
+    filtered.sort(function (a, b) {
+      if (sort === 'created_asc') {
+        return new Date(a.created || 0) - new Date(b.created || 0);
+      }
+      if (sort === 'pending_first') {
+        var aPending = (a.status || 'pending') === 'pending' || a.status === 'in_review';
+        var bPending = (b.status || 'pending') === 'pending' || b.status === 'in_review';
+        if (aPending && !bPending) return -1;
+        if (!aPending && bPending) return 1;
+        return new Date(b.created || 0) - new Date(a.created || 0);
+      }
+      return new Date(b.created || 0) - new Date(a.created || 0);
+    });
+
+    return filtered;
+  }
+
+  function loadReports() {
+    return pb.collection(REPORTS_COLLECTION).getFullList({ sort: '-created' })
+      .then(function (list) {
+        state.reports = list || [];
+        renderReportsSection();
+        subscribeReportsRealtime();
+      })
+      .catch(function (err) {
+        console.error('Error loading reports:', err);
+        showToast('Error cargando denuncias de PocketBase', 'error');
+      });
+  }
+
+  function subscribeReportsRealtime() {
+    if (state.reportsSubscribed || !pb) return;
+    try {
+      pb.collection(REPORTS_COLLECTION).subscribe('*', function (e) {
+        if (e.action === 'create') {
+          var exists = state.reports.some(function (r) { return r.id === e.record.id; });
+          if (!exists) {
+            state.reports.unshift(e.record);
+            showToast('🚨 Nueva denuncia recibida #' + e.record.id.slice(0, 6), 'info');
+          }
+        } else if (e.action === 'update') {
+          var idx = state.reports.findIndex(function (r) { return r.id === e.record.id; });
+          if (idx !== -1) {
+            state.reports[idx] = e.record;
+          } else {
+            state.reports.unshift(e.record);
+          }
+        } else if (e.action === 'delete') {
+          state.reports = state.reports.filter(function (r) { return r.id !== e.record.id; });
+        }
+        renderReportsSection();
+      }).then(function () {
+        state.reportsSubscribed = true;
+      }).catch(function (err) {
+        console.warn('Realtime reports subscription failed:', err);
+      });
+    } catch (e) {
+      console.warn('Realtime subscription not available:', e);
+    }
+  }
+
+  function renderReportsSection() {
+    if (!el.secReports) return;
+
+    var metrics = calculateReportMetrics(state.reports);
+
+    if (el.kpiRepTotal) el.kpiRepTotal.textContent = String(metrics.total);
+    if (el.kpiRepPending) el.kpiRepPending.textContent = String(metrics.pending + metrics.inReview);
+    if (el.kpiRepPendingSub) el.kpiRepPendingSub.textContent = metrics.pending + ' pendientes, ' + metrics.inReview + ' en revisión';
+    if (el.kpiRepResolved) el.kpiRepResolved.textContent = String(metrics.resolvedTotal);
+    if (el.kpiRepResolvedSub) el.kpiRepResolvedSub.textContent = metrics.actionTaken + ' acción tomada, ' + metrics.dismissed + ' desestimadas';
+    if (el.kpiRepSla) el.kpiRepSla.textContent = metrics.slaPct.toFixed(1) + '%';
+    if (el.kpiRepAvgTime) {
+      el.kpiRepAvgTime.textContent = metrics.avgTimeHours > 0
+        ? 'Tiempo medio: ' + metrics.avgTimeHours.toFixed(1) + 'h'
+        : 'Tiempo medio: -';
+    }
+
+    var pendingCount = metrics.pending + metrics.inReview;
+    if (el.reportsPendingBadge) {
+      if (pendingCount > 0) {
+        el.reportsPendingBadge.hidden = false;
+        el.reportsPendingBadge.textContent = String(pendingCount);
+      } else {
+        el.reportsPendingBadge.hidden = true;
+      }
+    }
+
+    if (el.repCategoryChips) {
+      var catLabels = {
+        spam: 'Spam / Publicidad',
+        harassment: 'Acoso / Odio',
+        inappropriate: 'Contenido Inapropiado',
+        impersonation: 'Suplantación',
+        other: 'Otros',
+      };
+      var chipsHtml = '';
+      Object.keys(metrics.categoryCounts).forEach(function (cat) {
+        var count = metrics.categoryCounts[cat];
+        var lbl = catLabels[cat] || cat;
+        chipsHtml += '<div class="xow-chip"><span>' + escapeHtml(lbl) + '</span><span class="xow-chip-count">' + count + '</span></div>';
+      });
+      el.repCategoryChips.innerHTML = chipsHtml;
+    }
+
+    if (el.repContentChips) {
+      var contentLabels = {
+        album: 'Álbum',
+        message: 'Mensaje / Chat',
+        user: 'Perfil / Usuario',
+        media: 'Foto / Vídeo',
+      };
+      var cntHtml = '';
+      Object.keys(metrics.contentCounts).forEach(function (cnt) {
+        var count = metrics.contentCounts[cnt];
+        var lbl = contentLabels[cnt] || cnt;
+        cntHtml += '<div class="xow-chip"><span>' + escapeHtml(lbl) + '</span><span class="xow-chip-count">' + count + '</span></div>';
+      });
+      el.repContentChips.innerHTML = cntHtml;
+    }
+
+    var filtered = filterReports(state.reports, state.reportsFilter);
+    if (!filtered.length) {
+      if (el.reportsTableBody) el.reportsTableBody.innerHTML = '';
+      if (el.reportsEmptyState) el.reportsEmptyState.hidden = false;
+      return;
+    }
+    if (el.reportsEmptyState) el.reportsEmptyState.hidden = true;
+
+    var rows = '';
+    filtered.forEach(function (r) {
+      var statusClass = r.status || 'pending';
+      var statusLabel = {
+        pending: 'Pendiente',
+        in_review: 'En Revisión',
+        action_taken: 'Acción Tomada',
+        dismissed: 'Desestimada',
+      }[statusClass] || statusClass;
+
+      var actionLabel = {
+        none: 'Ninguna',
+        user_blocked: 'Usuario Baneado',
+        warning_issued: 'Advertencia',
+        content_flagged: 'Contenido Marcado',
+        dismissed: 'Desestimada',
+      }[r.action_taken || 'none'] || (r.action_taken || '-');
+
+      var dateStr = r.created ? new Date(r.created).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : '-';
+      var reporterShort = r.reporter_id ? r.reporter_id.slice(0, 10) + '...' : '-';
+      var targetShort = r.target_user_id ? r.target_user_id.slice(0, 10) + '...' : '-';
+
+      rows += '<tr>';
+      rows += '  <td><span style="font-size: 12.5px; color: var(--text-muted);">' + escapeHtml(dateStr) + '</span></td>';
+      rows += '  <td><span class="xow-badge" style="font-size: 11px;">' + escapeHtml(r.content_type || 'album') + '</span></td>';
+      rows += '  <td><strong>' + escapeHtml(r.abuse_category || 'other') + '</strong></td>';
+      rows += '  <td><span class="font-mono" style="font-size: 12px;" title="' + escapeHtml(r.reporter_id || '') + '">' + escapeHtml(reporterShort) + '</span></td>';
+      rows += '  <td><span class="font-mono" style="font-size: 12px; color: var(--teal-accent);" title="' + escapeHtml(r.target_user_id || '') + '">' + escapeHtml(targetShort) + '</span></td>';
+      rows += '  <td><span class="xow-badge ' + statusClass + '">' + escapeHtml(statusLabel) + '</span></td>';
+      rows += '  <td><span style="font-size: 12px; color: var(--text-muted);">' + escapeHtml(actionLabel) + '</span></td>';
+      rows += '  <td>';
+      rows += '    <div class="cell-actions">';
+      rows += '      <button type="button" class="btn btn-secondary btn-xs" data-report-detail-id="' + r.id + '" title="Ver detalle y moderar">';
+      rows += '        <svg class="icon icon-sm"><use href="#i-flag"></use></svg>';
+      rows += '        <span>Moderar</span>';
+      rows += '      </button>';
+      rows += '    </div>';
+      rows += '  </td>';
+      rows += '</tr>';
+    });
+
+    if (el.reportsTableBody) el.reportsTableBody.innerHTML = rows;
+  }
+
+  function openReportModal(report) {
+    if (!report) return;
+    state.selectedReport = report;
+
+    if (el.repDetailId) el.repDetailId.value = report.id;
+    if (el.repDetailIdText) el.repDetailIdText.textContent = report.id;
+    if (el.repDetailDateText) el.repDetailDateText.textContent = report.created ? new Date(report.created).toLocaleString() : '-';
+    if (el.repDetailContentTypeText) el.repDetailContentTypeText.textContent = report.content_type || 'album';
+    if (el.repDetailCategoryText) el.repDetailCategoryText.textContent = report.abuse_category || 'other';
+    if (el.repDetailReporterText) el.repDetailReporterText.textContent = report.reporter_id || '-';
+    if (el.repDetailTargetText) el.repDetailTargetText.textContent = report.target_user_id || '-';
+    if (el.repDetailAlbumIdText) el.repDetailAlbumIdText.textContent = report.album_id || '-';
+    if (el.repDetailBlockedText) {
+      el.repDetailBlockedText.textContent = report.is_blocked ? 'Sí (Bloqueado por usuario)' : 'No';
+      el.repDetailBlockedText.style.color = report.is_blocked ? '#ef4444' : 'inherit';
+    }
+    if (el.repDetailDescriptionText) {
+      el.repDetailDescriptionText.textContent = report.description || '(Sin descripción proporcionada)';
+    }
+
+    var status = report.status || 'pending';
+    if (el.modalRepStatusBadge) {
+      el.modalRepStatusBadge.className = 'xow-badge ' + status;
+      el.modalRepStatusBadge.textContent = {
+        pending: 'Pendiente',
+        in_review: 'En Revisión',
+        action_taken: 'Acción Tomada',
+        dismissed: 'Desestimada',
+      }[status] || status;
+    }
+
+    if (el.repModStatus) el.repModStatus.value = status;
+    if (el.repModAction) el.repModAction.value = report.action_taken || 'none';
+    if (el.repModNotes) el.repModNotes.value = report.moderation_notes || '';
+
+    if (el.modalReportDetailBackdrop) el.modalReportDetailBackdrop.classList.add('open');
+  }
+
+  function closeReportModal() {
+    state.selectedReport = null;
+    if (el.modalReportDetailBackdrop) el.modalReportDetailBackdrop.classList.remove('open');
+  }
+
+  function saveReportResolution(reportId, status, actionTaken, notes) {
+    var adminEmail = (pb.authStore && pb.authStore.record && pb.authStore.record.email) || 'Admin';
+    var isResolved = (status === 'action_taken' || status === 'dismissed');
+
+    var data = {
+      status: status,
+      action_taken: actionTaken,
+      moderation_notes: notes,
+      resolved_at: isResolved ? new Date().toISOString() : '',
+      resolved_by: isResolved ? adminEmail : '',
+    };
+
+    return pb.collection(REPORTS_COLLECTION).update(reportId, data)
+      .then(function (updated) {
+        var idx = state.reports.findIndex(function (r) { return r.id === reportId; });
+        if (idx !== -1) state.reports[idx] = updated;
+        showToast('Resolución de denuncia guardada', 'success');
+        closeReportModal();
+        renderReportsSection();
+      })
+      .catch(function (err) {
+        console.error('Save report resolution error:', err);
+        showToast('Error guardando resolución de denuncia', 'error');
+      });
+  }
+
+  function banReportedUserFromReport(report) {
+    if (!report || !report.target_user_id) {
+      showToast('No hay ID de usuario denunciado para bloquear', 'error');
+      return;
+    }
+
+    if (!confirm('¿Estás seguro de que deseas banear y bloquear al usuario denunciado (' + report.target_user_id + ')?')) return;
+
+    var adminEmail = (pb.authStore && pb.authStore.record && pb.authStore.record.email) || 'Admin';
+
+    pb.collection(USERS_COLLECTION).update(report.target_user_id, {
+      is_banned: true,
+      ban_reason: 'Baneado por moderación debido a denuncia #' + report.id,
+    })
+      .then(function () {
+        return pb.collection(REPORTS_COLLECTION).update(report.id, {
+          status: 'action_taken',
+          action_taken: 'user_blocked',
+          moderation_notes: (report.moderation_notes ? report.moderation_notes + '\n' : '') + 'Usuario bloqueado por administración.',
+          resolved_at: new Date().toISOString(),
+          resolved_by: adminEmail,
+        });
+      })
+      .then(function (updatedReport) {
+        var idx = state.reports.findIndex(function (r) { return r.id === report.id; });
+        if (idx !== -1) state.reports[idx] = updatedReport;
+        showToast('Usuario bloqueado y denuncia resuelta', 'success');
+        closeReportModal();
+        renderReportsSection();
+      })
+      .catch(function (err) {
+        console.error('Ban user from report error:', err);
+        showToast('Error al bloquear usuario denunciado', 'error');
+      });
+  }
+
+  function dismissReportFromModal(report) {
+    if (!report) return;
+    if (!confirm('¿Deseas desestimar esta denuncia?')) return;
+
+    var adminEmail = (pb.authStore && pb.authStore.record && pb.authStore.record.email) || 'Admin';
+
+    pb.collection(REPORTS_COLLECTION).update(report.id, {
+      status: 'dismissed',
+      action_taken: 'dismissed',
+      resolved_at: new Date().toISOString(),
+      resolved_by: adminEmail,
+    })
+      .then(function (updatedReport) {
+        var idx = state.reports.findIndex(function (r) { return r.id === report.id; });
+        if (idx !== -1) state.reports[idx] = updatedReport;
+        showToast('Denuncia desestimada', 'info');
+        closeReportModal();
+        renderReportsSection();
+      })
+      .catch(function (err) {
+        console.error('Dismiss report error:', err);
+        showToast('Error desestimando denuncia', 'error');
+      });
+  }
+
+  // ------------------------------------------------------------------
+  // Users & Reserved Handles Module
+  // ------------------------------------------------------------------
+  var userSearchDebounceTimer = null;
+
+  function loadUsers() {
+    var filterParts = [];
+    var handleQuery = (state.userSearchHandle || '').trim().replace(/^@+/, '');
+    var nameQuery = (state.userSearchName || '').trim();
+
+    if (handleQuery) {
+      filterParts.push('handle ~ "' + escapePbFilter(handleQuery) + '"');
+    }
+    if (nameQuery) {
+      filterParts.push('name ~ "' + escapePbFilter(nameQuery) + '"');
+    }
+    if (state.userStatusFilter === 'active') {
+      filterParts.push('is_banned != true');
+    } else if (state.userStatusFilter === 'banned') {
+      filterParts.push('is_banned = true');
+    }
+
+    var filterStr = filterParts.join(' && ');
+
+    if (el.usersCountLabel) el.usersCountLabel.textContent = 'Buscando usuarios...';
+
+    return pb.collection(USERS_COLLECTION).getList(1, 50, {
+      sort: '-created',
+      filter: filterStr || undefined,
+    })
+      .then(function (result) {
+        state.users = (result && result.items) || [];
+        renderUsersSection(result ? result.totalItems : 0);
+      })
+      .catch(function (err) {
+        console.error('Error loading users:', err);
+        state.users = [];
+        renderUsersSection(0);
+        showToast('Error buscando usuarios en PocketBase', 'error');
+      });
+  }
+
+  function renderUsersSection(totalCount) {
+    if (!el.usersTableBody) return;
+
+    if (!state.users.length) {
+      el.usersTableBody.innerHTML = '';
+      if (el.usersEmptyState) el.usersEmptyState.hidden = false;
+      if (el.usersCountLabel) el.usersCountLabel.textContent = '0 usuarios encontrados';
+      return;
+    }
+    if (el.usersEmptyState) el.usersEmptyState.hidden = true;
+    if (el.usersCountLabel) {
+      el.usersCountLabel.textContent = 'Mostrando ' + state.users.length + ' de ' + (totalCount || state.users.length) + ' usuarios';
+    }
+
+    var rows = '';
+    state.users.forEach(function (u) {
+      var name = u.name || 'Sin nombre';
+      var handle = u.handle ? '@' + u.handle : '-';
+      var initials = (name.slice(0, 2) || 'XA').toUpperCase();
+      var isBanned = !!u.is_banned;
+      var statusBadge = isBanned
+        ? '<span class="xow-badge banned">Baneado</span>'
+        : '<span class="xow-badge active">Activo</span>';
+
+      var createdStr = u.created ? new Date(u.created).toLocaleDateString() : '-';
+      var lastSeenStr = u.last_seen ? new Date(u.last_seen).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : '-';
+
+      rows += '<tr>';
+      rows += '  <td>';
+      rows += '    <div style="display: flex; align-items: center; gap: 10px;">';
+      rows += '      <div class="xow-user-avatar-sm">' + escapeHtml(initials) + '</div>';
+      rows += '      <strong>' + escapeHtml(name) + '</strong>';
+      rows += '    </div>';
+      rows += '  </td>';
+      rows += '  <td><span style="color: var(--teal-accent); font-weight: 600;">' + escapeHtml(handle) + '</span></td>';
+      rows += '  <td><span class="xow-badge" style="font-size: 11px;">' + (u.trust_score !== undefined ? u.trust_score : '-') + '</span></td>';
+      rows += '  <td><span style="color: var(--text-muted); font-size: 12.5px;">' + escapeHtml(createdStr) + '</span></td>';
+      rows += '  <td><span style="color: var(--text-muted); font-size: 12.5px;">' + escapeHtml(lastSeenStr) + '</span></td>';
+      rows += '  <td>' + statusBadge + '</td>';
+      rows += '  <td>';
+      rows += '    <div class="cell-actions">';
+      rows += '      <button type="button" class="btn btn-secondary btn-xs" data-user-detail-id="' + u.id + '" title="Ver Ficha Detallada">';
+      rows += '        <svg class="icon icon-sm"><use href="#i-person"></use></svg>';
+      rows += '        <span>Ficha</span>';
+      rows += '      </button>';
+      if (isBanned) {
+        rows += '      <button type="button" class="btn btn-secondary btn-xs" data-user-unban-id="' + u.id + '" title="Reactivar Usuario" style="color: #10b981;">';
+        rows += '        <span>Reactivar</span>';
+        rows += '      </button>';
+      } else {
+        rows += '      <button type="button" class="btn btn-danger btn-xs" data-user-ban-id="' + u.id + '" title="Suspender Usuario">';
+        rows += '        <span>Banear</span>';
+        rows += '      </button>';
+      }
+      rows += '    </div>';
+      rows += '  </td>';
+      rows += '</tr>';
+    });
+
+    el.usersTableBody.innerHTML = rows;
+  }
+
+  function openUserModal(userId) {
+    if (!userId) return;
+
+    var safeUserId = escapePbFilter(userId);
+    var existingUser = state.users.find(function (u) { return u.id === userId; });
+    var pUser = existingUser ? Promise.resolve(existingUser) : pb.collection(USERS_COLLECTION).getOne(userId).catch(function () { return null; });
+
+    var pReportsReceived = pb.collection(REPORTS_COLLECTION).getList(1, 20, {
+      filter: 'target_user_id = "' + safeUserId + '"',
+      sort: '-created',
+    }).catch(function () { return { items: [] }; });
+
+    var pReportsMade = pb.collection(REPORTS_COLLECTION).getList(1, 20, {
+      filter: 'reporter_id = "' + safeUserId + '"',
+      sort: '-created',
+    }).catch(function () { return { items: [] }; });
+
+    Promise.all([pUser, pReportsReceived, pReportsMade])
+      .then(function (results) {
+        var user = results[0];
+        var repReceived = (results[1] && results[1].items) || [];
+        var repMade = (results[2] && results[2].items) || [];
+
+        if (!user) {
+          showToast('Usuario no encontrado en PocketBase', 'error');
+          return;
+        }
+
+        state.selectedUser = user;
+        state.userReportsReceived = repReceived;
+        state.userReportsMade = repMade;
+
+        var name = user.name || 'Sin nombre';
+        var handle = user.handle ? '@' + user.handle : '(sin @handle)';
+        var initials = (name.slice(0, 2) || 'XA').toUpperCase();
+        var isBanned = !!user.is_banned;
+
+        if (el.modalUserId) el.modalUserId.value = user.id;
+        if (el.modalUserAvatar) el.modalUserAvatar.textContent = initials;
+        if (el.modalUserName) el.modalUserName.textContent = name;
+        if (el.modalUserHandle) el.modalUserHandle.textContent = handle;
+
+        if (el.modalUserStatusBadge) {
+          el.modalUserStatusBadge.className = isBanned ? 'xow-badge banned' : 'xow-badge active';
+          el.modalUserStatusBadge.textContent = isBanned ? 'Baneado' : 'Activo';
+        }
+
+        if (el.modalUserIdText) el.modalUserIdText.textContent = user.id;
+        if (el.modalUserTrustText) el.modalUserTrustText.textContent = String(user.trust_score !== undefined ? user.trust_score : '-');
+        if (el.modalUserLocaleText) el.modalUserLocaleText.textContent = user.locale || 'es';
+        if (el.modalUserVersionText) el.modalUserVersionText.textContent = (user.app_version || '-') + (user.app_build ? ' (' + user.app_build + ')' : '');
+        if (el.modalUserCreatedText) el.modalUserCreatedText.textContent = user.created ? new Date(user.created).toLocaleString() : '-';
+        if (el.modalUserLastSeenText) el.modalUserLastSeenText.textContent = user.last_seen ? new Date(user.last_seen).toLocaleString() : '-';
+
+        if (el.modalUserBanBanner) {
+          el.modalUserBanBanner.hidden = !isBanned;
+          if (el.modalUserBanReasonText) el.modalUserBanReasonText.textContent = user.ban_reason || 'Sin motivo especificado.';
+        }
+
+        if (el.btnToggleUserBanText) {
+          el.btnToggleUserBanText.textContent = isBanned ? 'Reactivar / Desbloquear Cuenta' : 'Suspender / Bloquear Cuenta';
+        }
+        if (el.btnToggleUserBan) {
+          el.btnToggleUserBan.className = isBanned ? 'btn btn-primary' : 'btn btn-danger';
+        }
+
+        if (el.modalUserReportsReceivedCount) el.modalUserReportsReceivedCount.textContent = String(repReceived.length);
+        if (el.modalUserReportsReceivedList) {
+          if (!repReceived.length) {
+            el.modalUserReportsReceivedList.innerHTML = '<p class="xow-text-muted" style="font-size: 13px;">Sin denuncias registradas.</p>';
+          } else {
+            var recHtml = '';
+            repReceived.forEach(function (r) {
+              recHtml += '<div class="xow-history-item">';
+              recHtml += '  <div><strong>' + escapeHtml(r.abuse_category || 'other') + '</strong> <span style="color:var(--text-muted); font-size:11.5px;">(' + (r.created ? new Date(r.created).toLocaleDateString() : '-') + ')</span></div>';
+              recHtml += '  <span class="xow-badge ' + (r.status || 'pending') + '">' + escapeHtml(r.status || 'pending') + '</span>';
+              recHtml += '</div>';
+            });
+            el.modalUserReportsReceivedList.innerHTML = recHtml;
+          }
+        }
+
+        if (el.modalUserReportsMadeCount) el.modalUserReportsMadeCount.textContent = String(repMade.length);
+        if (el.modalUserReportsMadeList) {
+          if (!repMade.length) {
+            el.modalUserReportsMadeList.innerHTML = '<p class="xow-text-muted" style="font-size: 13px;">Sin denuncias realizadas.</p>';
+          } else {
+            var madeHtml = '';
+            repMade.forEach(function (r) {
+              madeHtml += '<div class="xow-history-item">';
+              madeHtml += '  <div><strong>' + escapeHtml(r.abuse_category || 'other') + '</strong> <span style="color:var(--text-muted); font-size:11.5px;">(' + (r.created ? new Date(r.created).toLocaleDateString() : '-') + ')</span></div>';
+              madeHtml += '  <span class="xow-badge ' + (r.status || 'pending') + '">' + escapeHtml(r.status || 'pending') + '</span>';
+              madeHtml += '</div>';
+            });
+            el.modalUserReportsMadeList.innerHTML = madeHtml;
+          }
+        }
+
+        if (el.modalUserDetailBackdrop) el.modalUserDetailBackdrop.classList.add('open');
+      })
+      .catch(function (err) {
+        console.error('Error opening user modal:', err);
+        showToast('Error cargando ficha de usuario', 'error');
+      });
+  }
+
+  function closeUserModal() {
+    state.selectedUser = null;
+    if (el.modalUserDetailBackdrop) el.modalUserDetailBackdrop.classList.remove('open');
+  }
+
+  function toggleUserBan(user) {
+    if (!user) return;
+    var currentlyBanned = !!user.is_banned;
+
+    if (currentlyBanned) {
+      if (!confirm('¿Deseas reactivar la cuenta de @' + (user.handle || user.name) + '?')) return;
+      pb.collection(USERS_COLLECTION).update(user.id, { is_banned: false, ban_reason: '' })
+        .then(function (updated) {
+          var idx = state.users.findIndex(function (u) { return u.id === user.id; });
+          if (idx !== -1) state.users[idx] = updated;
+          showToast('Cuenta de usuario reactivada con éxito', 'success');
+          closeUserModal();
+          renderUsersSection();
+        })
+        .catch(function (err) {
+          console.error('Unban user error:', err);
+          showToast('Error reactivando la cuenta', 'error');
+        });
+    } else {
+      var reason = prompt('Motivo de la suspensión / baneo de @' + (user.handle || user.name) + ':', 'Violación de Términos de Servicio / Conducta Inapropiada');
+      if (reason === null) return;
+      reason = reason.trim() || 'Suspendido por administración.';
+
+      pb.collection(USERS_COLLECTION).update(user.id, { is_banned: true, ban_reason: reason })
+        .then(function (updated) {
+          var idx = state.users.findIndex(function (u) { return u.id === user.id; });
+          if (idx !== -1) state.users[idx] = updated;
+          showToast('Cuenta de usuario suspendida / baneada', 'success');
+          closeUserModal();
+          renderUsersSection();
+        })
+        .catch(function (err) {
+          console.error('Ban user error:', err);
+          showToast('Error suspendiendo la cuenta', 'error');
+        });
+    }
+  }
+
+  function loadReservedHandles() {
+    return pb.collection(RESERVED_HANDLES_COLLECTION).getFullList({ sort: 'handle' })
+      .then(function (list) {
+        state.reservedHandles = list || [];
+        renderReservedHandles();
+      })
+      .catch(function (err) {
+        console.error('Error loading reserved handles:', err);
+        state.reservedHandles = [];
+        renderReservedHandles();
+      });
+  }
+
+  function renderReservedHandles() {
+    if (!el.reservedHandlesTableBody) return;
+
+    if (!state.reservedHandles.length) {
+      el.reservedHandlesTableBody.innerHTML = '';
+      if (el.reservedEmptyState) el.reservedEmptyState.hidden = false;
+      return;
+    }
+    if (el.reservedEmptyState) el.reservedEmptyState.hidden = true;
+
+    var rows = '';
+    state.reservedHandles.forEach(function (item) {
+      var dateStr = item.created ? new Date(item.created).toLocaleDateString() : '-';
+      rows += '<tr>';
+      rows += '  <td><strong style="color: var(--teal-accent);">@' + escapeHtml(item.handle || '-') + '</strong></td>';
+      rows += '  <td><span style="color: var(--text-main); font-size: 13px;">' + escapeHtml(item.reason || 'Protección de sistema') + '</span></td>';
+      rows += '  <td><span style="color: var(--text-muted); font-size: 12.5px;">' + escapeHtml(item.created_by || 'Admin') + '</span></td>';
+      rows += '  <td><span style="color: var(--text-muted); font-size: 12.5px;">' + escapeHtml(dateStr) + '</span></td>';
+      rows += '  <td>';
+      rows += '    <div class="cell-actions">';
+      rows += '      <button type="button" class="xow-btn-icon danger" data-reserved-delete-id="' + item.id + '" data-reserved-handle="' + escapeHtml(item.handle || '') + '" title="Eliminar reserva">';
+      rows += '        <svg class="icon icon-sm"><use href="#i-delete"></use></svg>';
+      rows += '      </button>';
+      rows += '    </div>';
+      rows += '  </td>';
+      rows += '</tr>';
+    });
+
+    el.reservedHandlesTableBody.innerHTML = rows;
+  }
+
+  function openAddReservedModal() {
+    if (el.formReservedHandle) el.formReservedHandle.reset();
+    if (el.modalReservedHandleBackdrop) el.modalReservedHandleBackdrop.classList.add('open');
+  }
+
+  function closeAddReservedModal() {
+    if (el.modalReservedHandleBackdrop) el.modalReservedHandleBackdrop.classList.remove('open');
+  }
+
+  function saveReservedHandle(rawHandle, reason) {
+    var clean = String(rawHandle || '').replace(/^@+/, '').trim().toLowerCase();
+    var pattern = /^[a-z0-9_-]{3,30}$/;
+
+    if (!pattern.test(clean)) {
+      showToast('Formato de handle no válido (3-30 chars, minúsculas, números, guiones)', 'error');
+      return;
+    }
+
+    var adminEmail = (pb.authStore && pb.authStore.record && pb.authStore.record.email) || 'Admin';
+
+    pb.collection(RESERVED_HANDLES_COLLECTION).create({
+      handle: clean,
+      reason: reason ? reason.trim() : 'Reserva administrativa',
+      created_by: adminEmail,
+    })
+      .then(function (record) {
+        state.reservedHandles.push(record);
+        state.reservedHandles.sort(function (a, b) { return (a.handle || '').localeCompare(b.handle || ''); });
+        closeAddReservedModal();
+        renderReservedHandles();
+        showToast('Handle @' + clean + ' reservado con éxito', 'success');
+      })
+      .catch(function (err) {
+        console.error('Create reserved handle error:', err);
+        showToast('Error: El handle ya está reservado o hubo un error', 'error');
+      });
+  }
+
+  function deleteReservedHandle(id, handle) {
+    if (!confirm('¿Eliminar la reserva del handle @' + handle + '?')) return;
+
+    pb.collection(RESERVED_HANDLES_COLLECTION).delete(id)
+      .then(function () {
+        state.reservedHandles = state.reservedHandles.filter(function (h) { return h.id !== id; });
+        renderReservedHandles();
+        showToast('Reserva del handle eliminada', 'success');
+      })
+      .catch(function (err) {
+        console.error('Delete reserved handle error:', err);
+        showToast('Error eliminando la reserva', 'error');
+      });
   }
 
   // ------------------------------------------------------------------
@@ -1653,23 +2623,246 @@
     });
 
     // 14. Incomes Table Actions (Edit, Delete)
-    el.incomesTableBody.addEventListener('click', function (e) {
-      var editBtn = e.target.closest('[data-income-edit-id]');
-      if (editBtn) {
-        var editId = editBtn.getAttribute('data-income-edit-id');
-        var income = state.incomes.find(function (x) { return x.id === editId; });
-        if (income) openIncomeModal(income);
-        return;
-      }
+    if (el.incomesTableBody) {
+      el.incomesTableBody.addEventListener('click', function (e) {
+        var editBtn = e.target.closest('[data-income-edit-id]');
+        if (editBtn) {
+          var editId = editBtn.getAttribute('data-income-edit-id');
+          var income = state.incomes.find(function (x) { return x.id === editId; });
+          if (income) openIncomeModal(income);
+          return;
+        }
 
-      var delBtn = e.target.closest('[data-income-delete-id]');
-      if (delBtn) {
-        var delId = delBtn.getAttribute('data-income-delete-id');
-        var delInc = state.incomes.find(function (x) { return x.id === delId; });
-        if (delInc) openDeleteModal('income', delId, delInc.concept);
-        return;
-      }
+        var delBtn = e.target.closest('[data-income-delete-id]');
+        if (delBtn) {
+          var delId = delBtn.getAttribute('data-income-delete-id');
+          var delInc = state.incomes.find(function (x) { return x.id === delId; });
+          if (delInc) openDeleteModal('income', delId, delInc.concept);
+          return;
+        }
+      });
+    }
+
+    // 15. Main Module Navigation
+    var mainNavTabs = [el.tabNavFunding, el.tabNavReports, el.tabNavUsers].filter(Boolean);
+    mainNavTabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var sec = tab.getAttribute('data-main-section');
+        if (sec) switchMainSection(sec);
+      });
     });
+
+    // 16. Reports Filtering and Actions
+    if (el.repSearchInput) {
+      el.repSearchInput.addEventListener('input', function (e) {
+        state.reportsFilter.search = e.target.value;
+        renderReportsSection();
+      });
+    }
+    if (el.repStatusFilter) {
+      el.repStatusFilter.addEventListener('change', function (e) {
+        state.reportsFilter.status = e.target.value;
+        renderReportsSection();
+      });
+    }
+    if (el.repCategoryFilter) {
+      el.repCategoryFilter.addEventListener('change', function (e) {
+        state.reportsFilter.category = e.target.value;
+        renderReportsSection();
+      });
+    }
+    if (el.repContentFilter) {
+      el.repContentFilter.addEventListener('change', function (e) {
+        state.reportsFilter.content = e.target.value;
+        renderReportsSection();
+      });
+    }
+    if (el.repBlockedFilter) {
+      el.repBlockedFilter.addEventListener('change', function (e) {
+        state.reportsFilter.blocked = e.target.value;
+        renderReportsSection();
+      });
+    }
+    if (el.repSortSelect) {
+      el.repSortSelect.addEventListener('change', function (e) {
+        state.reportsFilter.sort = e.target.value;
+        renderReportsSection();
+      });
+    }
+    if (el.btnRefreshReports) {
+      el.btnRefreshReports.addEventListener('click', function () {
+        loadReports().then(function () {
+          showToast('Denuncias actualizadas', 'info');
+        });
+      });
+    }
+    if (el.reportsTableBody) {
+      el.reportsTableBody.addEventListener('click', function (e) {
+        var detailBtn = e.target.closest('[data-report-detail-id]');
+        if (detailBtn) {
+          var repId = detailBtn.getAttribute('data-report-detail-id');
+          var report = state.reports.find(function (r) { return r.id === repId; });
+          if (report) openReportModal(report);
+        }
+      });
+    }
+
+    // 17. Report Detail Modal Actions
+    if (el.btnCloseReportDetailModal) {
+      el.btnCloseReportDetailModal.addEventListener('click', closeReportModal);
+    }
+    if (el.btnViewReporterUser) {
+      el.btnViewReporterUser.addEventListener('click', function () {
+        if (state.selectedReport && state.selectedReport.reporter_id) {
+          openUserModal(state.selectedReport.reporter_id);
+        }
+      });
+    }
+    if (el.btnViewTargetUser) {
+      el.btnViewTargetUser.addEventListener('click', function () {
+        if (state.selectedReport && state.selectedReport.target_user_id) {
+          openUserModal(state.selectedReport.target_user_id);
+        }
+      });
+    }
+    if (el.formReportModeration) {
+      el.formReportModeration.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!state.selectedReport) return;
+        saveReportResolution(
+          state.selectedReport.id,
+          el.repModStatus.value,
+          el.repModAction.value,
+          el.repModNotes.value.trim()
+        );
+      });
+    }
+    if (el.btnBanReportedUser) {
+      el.btnBanReportedUser.addEventListener('click', function () {
+        if (state.selectedReport) banReportedUserFromReport(state.selectedReport);
+      });
+    }
+    if (el.btnDismissReport) {
+      el.btnDismissReport.addEventListener('click', function () {
+        if (state.selectedReport) dismissReportFromModal(state.selectedReport);
+      });
+    }
+
+    // 18. Users Subtabs (Directory vs Reserved Handles)
+    var userSubTabs = [el.tabBtnUserDirectory, el.tabBtnUserReserved].filter(Boolean);
+    userSubTabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var t = tab.getAttribute('data-user-tab');
+        if (t) switchUserTab(t);
+      });
+    });
+
+    // 19. Users Directory Search & Actions
+    function triggerDebouncedUserSearch() {
+      if (userSearchDebounceTimer) clearTimeout(userSearchDebounceTimer);
+      userSearchDebounceTimer = setTimeout(function () {
+        loadUsers();
+      }, 300);
+    }
+
+    if (el.userSearchHandleInput) {
+      el.userSearchHandleInput.addEventListener('input', function (e) {
+        state.userSearchHandle = e.target.value;
+        triggerDebouncedUserSearch();
+      });
+    }
+    if (el.userSearchNameInput) {
+      el.userSearchNameInput.addEventListener('input', function (e) {
+        state.userSearchName = e.target.value;
+        triggerDebouncedUserSearch();
+      });
+    }
+    if (el.userStatusFilter) {
+      el.userStatusFilter.addEventListener('change', function (e) {
+        state.userStatusFilter = e.target.value;
+        loadUsers();
+      });
+    }
+    if (el.btnRefreshUsers) {
+      el.btnRefreshUsers.addEventListener('click', function () {
+        loadUsers().then(function () {
+          showToast('Directorio de usuarios actualizado', 'info');
+        });
+      });
+    }
+    if (el.usersTableBody) {
+      el.usersTableBody.addEventListener('click', function (e) {
+        var detailBtn = e.target.closest('[data-user-detail-id]');
+        if (detailBtn) {
+          var uId = detailBtn.getAttribute('data-user-detail-id');
+          openUserModal(uId);
+          return;
+        }
+
+        var banBtn = e.target.closest('[data-user-ban-id]');
+        if (banBtn) {
+          var banId = banBtn.getAttribute('data-user-ban-id');
+          var userToBan = state.users.find(function (u) { return u.id === banId; });
+          if (userToBan) toggleUserBan(userToBan);
+          return;
+        }
+
+        var unbanBtn = e.target.closest('[data-user-unban-id]');
+        if (unbanBtn) {
+          var unbanId = unbanBtn.getAttribute('data-user-unban-id');
+          var userToUnban = state.users.find(function (u) { return u.id === unbanId; });
+          if (userToUnban) toggleUserBan(userToUnban);
+          return;
+        }
+      });
+    }
+
+    // 20. User Detail Modal Actions
+    if (el.btnCloseUserDetailModal) {
+      el.btnCloseUserDetailModal.addEventListener('click', closeUserModal);
+    }
+    if (el.btnDismissUserDetail) {
+      el.btnDismissUserDetail.addEventListener('click', closeUserModal);
+    }
+    if (el.btnToggleUserBan) {
+      el.btnToggleUserBan.addEventListener('click', function () {
+        if (state.selectedUser) toggleUserBan(state.selectedUser);
+      });
+    }
+
+    // 21. Reserved Handles Actions
+    if (el.btnRefreshReserved) {
+      el.btnRefreshReserved.addEventListener('click', function () {
+        loadReservedHandles().then(function () {
+          showToast('Lista de handles actualizada', 'info');
+        });
+      });
+    }
+    if (el.btnOpenAddReservedModal) {
+      el.btnOpenAddReservedModal.addEventListener('click', openAddReservedModal);
+    }
+    if (el.btnCloseReservedModal) {
+      el.btnCloseReservedModal.addEventListener('click', closeAddReservedModal);
+    }
+    if (el.btnCancelReserved) {
+      el.btnCancelReserved.addEventListener('click', closeAddReservedModal);
+    }
+    if (el.formReservedHandle) {
+      el.formReservedHandle.addEventListener('submit', function (e) {
+        e.preventDefault();
+        saveReservedHandle(el.reservedHandleInput.value, el.reservedReasonInput.value);
+      });
+    }
+    if (el.reservedHandlesTableBody) {
+      el.reservedHandlesTableBody.addEventListener('click', function (e) {
+        var delBtn = e.target.closest('[data-reserved-delete-id]');
+        if (delBtn) {
+          var delId = delBtn.getAttribute('data-reserved-delete-id');
+          var handle = delBtn.getAttribute('data-reserved-handle');
+          deleteReservedHandle(delId, handle);
+        }
+      });
+    }
   }
 
   // ------------------------------------------------------------------
@@ -1701,6 +2894,9 @@
     computeFundingStatus: computeFundingStatus,
     calculateIncomeNet: calculateIncomeNet,
     computeFinancialAggregation: computeFinancialAggregation,
+    calculateReportMetrics: calculateReportMetrics,
+    filterReports: filterReports,
+    escapePbFilter: escapePbFilter,
     addMonthsClamped: addMonthsClamped,
     clamp01: clamp01,
     state: state,
