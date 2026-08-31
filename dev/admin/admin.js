@@ -1845,6 +1845,10 @@
   var userSearchDebounceTimer = null;
 
   function loadUsers() {
+    if (el.userSearchHandleInput) state.userSearchHandle = el.userSearchHandleInput.value;
+    if (el.userSearchNameInput) state.userSearchName = el.userSearchNameInput.value;
+    if (el.userStatusFilter) state.userStatusFilter = el.userStatusFilter.value;
+
     var filterParts = [];
     var handleQuery = (state.userSearchHandle || '').trim().replace(/^@+/, '');
     var nameQuery = (state.userSearchName || '').trim();
@@ -2835,11 +2839,25 @@
         state.userSearchHandle = e.target.value;
         triggerDebouncedUserSearch();
       });
+      el.userSearchHandleInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (userSearchDebounceTimer) clearTimeout(userSearchDebounceTimer);
+          loadUsers();
+        }
+      });
     }
     if (el.userSearchNameInput) {
       el.userSearchNameInput.addEventListener('input', function (e) {
         state.userSearchName = e.target.value;
         triggerDebouncedUserSearch();
+      });
+      el.userSearchNameInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (userSearchDebounceTimer) clearTimeout(userSearchDebounceTimer);
+          loadUsers();
+        }
       });
     }
     if (el.userStatusFilter) {
@@ -2850,8 +2868,9 @@
     }
     if (el.btnRefreshUsers) {
       el.btnRefreshUsers.addEventListener('click', function () {
+        if (userSearchDebounceTimer) clearTimeout(userSearchDebounceTimer);
         loadUsers().then(function () {
-          showToast('Directorio de usuarios actualizado', 'info');
+          showToast('Búsqueda de usuarios completada', 'info');
         });
       });
     }
@@ -2941,6 +2960,25 @@
     var name = (record && (record.display_name || record.email)) || 'Admin';
     el.adminWelcomeName.textContent = name;
     el.adminUserAvatar.textContent = name.slice(0, 2).toUpperCase();
+
+    if (pb && pb.collection) {
+      pb.collection(cfg.adminCollection || 'web_admins').authRefresh()
+        .then(function (authData) {
+          if (authData && authData.record) {
+            var rec = authData.record;
+            var updatedName = rec.display_name || rec.email || 'Admin';
+            el.adminWelcomeName.textContent = updatedName;
+            el.adminUserAvatar.textContent = updatedName.slice(0, 2).toUpperCase();
+          }
+        })
+        .catch(function (err) {
+          console.warn('Auth refresh warning:', err);
+          if (err && (err.status === 401 || err.status === 403)) {
+            pb.authStore.clear();
+            showLoginView();
+          }
+        });
+    }
 
     var initialSection = 'funding';
     try {
