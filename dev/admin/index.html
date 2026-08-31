@@ -52,7 +52,11 @@
 
         <!-- Main Module Navigation Tabs -->
         <nav class="xow-admin-main-nav" role="tablist" aria-label="Secciones del Panel">
-          <button type="button" class="xow-admin-main-tab active" role="tab" aria-selected="true" data-main-section="funding" id="tabNavFunding">
+          <button type="button" class="xow-admin-main-tab active" role="tab" aria-selected="true" data-main-section="dashboard" id="tabNavDashboard">
+            <svg class="icon icon-sm"><use href="#i-dashboard"></use></svg>
+            <span data-i18n-key="admin_nav_dashboard">Dashboard</span>
+          </button>
+          <button type="button" class="xow-admin-main-tab" role="tab" aria-selected="false" data-main-section="funding" id="tabNavFunding">
             <svg class="icon icon-sm"><use href="#i-payments"></use></svg>
             <span data-i18n-key="admin_nav_funding">Financiación</span>
           </button>
@@ -79,8 +83,113 @@
         </div>
       </header>
 
+      <!-- Section 0: Analytics Dashboard -->
+      <div class="xow-admin-main-section active" id="secDashboard">
+        <!-- Dashboard Current Values / KPIs Grid -->
+        <div class="xow-admin-section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2 class="xow-admin-section-title" style="margin: 0;">
+            <svg class="icon icon-sm"><use href="#i-analytics"></use></svg>
+            <span data-i18n-key="admin_dashboard_kpis_title">Valores Actuales y Estado del Sistema</span>
+          </h2>
+          <span class="xow-admin-kpi-sub" id="analyticsLastUpdatedText" style="font-size: 13px;"></span>
+        </div>
+
+        <section class="xow-admin-kpi-grid" aria-label="KPIs Actuales" style="margin-bottom: 24px;">
+          <!-- KPI 1: Total Users -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_kpi_total_users">Usuarios Totales</span>
+              <svg class="xow-admin-kpi-icon" style="color: #10b981;"><use href="#i-person"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value highlight" id="kpiTotalUsersValue">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiActiveUsersSub">0 activos (últimas 24h)</div>
+          </div>
+
+          <!-- KPI 2: Total & Pending Reports -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_kpi_reports_status">Denuncias (UGC)</span>
+              <svg class="xow-admin-kpi-icon" style="color: #ef4444;"><use href="#i-flag"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value" id="kpiTotalReportsValue">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiPendingReportsSub">0 pendientes de moderación</div>
+          </div>
+
+          <!-- KPI 3: Files in Transit (Pending) -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_kpi_transfers_transit">Ficheros en Tránsito</span>
+              <svg class="xow-admin-kpi-icon" style="color: #f59e0b;"><use href="#i-sync_alt"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value" id="kpiTransfersTransitValue">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiTransfersTransitSub">Enviados, pendientes de descarga</div>
+          </div>
+
+          <!-- KPI 4: Delivered Files (Purged from Server) -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_kpi_transfers_delivered">Ficheros Entregados</span>
+              <svg class="xow-admin-kpi-icon" style="color: #3b82f6;"><use href="#i-check_circle"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value" id="kpiTransfersDeliveredValue">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiTransfersDeliveredSub">Completados y purgados del servidor</div>
+          </div>
+
+          <!-- KPI 5: User Deregistrations (Bajas) -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_kpi_user_deletions">Bajas de Usuarios</span>
+              <svg class="xow-admin-kpi-icon" style="color: #8b5cf6;"><use href="#i-delete"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value" id="kpiUserDeletionsValue">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiUserDeletionsSub">Cuentas eliminadas (Derecho al olvido)</div>
+          </div>
+
+          <!-- KPI 6: Active Albums -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_kpi_active_albums">Álbumes Creados</span>
+              <svg class="xow-admin-kpi-icon" style="color: #06b6d4;"><use href="#i-photo_library"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value" id="kpiActiveAlbumsValue">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiActiveAlbumsSub">Álbumes activos en la red E2EE</div>
+          </div>
+        </section>
+
+        <!-- Time Series Multi-Parameter Chart Card -->
+        <div class="xow-admin-table-card xow-analytics-chart-card">
+          <div class="xow-chart-header">
+            <div class="xow-chart-title-wrap">
+              <h3 class="xow-chart-title" data-i18n-key="admin_chart_title">Gráfica Histórica de Actividad</h3>
+              <p class="xow-chart-subtitle" data-i18n-key="admin_chart_subtitle">Selecciona la granularidad temporal y activa los parámetros a comparar.</p>
+            </div>
+
+            <!-- Granularity Switcher Buttons -->
+            <div class="xow-granularity-group" role="group" aria-label="Granularidad Temporal">
+              <button type="button" class="xow-granularity-btn active" data-granularity="day" id="btnGranularityDay" data-i18n-key="admin_granularity_day">Día</button>
+              <button type="button" class="xow-granularity-btn" data-granularity="week" id="btnGranularityWeek" data-i18n-key="admin_granularity_week">Semana</button>
+              <button type="button" class="xow-granularity-btn" data-granularity="month" id="btnGranularityMonth" data-i18n-key="admin_granularity_month">Mes</button>
+              <button type="button" class="xow-granularity-btn" data-granularity="year" id="btnGranularityYear" data-i18n-key="admin_granularity_year">Año</button>
+            </div>
+          </div>
+
+          <!-- Parameter Toggle Chips -->
+          <div class="xow-parameter-pills" id="chartParameterPills" aria-label="Parámetros de la gráfica">
+            <!-- Rendered dynamically or declared with color dots -->
+          </div>
+
+          <!-- Chart Area with SVG and Tooltip -->
+          <div class="xow-chart-container" id="analyticsChartContainer">
+            <svg class="xow-chart-svg" id="analyticsChartSvg" viewBox="0 0 960 380" preserveAspectRatio="none">
+              <!-- SVG chart elements (grid, axes, series paths, points) rendered dynamically -->
+            </svg>
+            <div class="xow-chart-tooltip" id="chartTooltip" hidden></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Section 1: Funding Dashboard -->
-      <div class="xow-admin-main-section active" id="secFunding">
+      <div class="xow-admin-main-section" id="secFunding" hidden>
         <!-- Funding Top Sync & Actions Bar -->
         <div class="xow-admin-toolbar" style="margin-bottom: 20px; justify-content: space-between; align-items: center;">
           <div style="display: flex; align-items: center; gap: 8px;">

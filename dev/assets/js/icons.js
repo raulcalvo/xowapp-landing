@@ -63,6 +63,8 @@
     filter_list: '<path d="M4 6h16M7 12h10M10 18h4"/>',
     check: '<polyline points="20 6 9 17 4 12"/>',
     verified_user: '<path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/>',
+    dashboard: '<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/>',
+    analytics: '<path d="M18 20V10M12 20V4M6 20v-6"/><path d="M3 20h18"/>',
   };
 
   function buildSpriteMarkup() {

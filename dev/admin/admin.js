@@ -100,12 +100,15 @@
   var REPORTS_COLLECTION = 'reports';
   var USERS_COLLECTION = 'users';
   var RESERVED_HANDLES_COLLECTION = 'reserved_handles';
+  var SYSTEM_EVENTS_COLLECTION = 'system_events';
+  var ALBUMS_COLLECTION = 'albums';
+  var SERVER_TRANSFERS_COLLECTION = 'server_transfers';
 
   // ------------------------------------------------------------------
   // State Management
   // ------------------------------------------------------------------
   var state = {
-    activeMainSection: 'funding',
+    activeMainSection: 'dashboard',
     settings: {
       id: null,
       project_start_date: '2026-01-01',
@@ -122,6 +125,28 @@
     publicStatusRecord: null,
     deleteTarget: null, // { type: 'expense'|'income'|'phase', id: string, name: string }
     isSyncing: false,
+
+    // Analytics Dashboard State
+    analyticsGranularity: 'day', // 'day', 'week', 'month', 'year'
+    analyticsActiveParams: ['new_users', 'reports', 'transfers_delivered', 'transfers_transit', 'user_deletions'],
+    analyticsRawData: {
+      users: [],
+      reports: [],
+      transfers: [],
+      systemEvents: [],
+      albums: []
+    },
+    analyticsCurrentKpis: {
+      totalUsers: 0,
+      activeUsers24h: 0,
+      activeUsers7d: 0,
+      totalReports: 0,
+      pendingReports: 0,
+      transfersTransit: 0,
+      transfersDelivered: 0,
+      userDeletions: 0,
+      activeAlbums: 0
+    },
 
     // Reports Module State
     reports: [],
@@ -173,13 +198,39 @@
     btnSyncPublic: doc.getElementById('btnSyncPublic'),
 
     // Main Module Navigation
+    tabNavDashboard: doc.getElementById('tabNavDashboard'),
     tabNavFunding: doc.getElementById('tabNavFunding'),
     tabNavReports: doc.getElementById('tabNavReports'),
     tabNavUsers: doc.getElementById('tabNavUsers'),
     reportsPendingBadge: doc.getElementById('reportsPendingBadge'),
+    secDashboard: doc.getElementById('secDashboard'),
     secFunding: doc.getElementById('secFunding'),
     secReports: doc.getElementById('secReports'),
     secUsers: doc.getElementById('secUsers'),
+
+    // Analytics Dashboard KPIs & Chart
+    kpiTotalUsersValue: doc.getElementById('kpiTotalUsersValue'),
+    kpiActiveUsersSub: doc.getElementById('kpiActiveUsersSub'),
+    kpiTotalReportsValue: doc.getElementById('kpiTotalReportsValue'),
+    kpiPendingReportsSub: doc.getElementById('kpiPendingReportsSub'),
+    kpiTransfersTransitValue: doc.getElementById('kpiTransfersTransitValue'),
+    kpiTransfersTransitSub: doc.getElementById('kpiTransfersTransitSub'),
+    kpiTransfersDeliveredValue: doc.getElementById('kpiTransfersDeliveredValue'),
+    kpiTransfersDeliveredSub: doc.getElementById('kpiTransfersDeliveredSub'),
+    kpiUserDeletionsValue: doc.getElementById('kpiUserDeletionsValue'),
+    kpiUserDeletionsSub: doc.getElementById('kpiUserDeletionsSub'),
+    kpiActiveAlbumsValue: doc.getElementById('kpiActiveAlbumsValue'),
+    kpiActiveAlbumsSub: doc.getElementById('kpiActiveAlbumsSub'),
+    analyticsLastUpdatedText: doc.getElementById('analyticsLastUpdatedText'),
+
+    chartParameterPills: doc.getElementById('chartParameterPills'),
+    analyticsChartContainer: doc.getElementById('analyticsChartContainer'),
+    analyticsChartSvg: doc.getElementById('analyticsChartSvg'),
+    chartTooltip: doc.getElementById('chartTooltip'),
+    btnGranularityDay: doc.getElementById('btnGranularityDay'),
+    btnGranularityWeek: doc.getElementById('btnGranularityWeek'),
+    btnGranularityMonth: doc.getElementById('btnGranularityMonth'),
+    btnGranularityYear: doc.getElementById('btnGranularityYear'),
 
     // Funding KPIs
     kpiGrossValue: doc.getElementById('kpiGrossValue'),
@@ -1347,10 +1398,455 @@
   }
 
   // ------------------------------------------------------------------
+  // Analytics Dashboard & Historical Chart Module
+  // ------------------------------------------------------------------
+  var ANALYTICS_PARAMETERS = {
+    new_users: { id: 'new_users', labelKey: 'admin_param_new_users', labelDefault: 'Nuevos Usuarios', color: '#10B981', defaultActive: true },
+    reports: { id: 'reports', labelKey: 'admin_param_reports', labelDefault: 'Denuncias', color: '#EF4444', defaultActive: true },
+    transfers_delivered: { id: 'transfers_delivered', labelKey: 'admin_param_transfers_delivered', labelDefault: 'Ficheros Enviados y Recibidos (Borrados)', color: '#3B82F6', defaultActive: true },
+    transfers_transit: { id: 'transfers_transit', labelKey: 'admin_param_transfers_transit', labelDefault: 'Ficheros Enviados no Recibidos', color: '#F59E0B', defaultActive: true },
+    user_deletions: { id: 'user_deletions', labelKey: 'admin_param_user_deletions', labelDefault: 'Bajas de Usuarios', color: '#8B5CF6', defaultActive: true },
+    albums_created: { id: 'albums_created', labelKey: 'admin_param_albums_created', labelDefault: 'Nuevos Álbumes Creados', color: '#06B6D4', defaultActive: false },
+    active_users: { id: 'active_users', labelKey: 'admin_param_active_users', labelDefault: 'Usuarios Activos', color: '#F97316', defaultActive: false }
+  };
+
+  function getWeekNumber(d) {
+    var date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    var dayNum = date.getUTCDay() || 7;
+    date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+    var yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+    return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  }
+
+  function getYearWeekKey(d) {
+    var date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    var dayNum = date.getUTCDay() || 7;
+    date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+    var year = date.getUTCFullYear();
+    var yearStart = new Date(Date.UTC(year, 0, 1));
+    var weekNo = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+    return year + '-W' + (weekNo < 10 ? '0' + weekNo : weekNo);
+  }
+
+  function buildDateBuckets(granularity, refDate) {
+    var now = refDate ? new Date(refDate) : new Date();
+    var buckets = [];
+
+    if (granularity === 'day') {
+      for (var i = 29; i >= 0; i--) {
+        var d = new Date(now.getTime() - i * 86400000);
+        var key = d.toISOString().slice(0, 10);
+        var label = d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        buckets.push({ key: key, label: label, date: d });
+      }
+    } else if (granularity === 'week') {
+      for (var i = 11; i >= 0; i--) {
+        var d = new Date(now.getTime() - i * 7 * 86400000);
+        var key = getYearWeekKey(d);
+        var label = 'W' + getWeekNumber(d);
+        buckets.push({ key: key, label: label, date: d });
+      }
+    } else if (granularity === 'month') {
+      for (var i = 11; i >= 0; i--) {
+        var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        var key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+        var label = d.toLocaleDateString([], { month: 'short', year: '2-digit' });
+        buckets.push({ key: key, label: label, date: d });
+      }
+    } else if (granularity === 'year') {
+      for (var i = 4; i >= 0; i--) {
+        var yr = now.getFullYear() - i;
+        var key = String(yr);
+        var label = String(yr);
+        buckets.push({ key: key, label: label, date: new Date(yr, 0, 1) });
+      }
+    }
+    return buckets;
+  }
+
+  function extractBucketKey(dateString, granularity) {
+    if (!dateString) return null;
+    var d = new Date(dateString);
+    if (isNaN(d.getTime())) return null;
+
+    if (granularity === 'day') {
+      return d.toISOString().slice(0, 10);
+    } else if (granularity === 'week') {
+      return getYearWeekKey(d);
+    } else if (granularity === 'month') {
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    } else if (granularity === 'year') {
+      return String(d.getFullYear());
+    }
+    return null;
+  }
+
+  function buildAnalyticsTimeSeries(rawData, granularity, refDate) {
+    var buckets = buildDateBuckets(granularity, refDate);
+    var bucketMap = {};
+    var paramKeys = Object.keys(ANALYTICS_PARAMETERS);
+
+    buckets.forEach(function (b, index) {
+      bucketMap[b.key] = index;
+      b.counts = {};
+      paramKeys.forEach(function (k) {
+        b.counts[k] = 0;
+      });
+    });
+
+    var users = (rawData && rawData.users) || [];
+    var reports = (rawData && rawData.reports) || [];
+    var transfers = (rawData && rawData.transfers) || [];
+    var systemEvents = (rawData && rawData.systemEvents) || [];
+    var albums = (rawData && rawData.albums) || [];
+
+    // 1. New Users
+    users.forEach(function (u) {
+      var k = extractBucketKey(u.created, granularity);
+      if (k in bucketMap) buckets[bucketMap[k]].counts.new_users++;
+    });
+
+    // 2. Reports
+    reports.forEach(function (r) {
+      var k = extractBucketKey(r.created || r.timestamp, granularity);
+      if (k in bucketMap) buckets[bucketMap[k]].counts.reports++;
+    });
+
+    // 3. Transfers in Transit (Pending)
+    transfers.forEach(function (t) {
+      var k = extractBucketKey(t.created, granularity);
+      if (k in bucketMap) buckets[bucketMap[k]].counts.transfers_transit++;
+    });
+
+    // 4. System Events (Transfers delivered / User deletions)
+    systemEvents.forEach(function (ev) {
+      var k = extractBucketKey(ev.created, granularity);
+      if (k in bucketMap) {
+        if (ev.event_type === 'transfer_completed') {
+          buckets[bucketMap[k]].counts.transfers_delivered++;
+        } else if (ev.event_type === 'user_deleted') {
+          buckets[bucketMap[k]].counts.user_deletions++;
+        }
+      }
+    });
+
+    // 5. Albums created
+    albums.forEach(function (a) {
+      var k = extractBucketKey(a.created, granularity);
+      if (k in bucketMap) buckets[bucketMap[k]].counts.albums_created++;
+    });
+
+    // 6. Active Users (by last_seen)
+    users.forEach(function (u) {
+      if (u.last_seen) {
+        var k = extractBucketKey(u.last_seen, granularity);
+        if (k in bucketMap) buckets[bucketMap[k]].counts.active_users++;
+      }
+    });
+
+    return buckets;
+  }
+
+  function computeCurrentKpis(rawData, refDate) {
+    var now = refDate ? new Date(refDate).getTime() : Date.now();
+    var users = (rawData && rawData.users) || [];
+    var reports = (rawData && rawData.reports) || [];
+    var transfers = (rawData && rawData.transfers) || [];
+    var systemEvents = (rawData && rawData.systemEvents) || [];
+    var albums = (rawData && rawData.albums) || [];
+
+    var active24h = 0;
+    var active7d = 0;
+    users.forEach(function (u) {
+      if (u.last_seen) {
+        var diff = now - new Date(u.last_seen).getTime();
+        if (diff >= 0 && diff <= 24 * 3600000) active24h++;
+        if (diff >= 0 && diff <= 7 * 24 * 3600000) active7d++;
+      }
+    });
+
+    var pendingReports = 0;
+    reports.forEach(function (r) {
+      if (!r.status || r.status === 'pending') pendingReports++;
+    });
+
+    var transfersDelivered = 0;
+    var userDeletions = 0;
+    systemEvents.forEach(function (ev) {
+      if (ev.event_type === 'transfer_completed') transfersDelivered++;
+      else if (ev.event_type === 'user_deleted') userDeletions++;
+    });
+
+    return {
+      totalUsers: users.length,
+      activeUsers24h: active24h,
+      activeUsers7d: active7d,
+      totalReports: reports.length,
+      pendingReports: pendingReports,
+      transfersTransit: transfers.length,
+      transfersDelivered: transfersDelivered,
+      userDeletions: userDeletions,
+      activeAlbums: albums.length,
+    };
+  }
+
+  function renderCurrentKpis(kpis) {
+    if (!kpis) return;
+    if (el.kpiTotalUsersValue) el.kpiTotalUsersValue.textContent = kpis.totalUsers.toLocaleString();
+    if (el.kpiActiveUsersSub) el.kpiActiveUsersSub.textContent = kpis.activeUsers24h + ' activos (24h) · ' + kpis.activeUsers7d + ' (7d)';
+    if (el.kpiTotalReportsValue) el.kpiTotalReportsValue.textContent = kpis.totalReports.toLocaleString();
+    if (el.kpiPendingReportsSub) el.kpiPendingReportsSub.textContent = kpis.pendingReports + ' pendientes de moderación';
+    if (el.kpiTransfersTransitValue) el.kpiTransfersTransitValue.textContent = kpis.transfersTransit.toLocaleString();
+    if (el.kpiTransfersTransitSub) el.kpiTransfersTransitSub.textContent = 'Enviados, pendientes de descarga';
+    if (el.kpiTransfersDeliveredValue) el.kpiTransfersDeliveredValue.textContent = kpis.transfersDelivered.toLocaleString();
+    if (el.kpiTransfersDeliveredSub) el.kpiTransfersDeliveredSub.textContent = 'Completados y purgados del servidor';
+    if (el.kpiUserDeletionsValue) el.kpiUserDeletionsValue.textContent = kpis.userDeletions.toLocaleString();
+    if (el.kpiUserDeletionsSub) el.kpiUserDeletionsSub.textContent = 'Cuentas eliminadas (Derecho al olvido)';
+    if (el.kpiActiveAlbumsValue) el.kpiActiveAlbumsValue.textContent = kpis.activeAlbums.toLocaleString();
+    if (el.kpiActiveAlbumsSub) el.kpiActiveAlbumsSub.textContent = 'Álbumes activos en la red E2EE';
+    if (el.analyticsLastUpdatedText) {
+      var d = new Date();
+      el.analyticsLastUpdatedText.textContent = 'Actualizado: ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+  }
+
+  function renderParameterPills() {
+    if (!el.chartParameterPills) return;
+    var html = '';
+    Object.keys(ANALYTICS_PARAMETERS).forEach(function (paramId) {
+      var p = ANALYTICS_PARAMETERS[paramId];
+      var isActive = state.analyticsActiveParams.indexOf(paramId) !== -1;
+      var label = t(p.labelKey) || p.labelDefault;
+      html += '<button type="button" class="xow-param-pill ' + (isActive ? 'active' : '') + '" data-param-id="' + p.id + '" style="border-color: ' + (isActive ? p.color : 'rgba(255,255,255,0.1)') + '">';
+      html += '  <span class="xow-param-dot" style="background: ' + p.color + '"></span>';
+      html += '  <span>' + escapeHtml(label) + '</span>';
+      html += '</button>';
+    });
+    el.chartParameterPills.innerHTML = html;
+  }
+
+  function renderAnalyticsChart() {
+    if (!el.analyticsChartSvg) return;
+
+    var buckets = buildAnalyticsTimeSeries(state.analyticsRawData, state.analyticsGranularity);
+    var activeParams = state.analyticsActiveParams.filter(function (id) {
+      return id in ANALYTICS_PARAMETERS;
+    });
+
+    var svgW = 960;
+    var svgH = 380;
+    var padL = 55;
+    var padR = 30;
+    var padT = 30;
+    var padB = 45;
+    var plotW = svgW - padL - padR;
+    var plotH = svgH - padT - padB;
+
+    // Find max value across active series in all buckets
+    var maxVal = 0;
+    buckets.forEach(function (b) {
+      activeParams.forEach(function (pId) {
+        var v = b.counts[pId] || 0;
+        if (v > maxVal) maxVal = v;
+      });
+    });
+
+    var maxY = Math.max(5, Math.ceil(maxVal * 1.2));
+
+    var svg = '';
+
+    // Defs for Gradients
+    svg += '<defs>';
+    activeParams.forEach(function (pId) {
+      var color = ANALYTICS_PARAMETERS[pId].color;
+      svg += '<linearGradient id="grad_' + pId + '" x1="0" y1="0" x2="0" y2="1">';
+      svg += '  <stop offset="0%" stop-color="' + color + '" stop-opacity="0.3"/>';
+      svg += '  <stop offset="100%" stop-color="' + color + '" stop-opacity="0.0"/>';
+      svg += '</linearGradient>';
+    });
+    svg += '</defs>';
+
+    // Horizontal Grid Lines & Y Axis Labels (4 divisions)
+    for (var i = 0; i <= 4; i++) {
+      var yFraction = i / 4;
+      var yVal = Math.round(maxY * (1 - yFraction));
+      var yPos = padT + yFraction * plotH;
+
+      svg += '<line class="xow-chart-grid-line" x1="' + padL + '" y1="' + yPos + '" x2="' + (svgW - padR) + '" y2="' + yPos + '"/>';
+      svg += '<text class="xow-chart-axis-label" x="' + (padL - 10) + '" y="' + (yPos + 4) + '" text-anchor="end">' + yVal + '</text>';
+    }
+
+    // X Axis baseline
+    svg += '<line class="xow-chart-axis-line" x1="' + padL + '" y1="' + (padT + plotH) + '" x2="' + (svgW - padR) + '" y2="' + (padT + plotH) + '"/>';
+
+    var numBuckets = buckets.length;
+    var getX = function (index) {
+      if (numBuckets <= 1) return padL + plotW / 2;
+      return padL + (index / (numBuckets - 1)) * plotW;
+    };
+    var getY = function (val) {
+      return padT + plotH - (val / maxY) * plotH;
+    };
+
+    // X Axis Labels (Thinning out if needed to prevent label crowding)
+    var step = 1;
+    if (numBuckets > 20) step = Math.ceil(numBuckets / 10);
+    else if (numBuckets > 10) step = 2;
+
+    for (var bIdx = 0; bIdx < numBuckets; bIdx++) {
+      if (bIdx % step === 0 || bIdx === numBuckets - 1) {
+        var bx = getX(bIdx);
+        svg += '<text class="xow-chart-axis-label" x="' + bx + '" y="' + (padT + plotH + 22) + '" text-anchor="middle">' + escapeHtml(buckets[bIdx].label) + '</text>';
+      }
+    }
+
+    // Render Series Area and Paths
+    activeParams.forEach(function (pId) {
+      var pDef = ANALYTICS_PARAMETERS[pId];
+      if (numBuckets === 0) return;
+
+      var points = [];
+      for (var idx = 0; idx < numBuckets; idx++) {
+        var vx = getX(idx);
+        var vy = getY(buckets[idx].counts[pId] || 0);
+        points.push({ x: vx, y: vy, val: buckets[idx].counts[pId] || 0 });
+      }
+
+      // Smooth Cubic Bezier Spline Path
+      var lineD = 'M ' + points[0].x + ' ' + points[0].y;
+      for (var p = 0; p < points.length - 1; p++) {
+        var p0 = points[p];
+        var p1 = points[p + 1];
+        var mx = (p0.x + p1.x) / 2;
+        lineD += ' C ' + mx + ' ' + p0.y + ', ' + mx + ' ' + p1.y + ', ' + p1.x + ' ' + p1.y;
+      }
+
+      var areaD = lineD + ' L ' + points[points.length - 1].x + ' ' + (padT + plotH) + ' L ' + points[0].x + ' ' + (padT + plotH) + ' Z';
+
+      // Area fill
+      svg += '<path class="xow-chart-series-area" d="' + areaD + '" fill="url(#grad_' + pId + ')"/>';
+
+      // Line stroke
+      svg += '<path class="xow-chart-series-path" d="' + lineD + '" stroke="' + pDef.color + '"/>';
+
+      // Data Points
+      points.forEach(function (pt, ptIdx) {
+        svg += '<circle class="xow-chart-point" cx="' + pt.x + '" cy="' + pt.y + '" r="3.5" fill="' + pDef.color + '" stroke="#0F172A" data-bucket-idx="' + ptIdx + '" data-param-id="' + pId + '"/>';
+      });
+    });
+
+    // Crosshair line (hidden initially)
+    svg += '<line class="xow-chart-crosshair" id="chartCrosshairLine" x1="0" y1="' + padT + '" x2="0" y2="' + (padT + plotH) + '" style="display: none;"/>';
+
+    el.analyticsChartSvg.innerHTML = svg;
+    setupChartInteractions(buckets, activeParams, padL, padR, padT, plotW, plotH);
+  }
+
+  function setupChartInteractions(buckets, activeParams, padL, padR, padT, plotW, plotH) {
+    if (!el.analyticsChartContainer || !el.chartTooltip) return;
+
+    var crosshair = doc.getElementById('chartCrosshairLine');
+
+    el.analyticsChartContainer.onmousemove = function (e) {
+      var rect = el.analyticsChartContainer.getBoundingClientRect();
+      var mouseX = e.clientX - rect.left;
+      var mouseY = e.clientY - rect.top;
+
+      // Scale coordinates to SVG viewBox (960x380)
+      var svgScaleX = 960 / rect.width;
+      var svgX = mouseX * svgScaleX;
+
+      if (svgX < padL || svgX > (960 - padR) || buckets.length === 0) {
+        if (crosshair) crosshair.style.display = 'none';
+        el.chartTooltip.hidden = true;
+        return;
+      }
+
+      // Find nearest bucket
+      var numBuckets = buckets.length;
+      var ratio = (svgX - padL) / plotW;
+      var nearestIdx = Math.round(ratio * (numBuckets - 1));
+      nearestIdx = Math.max(0, Math.min(numBuckets - 1, nearestIdx));
+
+      var bucket = buckets[nearestIdx];
+      var bucketSvgX = numBuckets <= 1 ? (padL + plotW / 2) : (padL + (nearestIdx / (numBuckets - 1)) * plotW);
+
+      if (crosshair) {
+        crosshair.setAttribute('x1', bucketSvgX);
+        crosshair.setAttribute('x2', bucketSvgX);
+        crosshair.style.display = '';
+      }
+
+      // Build Tooltip HTML
+      var ttHtml = '<div class="xow-chart-tooltip-date">' + escapeHtml(bucket.label) + ' (' + escapeHtml(bucket.key) + ')</div>';
+      activeParams.forEach(function (pId) {
+        var pDef = ANALYTICS_PARAMETERS[pId];
+        var val = bucket.counts[pId] || 0;
+        var pName = t(pDef.labelKey) || pDef.labelDefault;
+        ttHtml += '<div class="xow-chart-tooltip-item">';
+        ttHtml += '  <div class="xow-chart-tooltip-label">';
+        ttHtml += '    <span class="xow-param-dot" style="background: ' + pDef.color + '"></span>';
+        ttHtml += '    <span>' + escapeHtml(pName) + ':</span>';
+        ttHtml += '  </div>';
+        ttHtml += '  <span class="xow-chart-tooltip-val">' + val.toLocaleString() + '</span>';
+        ttHtml += '</div>';
+      });
+
+      el.chartTooltip.innerHTML = ttHtml;
+      el.chartTooltip.hidden = false;
+
+      // Position Tooltip
+      var ttWidth = el.chartTooltip.offsetWidth || 190;
+      var leftPos = mouseX + 16;
+      if (leftPos + ttWidth > rect.width - 16) {
+        leftPos = mouseX - ttWidth - 16;
+      }
+      var topPos = Math.max(10, Math.min(rect.height - 120, mouseY - 20));
+
+      el.chartTooltip.style.left = leftPos + 'px';
+      el.chartTooltip.style.top = topPos + 'px';
+    };
+
+    el.analyticsChartContainer.onmouseleave = function () {
+      if (crosshair) crosshair.style.display = 'none';
+      if (el.chartTooltip) el.chartTooltip.hidden = true;
+    };
+  }
+
+  function loadDashboardAnalytics() {
+    renderParameterPills();
+
+    var pUsers = pb.collection(USERS_COLLECTION).getFullList({ sort: '-created' }).catch(function () { return []; });
+    var pReports = pb.collection(REPORTS_COLLECTION).getFullList({ sort: '-created' }).catch(function () { return []; });
+    var pTransfers = pb.collection(SERVER_TRANSFERS_COLLECTION).getFullList({ sort: '-created' }).catch(function () { return []; });
+    var pEvents = pb.collection(SYSTEM_EVENTS_COLLECTION).getFullList({ sort: '-created' }).catch(function () { return []; });
+    var pAlbums = pb.collection(ALBUMS_COLLECTION).getFullList({ sort: '-created' }).catch(function () { return []; });
+
+    return Promise.all([pUsers, pReports, pTransfers, pEvents, pAlbums])
+      .then(function (results) {
+        state.analyticsRawData = {
+          users: results[0] || [],
+          reports: results[1] || [],
+          transfers: results[2] || [],
+          systemEvents: results[3] || [],
+          albums: results[4] || []
+        };
+
+        state.analyticsCurrentKpis = computeCurrentKpis(state.analyticsRawData);
+        renderCurrentKpis(state.analyticsCurrentKpis);
+        renderAnalyticsChart();
+      })
+      .catch(function (err) {
+        console.error('Error loading dashboard analytics:', err);
+        showToast('Error cargando métricas analíticas: ' + ((err && err.message) || 'desconocido'), 'error');
+      });
+  }
+
+  // ------------------------------------------------------------------
   // Main Module Navigation
   // ------------------------------------------------------------------
   function switchMainSection(sectionName) {
-    if (!sectionName) sectionName = 'funding';
+    if (!sectionName) sectionName = 'dashboard';
     state.activeMainSection = sectionName;
 
     try {
@@ -1362,7 +1858,7 @@
       }
     } catch (e) {}
 
-    var navTabs = [el.tabNavFunding, el.tabNavReports, el.tabNavUsers].filter(Boolean);
+    var navTabs = [el.tabNavDashboard, el.tabNavFunding, el.tabNavReports, el.tabNavUsers].filter(Boolean);
     navTabs.forEach(function (tab) {
       var sec = tab.getAttribute('data-main-section');
       var isActive = sec === sectionName;
@@ -1370,6 +1866,10 @@
       tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
     });
 
+    if (el.secDashboard) {
+      el.secDashboard.hidden = (sectionName !== 'dashboard');
+      el.secDashboard.classList.toggle('active', sectionName === 'dashboard');
+    }
     if (el.secFunding) {
       el.secFunding.hidden = (sectionName !== 'funding');
       el.secFunding.classList.toggle('active', sectionName === 'funding');
@@ -1383,7 +1883,9 @@
       el.secUsers.classList.toggle('active', sectionName === 'users');
     }
 
-    if (sectionName === 'funding') {
+    if (sectionName === 'dashboard') {
+      loadDashboardAnalytics();
+    } else if (sectionName === 'funding') {
       renderDashboard();
     } else if (sectionName === 'reports') {
       loadReports();
@@ -2947,6 +3449,61 @@
         }
       });
     }
+
+    // 22. Analytics Dashboard & Granularity Events
+    var granButtons = [el.btnGranularityDay, el.btnGranularityWeek, el.btnGranularityMonth, el.btnGranularityYear].filter(Boolean);
+    granButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var g = btn.getAttribute('data-granularity');
+        if (!g) return;
+        state.analyticsGranularity = g;
+        granButtons.forEach(function (b) {
+          b.classList.toggle('active', b === btn);
+        });
+        renderAnalyticsChart();
+      });
+    });
+
+    if (el.chartParameterPills) {
+      el.chartParameterPills.addEventListener('click', function (e) {
+        var pill = e.target.closest('.xow-param-pill');
+        if (pill) {
+          var pId = pill.getAttribute('data-param-id');
+          if (pId) {
+            var idx = state.analyticsActiveParams.indexOf(pId);
+            if (idx !== -1) {
+              if (state.analyticsActiveParams.length > 1) {
+                state.analyticsActiveParams.splice(idx, 1);
+              } else {
+                showToast('Debe haber al menos un parámetro activo en la gráfica', 'info');
+                return;
+              }
+            } else {
+              state.analyticsActiveParams.push(pId);
+            }
+            renderParameterPills();
+            renderAnalyticsChart();
+          }
+        }
+      });
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', function () {
+        if (state.activeMainSection === 'dashboard') {
+          renderAnalyticsChart();
+        }
+      });
+    }
+
+    // 23. Main Navigation Tab Events
+    var mainNavTabs = [el.tabNavDashboard, el.tabNavFunding, el.tabNavReports, el.tabNavUsers].filter(Boolean);
+    mainNavTabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var sec = tab.getAttribute('data-main-section');
+        if (sec) switchMainSection(sec);
+      });
+    });
   }
 
   // ------------------------------------------------------------------
@@ -2980,14 +3537,14 @@
         });
     }
 
-    var initialSection = 'funding';
+    var initialSection = 'dashboard';
     try {
       var hash = window.location.hash ? window.location.hash.slice(1).toLowerCase() : '';
-      if (hash === 'reports' || hash === 'users' || hash === 'funding') {
+      if (hash === 'dashboard' || hash === 'reports' || hash === 'users' || hash === 'funding') {
         initialSection = hash;
       } else if (window.sessionStorage) {
         var savedSec = window.sessionStorage.getItem('xow_admin_active_section');
-        if (savedSec === 'reports' || savedSec === 'users' || savedSec === 'funding') {
+        if (savedSec === 'dashboard' || savedSec === 'reports' || savedSec === 'users' || savedSec === 'funding') {
           initialSection = savedSec;
         }
       }
@@ -3021,6 +3578,10 @@
     firstNonEmptyTranslation: firstNonEmptyTranslation,
     resolvePhaseText: resolvePhaseText,
     slugifyPhaseKey: slugifyPhaseKey,
+    buildDateBuckets: buildDateBuckets,
+    buildAnalyticsTimeSeries: buildAnalyticsTimeSeries,
+    computeCurrentKpis: computeCurrentKpis,
+    ANALYTICS_PARAMETERS: ANALYTICS_PARAMETERS,
   };
 
   if (typeof window !== 'undefined') {
