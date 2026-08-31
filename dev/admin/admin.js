@@ -91,6 +91,13 @@
 
   var cfg = (typeof window !== 'undefined' && window.XOW_CONFIG) || {};
   var pb = (typeof PocketBase !== 'undefined') ? new PocketBase(cfg.pocketbaseUrl || '', new SessionAuthStore()) : null;
+  if (pb && typeof pb.autoCancellation === 'function') {
+    pb.autoCancellation(false);
+  }
+
+  function isAbortError(err) {
+    return !!(err && (err.isAbort || err.name === 'AbortError' || (err.message && err.message.indexOf('autocancelled') !== -1)));
+  }
 
   var SETTINGS_COLLECTION = cfg.fundingSettingsCollection || 'funding_settings';
   var PHASES_COLLECTION = cfg.fundingPhasesCollection || 'funding_phases';
@@ -1045,7 +1052,7 @@
   // Data Fetching & Synchronization
   // ------------------------------------------------------------------
   function loadAllData() {
-    var pSettings = pb.collection(SETTINGS_COLLECTION).getFullList({ sort: '-created' })
+    var pSettings = pb.collection(SETTINGS_COLLECTION).getFullList({ sort: '-created', requestKey: null })
       .then(function (list) {
         if (list && list.length) {
           state.settings = Object.assign({}, state.settings, list[0]);
@@ -1053,7 +1060,7 @@
       })
       .catch(function () { /* use default settings */ });
 
-    var pPhases = pb.collection(PHASES_COLLECTION).getFullList({ sort: 'order,created' })
+    var pPhases = pb.collection(PHASES_COLLECTION).getFullList({ sort: 'order,created', requestKey: null })
       .then(function (list) {
         if (list && list.length) {
           state.phases = list;
@@ -1070,38 +1077,32 @@
         ];
       });
 
-    var pExpenses = pb.collection(EXPENSES_COLLECTION).getFullList({ sort: '-created' })
+    var pExpenses = pb.collection(EXPENSES_COLLECTION).getFullList({ sort: '-created', requestKey: null })
       .then(function (list) {
         state.expenses = list || [];
       })
       .catch(function () { state.expenses = []; });
 
-    var pIncomes = pb.collection(INCOMES_COLLECTION).getFullList({ sort: '-date,-created' })
+    var pIncomes = pb.collection(INCOMES_COLLECTION).getFullList({ sort: '-date,-created', requestKey: null })
       .then(function (list) {
         state.incomes = list || [];
       })
       .catch(function () { state.incomes = []; });
 
-    var pPublic = pb.collection(PUBLIC_STATUS_COLLECTION).getFullList({ sort: '-created', perPage: 1 })
+    var pPublic = pb.collection(PUBLIC_STATUS_COLLECTION).getFullList({ sort: '-created', perPage: 1, requestKey: null })
       .then(function (list) {
         state.publicStatusRecord = (list && list.length) ? list[0] : null;
       })
       .catch(function () { state.publicStatusRecord = null; });
 
-    var pReports = loadReports().catch(function () { /* handled */ });
-
-    return Promise.all([pSettings, pPhases, pExpenses, pIncomes, pPublic, pReports])
+    return Promise.all([pSettings, pPhases, pExpenses, pIncomes, pPublic])
       .then(function () {
         if (state.activeMainSection === 'funding') {
           renderDashboard();
-        } else if (state.activeMainSection === 'reports') {
-          renderReportsSection();
-        } else if (state.activeMainSection === 'users') {
-          if (state.activeUserTab === 'directory') loadUsers();
-          else loadReservedHandles();
         }
       })
       .catch(function (err) {
+        if (isAbortError(err)) return;
         console.error('Error loading admin data:', err);
         showToast('Error cargando los datos de PocketBase', 'error');
       });
@@ -1816,11 +1817,11 @@
   function loadDashboardAnalytics() {
     renderParameterPills();
 
-    var pUsers = pb.collection(USERS_COLLECTION).getFullList({ sort: '-created' }).catch(function () { return []; });
-    var pReports = pb.collection(REPORTS_COLLECTION).getFullList({ sort: '-created' }).catch(function () { return []; });
-    var pTransfers = pb.collection(SERVER_TRANSFERS_COLLECTION).getFullList({ sort: '-created' }).catch(function () { return []; });
-    var pEvents = pb.collection(SYSTEM_EVENTS_COLLECTION).getFullList({ sort: '-created' }).catch(function () { return []; });
-    var pAlbums = pb.collection(ALBUMS_COLLECTION).getFullList({ sort: '-created' }).catch(function () { return []; });
+    var pUsers = pb.collection(USERS_COLLECTION).getFullList({ sort: '-created', requestKey: null }).catch(function () { return []; });
+    var pReports = pb.collection(REPORTS_COLLECTION).getFullList({ sort: '-created', requestKey: null }).catch(function () { return []; });
+    var pTransfers = pb.collection(SERVER_TRANSFERS_COLLECTION).getFullList({ sort: '-created', requestKey: null }).catch(function () { return []; });
+    var pEvents = pb.collection(SYSTEM_EVENTS_COLLECTION).getFullList({ sort: '-created', requestKey: null }).catch(function () { return []; });
+    var pAlbums = pb.collection(ALBUMS_COLLECTION).getFullList({ sort: '-created', requestKey: null }).catch(function () { return []; });
 
     return Promise.all([pUsers, pReports, pTransfers, pEvents, pAlbums])
       .then(function (results) {
@@ -1837,6 +1838,7 @@
         renderAnalyticsChart();
       })
       .catch(function (err) {
+        if (isAbortError(err)) return;
         console.error('Error loading dashboard analytics:', err);
         showToast('Error cargando métricas analíticas: ' + ((err && err.message) || 'desconocido'), 'error');
       });
@@ -2051,13 +2053,14 @@
   }
 
   function loadReports() {
-    return pb.collection(REPORTS_COLLECTION).getFullList({ sort: '-created' })
+    return pb.collection(REPORTS_COLLECTION).getFullList({ sort: '-created', requestKey: null })
       .then(function (list) {
         state.reports = list || [];
         renderReportsSection();
         subscribeReportsRealtime();
       })
       .catch(function (err) {
+        if (isAbortError(err)) return;
         console.error('Error loading reports:', err);
         var status = err && err.status;
         if (status === 403) {
@@ -2374,12 +2377,14 @@
     return pb.collection(USERS_COLLECTION).getList(1, 50, {
       sort: '-created',
       filter: filterStr || undefined,
+      requestKey: null,
     })
       .then(function (result) {
         state.users = (result && result.items) || [];
         renderUsersSection(result ? result.totalItems : 0);
       })
       .catch(function (err) {
+        if (isAbortError(err)) return;
         console.error('Error loading users:', err);
         state.users = [];
         renderUsersSection(0);
@@ -2459,16 +2464,18 @@
 
     var safeUserId = escapePbFilter(userId);
     var existingUser = state.users.find(function (u) { return u.id === userId; });
-    var pUser = existingUser ? Promise.resolve(existingUser) : pb.collection(USERS_COLLECTION).getOne(userId).catch(function () { return null; });
+    var pUser = existingUser ? Promise.resolve(existingUser) : pb.collection(USERS_COLLECTION).getOne(userId, { requestKey: null }).catch(function () { return null; });
 
     var pReportsReceived = pb.collection(REPORTS_COLLECTION).getList(1, 20, {
       filter: 'target_user_id = "' + safeUserId + '"',
       sort: '-created',
+      requestKey: null,
     }).catch(function () { return { items: [] }; });
 
     var pReportsMade = pb.collection(REPORTS_COLLECTION).getList(1, 20, {
       filter: 'reporter_id = "' + safeUserId + '"',
       sort: '-created',
+      requestKey: null,
     }).catch(function () { return { items: [] }; });
 
     Promise.all([pUser, pReportsReceived, pReportsMade])
@@ -2571,7 +2578,7 @@
 
     if (currentlyBanned) {
       if (!confirm('¿Deseas reactivar la cuenta de @' + (user.handle || user.name) + '?')) return;
-      pb.collection(USERS_COLLECTION).update(user.id, { is_banned: false, ban_reason: '' })
+      pb.collection(USERS_COLLECTION).update(user.id, { is_banned: false, ban_reason: '' }, { requestKey: null })
         .then(function (updated) {
           var idx = state.users.findIndex(function (u) { return u.id === user.id; });
           if (idx !== -1) state.users[idx] = updated;
@@ -2604,12 +2611,13 @@
   }
 
   function loadReservedHandles() {
-    return pb.collection(RESERVED_HANDLES_COLLECTION).getFullList({ sort: 'handle' })
+    return pb.collection(RESERVED_HANDLES_COLLECTION).getFullList({ sort: 'handle', requestKey: null })
       .then(function (list) {
         state.reservedHandles = list || [];
         renderReservedHandles();
       })
       .catch(function (err) {
+        if (isAbortError(err)) return;
         console.error('Error loading reserved handles:', err);
         state.reservedHandles = [];
         renderReservedHandles();
