@@ -46,7 +46,7 @@
           <img class="xow-brand-logo" src="../logo.png" alt="XowApp" width="36" height="36">
           <div>
             <h1 class="xow-admin-header-title" id="admin_dashboard_title"></h1>
-            <p class="xow-admin-header-subtitle" id="lastSyncStatusText"></p>
+            <p class="xow-admin-header-subtitle" id="admin_header_subtitle" data-i18n-key="admin_subtitle"></p>
           </div>
         </div>
 
@@ -72,10 +72,6 @@
             <span class="xow-admin-user-avatar" id="adminUserAvatar">XA</span>
             <span id="adminWelcomeName">Admin</span>
           </div>
-          <button type="button" class="btn btn-primary btn-sm" id="btnSyncPublic">
-            <svg class="icon icon-sm"><use href="#i-refresh"></use></svg>
-            <span id="admin_sync_btn"></span>
-          </button>
           <button type="button" class="btn btn-secondary btn-sm" id="adminLogoutBtn">
             <svg class="icon icon-sm"><use href="#i-logout"></use></svg>
             <span id="admin_logout"></span>
@@ -85,6 +81,17 @@
 
       <!-- Section 1: Funding Dashboard -->
       <div class="xow-admin-main-section active" id="secFunding">
+        <!-- Funding Top Sync & Actions Bar -->
+        <div class="xow-admin-toolbar" style="margin-bottom: 20px; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg class="icon icon-sm" style="color: var(--teal-accent);"><use href="#i-schedule"></use></svg>
+            <span class="xow-admin-kpi-sub" id="lastSyncStatusText" style="font-size: 13px; font-weight: 500;"></span>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" id="btnSyncPublic">
+            <svg class="icon icon-sm"><use href="#i-refresh"></use></svg>
+            <span id="admin_sync_btn"></span>
+          </button>
+        </div>
       <!-- KPI Summary Cards -->
       <section class="xow-admin-kpi-grid" aria-label="KPIs">
         <!-- KPI 1: Gross Raised -->
