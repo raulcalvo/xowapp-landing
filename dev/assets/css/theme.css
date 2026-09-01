@@ -2427,6 +2427,126 @@ a:hover {
   margin: 0 auto;
 }
 
+.xow-analogies-section {
+  margin-bottom: 36px;
+}
+
+.xow-analogies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.xow-analogy-row {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 32px 36px;
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 32px;
+  align-items: center;
+  position: relative;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.xow-analogy-row:hover {
+  transform: translateY(-3px);
+  border-color: rgba(3, 218, 197, 0.45);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22);
+}
+
+.xow-analogy-row-media {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.xow-analogy-icon {
+  width: 84px;
+  height: 84px;
+  border-radius: 22px;
+  background: var(--box-bg);
+  color: var(--teal-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.xow-analogy-row:hover .xow-analogy-icon {
+  transform: scale(1.08);
+}
+
+.xow-analogy-icon .icon {
+  width: 40px;
+  height: 40px;
+}
+
+.xow-analogy-video {
+  width: 100%;
+  max-width: 240px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  background: #000;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.xow-analogy-row-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.xow-analogy-badge-wrap {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.xow-analogy-row-title {
+  color: var(--heading-color);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.xow-analogy-row-body {
+  color: var(--text-muted);
+  font-size: 15.5px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .xow-analogy-row {
+    grid-template-columns: 1fr;
+    padding: 24px 20px;
+    gap: 16px;
+  }
+  .xow-analogy-row-media {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .xow-analogy-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+  }
+  .xow-analogy-icon .icon {
+    width: 32px;
+    height: 32px;
+  }
+}
+
 .xow-concepts-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

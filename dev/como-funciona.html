@@ -25,48 +25,82 @@
           <p class="xow-subtitle xow-lead" id="deepdive_intro"></p>
         </section>
 
-        <!-- Fundamental concepts: Showing vs Sharing, Album types, Social interactions, and Local AI/Biometrics -->
-        <section class="xow-section">
-          <div class="xow-concepts-grid">
-            <div class="xow-concept-card">
-              <div class="xow-concept-header">
-                <div class="xow-concept-icon">
-                  <svg class="icon"><use href="#i-visibility_off"></use></svg>
-                </div>
-                <h3 id="deepdive_concept_showing_title"></h3>
-              </div>
-              <p id="deepdive_concept_showing_body"></p>
-            </div>
+        <!-- The 3 Human Analogies -->
+        <section class="xow-section xow-analogies-section">
+          <div class="xow-usecases-header">
+            <div class="xow-kicker xow-center" id="analogies_kicker"></div>
+            <h2 class="xow-title-sm xow-center" id="analogies_title"></h2>
+            <p class="xow-subtitle xow-lead xow-center" id="analogies_intro"></p>
+          </div>
 
-            <div class="xow-concept-card">
-              <div class="xow-concept-header">
-                <div class="xow-concept-icon">
-                  <svg class="icon"><use href="#i-groups"></use></svg>
+          <div class="xow-analogies-list">
+            <!-- Analogy 1: The Bouncer -->
+            <article class="xow-analogy-row" id="cardAnalogyBouncer">
+              <div class="xow-analogy-row-media" data-video-key="analogy_bouncer_video">
+                <div class="xow-analogy-icon">
+                  <svg class="icon"><use href="#i-shield"></use></svg>
                 </div>
-                <h3 id="deepdive_concept_albums_title"></h3>
+                <video class="xow-analogy-video" controls playsinline preload="metadata" hidden></video>
               </div>
-              <p id="deepdive_concept_albums_body"></p>
-            </div>
+              <div class="xow-analogy-row-content">
+                <div class="xow-analogy-badge-wrap">
+                  <span class="xow-badge xow-badge-teal" id="analogy_bouncer_badge"></span>
+                </div>
+                <h3 class="xow-analogy-row-title" id="analogy_bouncer_title"></h3>
+                <p class="xow-analogy-row-body" id="analogy_bouncer_body"></p>
+              </div>
+            </article>
 
-            <div class="xow-concept-card">
-              <div class="xow-concept-header">
-                <div class="xow-concept-icon">
-                  <svg class="icon"><use href="#i-chat"></use></svg>
+            <!-- Analogy 2: The Padlock Factory -->
+            <article class="xow-analogy-row" id="cardAnalogyLocks">
+              <div class="xow-analogy-row-media" data-video-key="analogy_locks_video">
+                <div class="xow-analogy-icon">
+                  <svg class="icon"><use href="#i-lock"></use></svg>
                 </div>
-                <h3 id="deepdive_concept_social_title"></h3>
+                <video class="xow-analogy-video" controls playsinline preload="metadata" hidden></video>
               </div>
-              <p id="deepdive_concept_social_body"></p>
-            </div>
+              <div class="xow-analogy-row-content">
+                <div class="xow-analogy-badge-wrap">
+                  <span class="xow-badge xow-badge-indigo" id="analogy_locks_badge"></span>
+                </div>
+                <h3 class="xow-analogy-row-title" id="analogy_locks_title"></h3>
+                <p class="xow-analogy-row-body" id="analogy_locks_body"></p>
+              </div>
+            </article>
 
-            <div class="xow-concept-card">
-              <div class="xow-concept-header">
-                <div class="xow-concept-icon">
-                  <svg class="icon"><use href="#i-fingerprint"></use></svg>
+            <!-- Analogy 3: The Ephemeral Mailbox -->
+            <article class="xow-analogy-row" id="cardAnalogyMailbox">
+              <div class="xow-analogy-row-media" data-video-key="analogy_mailbox_video">
+                <div class="xow-analogy-icon">
+                  <svg class="icon"><use href="#i-schedule"></use></svg>
                 </div>
-                <h3 id="deepdive_concept_security_title"></h3>
+                <video class="xow-analogy-video" controls playsinline preload="metadata" hidden></video>
               </div>
-              <p id="deepdive_concept_security_body"></p>
-            </div>
+              <div class="xow-analogy-row-content">
+                <div class="xow-analogy-badge-wrap">
+                  <span class="xow-badge xow-badge-teal" id="analogy_mailbox_badge"></span>
+                </div>
+                <h3 class="xow-analogy-row-title" id="analogy_mailbox_title"></h3>
+                <p class="xow-analogy-row-body" id="analogy_mailbox_body"></p>
+              </div>
+            </article>
+
+            <!-- Analogy 4: Taking a Photo of the Screen -->
+            <article class="xow-analogy-row" id="cardAnalogyScreenPhoto">
+              <div class="xow-analogy-row-media" data-video-key="analogy_screenphoto_video">
+                <div class="xow-analogy-icon">
+                  <svg class="icon"><use href="#i-shield"></use></svg>
+                </div>
+                <video class="xow-analogy-video" controls playsinline preload="metadata" hidden></video>
+              </div>
+              <div class="xow-analogy-row-content">
+                <div class="xow-analogy-badge-wrap">
+                  <span class="xow-badge xow-badge-indigo" id="analogy_screenphoto_badge"></span>
+                </div>
+                <h3 class="xow-analogy-row-title" id="analogy_screenphoto_title"></h3>
+                <p class="xow-analogy-row-body" id="analogy_screenphoto_body"></p>
+              </div>
+            </article>
           </div>
         </section>
 
@@ -326,5 +360,44 @@
   <script src="assets/js/donate-fab.js"></script>
   <script src="assets/js/auth.js"></script>
   <script src="assets/js/user-menu.js"></script>
+  <script>
+    (function () {
+      function updateAnalogyVideos(lang) {
+        var table = (window.XOW_I18N && window.XOW_I18N[lang]) ? window.XOW_I18N[lang] : {};
+        document.querySelectorAll('[data-video-key]').forEach(function (container) {
+          var key = container.getAttribute('data-video-key');
+          var videoSrc = table[key] || '';
+          var videoEl = container.querySelector('.xow-analogy-video');
+          var iconEl = container.querySelector('.xow-analogy-icon');
+          if (videoSrc && videoSrc.trim() !== '') {
+            if (videoEl) {
+              if (videoEl.getAttribute('src') !== videoSrc) {
+                videoEl.src = videoSrc;
+              }
+              videoEl.hidden = false;
+            }
+            if (iconEl) iconEl.hidden = true;
+          } else {
+            if (videoEl) {
+              videoEl.removeAttribute('src');
+              videoEl.hidden = true;
+            }
+            if (iconEl) iconEl.hidden = false;
+          }
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        var lang = localStorage.getItem('xowapp_landing_lang') || 'es';
+        updateAnalogyVideos(lang);
+      });
+
+      document.addEventListener('xow:langchange', function (e) {
+        if (e.detail && e.detail.lang) {
+          updateAnalogyVideos(e.detail.lang);
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
