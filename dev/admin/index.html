@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://pocketbase.raulcalvo.com https://dev.pocketbase.xowapp.com; img-src 'self' data: https://pocketbase.raulcalvo.com https://dev.pocketbase.xowapp.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-ancestors 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://pocketbase.xowapp.com https://pocketbase.raulcalvo.com https://dev.pocketbase.xowapp.com; img-src 'self' data: https://pocketbase.xowapp.com https://pocketbase.raulcalvo.com https://dev.pocketbase.xowapp.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-ancestors 'none'">
   <title id="pageTitle" data-i18n-key="admin_title">XowApp Admin</title>
   <link rel="icon" type="image/png" href="../logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/theme.css?v=550">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=552">
 </head>
 <body data-page="admin">
   <div class="xow-page">
@@ -122,7 +122,7 @@
               <svg class="xow-admin-kpi-icon" style="color: #f59e0b;"><use href="#i-sync_alt"></use></svg>
             </div>
             <div class="xow-admin-kpi-value" id="kpiTransfersTransitValue">0</div>
-            <div class="xow-admin-kpi-sub" id="kpiTransfersTransitSub">Enviados, pendientes de descarga</div>
+            <div class="xow-admin-kpi-sub" id="kpiTransfersTransitSub" data-i18n-key="admin_kpi_transfers_transit_sub">Enviados, pendientes de descarga</div>
           </div>
 
           <!-- KPI 4: Delivered Files (Purged from Server) -->
@@ -132,7 +132,7 @@
               <svg class="xow-admin-kpi-icon" style="color: #3b82f6;"><use href="#i-check_circle"></use></svg>
             </div>
             <div class="xow-admin-kpi-value" id="kpiTransfersDeliveredValue">0</div>
-            <div class="xow-admin-kpi-sub" id="kpiTransfersDeliveredSub">Completados y purgados del servidor</div>
+            <div class="xow-admin-kpi-sub" id="kpiTransfersDeliveredSub" data-i18n-key="admin_kpi_transfers_delivered_sub">Completados y purgados del servidor</div>
           </div>
 
           <!-- KPI 5: User Deregistrations (Bajas) -->
@@ -142,7 +142,7 @@
               <svg class="xow-admin-kpi-icon" style="color: #8b5cf6;"><use href="#i-delete"></use></svg>
             </div>
             <div class="xow-admin-kpi-value" id="kpiUserDeletionsValue">0</div>
-            <div class="xow-admin-kpi-sub" id="kpiUserDeletionsSub">Cuentas eliminadas (Derecho al olvido)</div>
+            <div class="xow-admin-kpi-sub" id="kpiUserDeletionsSub" data-i18n-key="admin_kpi_user_deletions_sub">Cuentas eliminadas (Derecho al olvido)</div>
           </div>
 
           <!-- KPI 6: Active Albums -->
@@ -152,7 +152,7 @@
               <svg class="xow-admin-kpi-icon" style="color: #06b6d4;"><use href="#i-photo_library"></use></svg>
             </div>
             <div class="xow-admin-kpi-value" id="kpiActiveAlbumsValue">0</div>
-            <div class="xow-admin-kpi-sub" id="kpiActiveAlbumsSub">Álbumes activos en la red E2EE</div>
+            <div class="xow-admin-kpi-sub" id="kpiActiveAlbumsSub" data-i18n-key="admin_kpi_active_albums_sub">Álbumes activos en la red E2EE</div>
           </div>
         </section>
 
@@ -277,7 +277,7 @@
       <!-- Tab 1: Expenses Panel -->
       <div class="xow-admin-tab-panel active" id="panelExpenses" role="tabpanel">
         <div class="xow-admin-toolbar">
-          <h3 class="xow-admin-section-title" style="margin-bottom: 0;" id="expensesPanelTitle">Listado de Gastos</h3>
+          <h3 class="xow-admin-section-title" style="margin-bottom: 0;" id="expensesPanelTitle" data-i18n-key="admin_exp_panel_title">Listado de Gastos</h3>
           <button type="button" class="btn btn-primary btn-sm" id="btnOpenAddExpenseModal">
             <svg class="icon icon-sm"><use href="#i-add"></use></svg>
             <span id="admin_btn_add_expense">+ Añadir Gasto</span>
@@ -288,13 +288,13 @@
             <table class="xow-admin-table" id="expensesTable">
               <thead>
                 <tr>
-                  <th id="thExpConcept">Concepto</th>
-                  <th id="thExpType">Tipo / Periodicidad</th>
-                  <th id="thExpPhases">Fases</th>
-                  <th id="thExpDate">Fecha</th>
-                  <th id="thExpAmount">Importe (€)</th>
-                  <th id="thExpStatus">Estado</th>
-                  <th id="thExpActions">Acciones</th>
+                  <th id="thExpConcept" data-i18n-key="admin_col_concept">Concepto</th>
+                  <th id="thExpType" data-i18n-key="admin_exp_col_type">Tipo / Periodicidad</th>
+                  <th id="thExpPhases" data-i18n-key="admin_exp_col_phases">Fases</th>
+                  <th id="thExpDate" data-i18n-key="admin_col_date">Fecha</th>
+                  <th id="thExpAmount" data-i18n-key="admin_col_amount">Importe (€)</th>
+                  <th id="thExpStatus" data-i18n-key="admin_col_status">Estado</th>
+                  <th id="thExpActions" data-i18n-key="admin_col_actions">Acciones</th>
                 </tr>
               </thead>
               <tbody id="expensesTableBody">
@@ -312,7 +312,7 @@
       <!-- Tab: Phases Panel -->
       <div class="xow-admin-tab-panel" id="panelPhases" role="tabpanel">
         <div class="xow-admin-toolbar">
-          <h3 class="xow-admin-section-title" style="margin-bottom: 0;" id="phasesPanelTitle">Fases del Proyecto</h3>
+          <h3 class="xow-admin-section-title" style="margin-bottom: 0;" id="phasesPanelTitle" data-i18n-key="admin_phase_panel_title">Fases del Proyecto</h3>
           <button type="button" class="btn btn-primary btn-sm" id="btnOpenAddPhaseModal">
             <svg class="icon icon-sm"><use href="#i-add"></use></svg>
             <span id="admin_btn_add_phase">+ Añadir Fase</span>
@@ -323,12 +323,12 @@
             <table class="xow-admin-table" id="phasesTable">
               <thead>
                 <tr>
-                  <th id="thPhaseOrder">Orden</th>
-                  <th id="thPhaseName">Nombre de la Fase</th>
-                  <th id="thPhaseDesc">Descripción</th>
-                  <th id="thPhaseMonthly">Coste Mensual</th>
-                  <th id="thPhaseTarget">Meta Anual (Bucket)</th>
-                  <th id="thPhaseActions">Acciones</th>
+                  <th id="thPhaseOrder" data-i18n-key="admin_phase_col_order">Orden</th>
+                  <th id="thPhaseName" data-i18n-key="admin_phase_col_name">Nombre de la Fase</th>
+                  <th id="thPhaseDesc" data-i18n-key="admin_phase_col_desc">Descripción</th>
+                  <th id="thPhaseMonthly" data-i18n-key="admin_phase_col_monthly">Coste Mensual</th>
+                  <th id="thPhaseTarget" data-i18n-key="admin_phase_col_target">Meta Anual (Bucket)</th>
+                  <th id="thPhaseActions" data-i18n-key="admin_col_actions">Acciones</th>
                 </tr>
               </thead>
               <tbody id="phasesTableBody">
@@ -346,7 +346,7 @@
       <!-- Tab 2: Incomes Panel -->
       <div class="xow-admin-tab-panel" id="panelIncomes" role="tabpanel">
         <div class="xow-admin-toolbar">
-          <h3 class="xow-admin-section-title" style="margin-bottom: 0;" id="incomesPanelTitle">Listado de Ingresos y Donaciones</h3>
+          <h3 class="xow-admin-section-title" style="margin-bottom: 0;" id="incomesPanelTitle" data-i18n-key="admin_inc_panel_title">Listado de Ingresos y Donaciones</h3>
           <button type="button" class="btn btn-primary btn-sm" id="btnOpenAddIncomeModal">
             <svg class="icon icon-sm"><use href="#i-add"></use></svg>
             <span id="admin_btn_add_income">+ Añadir Ingreso</span>
@@ -357,14 +357,14 @@
             <table class="xow-admin-table" id="incomesTable">
               <thead>
                 <tr>
-                  <th id="thIncDate">Fecha</th>
-                  <th id="thIncConcept">Concepto</th>
-                  <th id="thIncSource">Origen</th>
-                  <th id="thIncGross">Bruto (€)</th>
-                  <th id="thIncFee">Comisión (€)</th>
-                  <th id="thIncTax">Impuestos (€)</th>
-                  <th id="thIncNet">Neto (€)</th>
-                  <th id="thIncActions">Acciones</th>
+                  <th id="thIncDate" data-i18n-key="admin_col_date">Fecha</th>
+                  <th id="thIncConcept" data-i18n-key="admin_col_concept">Concepto</th>
+                  <th id="thIncSource" data-i18n-key="admin_inc_col_source">Origen</th>
+                  <th id="thIncGross" data-i18n-key="admin_inc_col_gross">Bruto (€)</th>
+                  <th id="thIncFee" data-i18n-key="admin_inc_col_fee">Comisión (€)</th>
+                  <th id="thIncTax" data-i18n-key="admin_inc_col_tax">Impuestos (€)</th>
+                  <th id="thIncNet" data-i18n-key="admin_inc_col_net">Neto (€)</th>
+                  <th id="thIncActions" data-i18n-key="admin_col_actions">Acciones</th>
                 </tr>
               </thead>
               <tbody id="incomesTableBody">
@@ -383,7 +383,7 @@
       <div class="xow-admin-tab-panel" id="panelSettings" role="tabpanel">
         <div class="xow-admin-table-card" style="padding: 24px; max-width: 680px;">
           <h3 class="xow-title-sm" style="margin-bottom: 8px;" id="admin_settings_title">Configuración de Comisiones y Finanzas</h3>
-          <p class="xow-subtitle" style="margin-bottom: 24px;">Ajusta los porcentajes aplicados automáticamente al registrar ingresos y donaciones.</p>
+          <p class="xow-subtitle" style="margin-bottom: 24px;" data-i18n-key="admin_settings_rates_lead">Ajusta los porcentajes aplicados automáticamente al registrar ingresos y donaciones.</p>
 
           <form id="adminSettingsForm" novalidate>
             <div class="xow-form-grid-2">
@@ -447,7 +447,7 @@
               <svg class="xow-admin-kpi-icon"><use href="#i-flag"></use></svg>
             </div>
             <div class="xow-admin-kpi-value" id="kpiRepTotal">0</div>
-            <div class="xow-admin-kpi-sub" id="kpiRepTotalSub">Histórico registrado</div>
+            <div class="xow-admin-kpi-sub" id="kpiRepTotalSub" data-i18n-key="admin_reports_kpi_total_sub">Histórico registrado</div>
           </div>
 
           <!-- KPI 2: Pending Review -->
@@ -457,7 +457,7 @@
               <svg class="xow-admin-kpi-icon" style="color: #f59e0b;"><use href="#i-schedule"></use></svg>
             </div>
             <div class="xow-admin-kpi-value highlight-warning" id="kpiRepPending">0</div>
-            <div class="xow-admin-kpi-sub" id="kpiRepPendingSub">Requieren atención</div>
+            <div class="xow-admin-kpi-sub" id="kpiRepPendingSub" data-i18n-key="admin_reports_kpi_pending_sub">Requieren atención</div>
           </div>
 
           <!-- KPI 3: Resolved / Action Taken -->
@@ -467,7 +467,7 @@
               <svg class="xow-admin-kpi-icon" style="color: #10b981;"><use href="#i-check_circle"></use></svg>
             </div>
             <div class="xow-admin-kpi-value highlight" id="kpiRepResolved">0</div>
-            <div class="xow-admin-kpi-sub" id="kpiRepResolvedSub">Acción o desestimadas</div>
+            <div class="xow-admin-kpi-sub" id="kpiRepResolvedSub" data-i18n-key="admin_reports_kpi_resolved_sub">Acción o desestimadas</div>
           </div>
 
           <!-- KPI 4: SLA Compliance -->
@@ -501,7 +501,7 @@
         <div class="xow-admin-toolbar xow-reports-toolbar">
           <div class="xow-filter-search-wrap">
             <svg class="icon icon-sm xow-search-icon"><use href="#i-search"></use></svg>
-            <input type="search" class="xow-input-search" id="repSearchInput" placeholder="Buscar denuncias (ID, usuario, descripción)..." aria-label="Buscar denuncias">
+            <input type="search" class="xow-input-search" id="repSearchInput" placeholder="Buscar denuncias (ID, usuario, descripción)..." data-i18n-placeholder="admin_reports_search_ph" aria-label="Buscar denuncias">
           </div>
 
           <div class="xow-filter-group">
@@ -544,7 +544,7 @@
 
             <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshReports" title="Refrescar denuncias">
               <svg class="icon icon-sm"><use href="#i-refresh"></use></svg>
-              <span>Refrescar</span>
+              <span data-i18n-key="admin_btn_refresh">Refrescar</span>
             </button>
           </div>
         </div>
@@ -599,11 +599,11 @@
             <div class="xow-users-search-inputs">
               <div class="xow-filter-search-wrap">
                 <svg class="icon icon-sm xow-search-icon"><use href="#i-search"></use></svg>
-                <input type="search" class="xow-input-search" id="userSearchHandleInput" placeholder="Buscar por @handle (contiene)..." aria-label="Buscar por handle">
+                <input type="search" class="xow-input-search" id="userSearchHandleInput" placeholder="Buscar por @handle (contiene)..." data-i18n-placeholder="admin_users_search_handle_ph" aria-label="Buscar por handle">
               </div>
               <div class="xow-filter-search-wrap">
                 <svg class="icon icon-sm xow-search-icon"><use href="#i-person"></use></svg>
-                <input type="search" class="xow-input-search" id="userSearchNameInput" placeholder="Buscar por Nombre (contiene)..." aria-label="Buscar por nombre">
+                <input type="search" class="xow-input-search" id="userSearchNameInput" placeholder="Buscar por Nombre (contiene)..." data-i18n-placeholder="admin_users_search_name_ph" aria-label="Buscar por nombre">
               </div>
             </div>
 
@@ -626,13 +626,13 @@
               <table class="xow-admin-table" id="usersTable">
                 <thead>
                   <tr>
-                    <th id="thUserAvatar">Usuario</th>
-                    <th id="thUserHandle">@handle</th>
-                    <th id="thUserTrust">Trust Score</th>
-                    <th id="thUserCreated">Registro</th>
-                    <th id="thUserLastSeen">Última Conexión</th>
-                    <th id="thUserStatus">Estado</th>
-                    <th id="thUserActions">Acciones</th>
+                    <th id="thUserAvatar" data-i18n-key="admin_users_col_user">Usuario</th>
+                    <th id="thUserHandle" data-i18n-key="admin_users_col_handle">@handle</th>
+                    <th id="thUserTrust" data-i18n-key="admin_users_col_trust">Trust Score</th>
+                    <th id="thUserCreated" data-i18n-key="admin_users_col_created">Registro</th>
+                    <th id="thUserLastSeen" data-i18n-key="admin_users_col_last_seen">Última Conexión</th>
+                    <th id="thUserStatus" data-i18n-key="admin_col_status">Estado</th>
+                    <th id="thUserActions" data-i18n-key="admin_col_actions">Acciones</th>
                   </tr>
                 </thead>
                 <tbody id="usersTableBody">
@@ -657,7 +657,7 @@
             <div style="display: flex; gap: 8px;">
               <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshReserved">
                 <svg class="icon icon-sm"><use href="#i-refresh"></use></svg>
-                <span>Refrescar</span>
+                <span data-i18n-key="admin_btn_refresh">Refrescar</span>
               </button>
               <button type="button" class="btn btn-primary btn-sm" id="btnOpenAddReservedModal">
                 <svg class="icon icon-sm"><use href="#i-add"></use></svg>
@@ -699,7 +699,7 @@
   <div class="xow-modal-backdrop" id="modalExpenseBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalExpenseTitle">
     <div class="xow-modal-card">
       <div class="xow-modal-header">
-        <h3 class="xow-modal-title" id="modalExpenseTitle">Añadir Gasto</h3>
+        <h3 class="xow-modal-title" id="modalExpenseTitle" data-i18n-key="admin_exp_modal_title">Añadir Gasto</h3>
         <button type="button" class="xow-modal-close" id="btnCloseExpenseModal" aria-label="Cerrar">
           <svg class="icon"><use href="#i-close"></use></svg>
         </button>
@@ -709,17 +709,17 @@
         <input type="hidden" id="expenseEditId" name="id">
 
         <div class="xow-form-group">
-          <label for="expConcept" id="lblExpConcept">Concepto *</label>
-          <input type="text" id="expConcept" name="concept" placeholder="Ej. Servidor Hetzner VPS" required>
+          <label for="expConcept" id="lblExpConcept" data-i18n-key="admin_exp_lbl_concept">Concepto *</label>
+          <input type="text" id="expConcept" name="concept" placeholder="Ej. Servidor Hetzner VPS" data-i18n-placeholder="admin_exp_ph_concept" required>
         </div>
 
         <div class="xow-form-grid-2">
           <div class="xow-form-group">
-            <label for="expAmount" id="lblExpAmount">Importe (€) *</label>
-            <input type="number" id="expAmount" name="amount_eur" step="0.01" min="0" placeholder="Ej. 150.00" required>
+            <label for="expAmount" id="lblExpAmount" data-i18n-key="admin_exp_lbl_amount">Importe (€) *</label>
+            <input type="number" id="expAmount" name="amount_eur" step="0.01" min="0" placeholder="Ej. 150.00" data-i18n-placeholder="admin_exp_ph_amount" required>
           </div>
           <div class="xow-form-group">
-            <label for="expType" id="lblExpType">Tipo *</label>
+            <label for="expType" id="lblExpType" data-i18n-key="admin_exp_lbl_type">Tipo *</label>
             <select id="expType" name="type" required>
               <option value="monthly">Mensual recurrente</option>
               <option value="one_off">Puntual</option>
@@ -728,7 +728,7 @@
         </div>
 
         <div class="xow-form-group">
-          <label id="lblExpPhases">Fases aplicables</label>
+          <label id="lblExpPhases" data-i18n-key="admin_exp_lbl_phases">Fases aplicables</label>
           <div class="xow-checkbox-group" id="expPhasesCheckboxGroup">
             <!-- Dynamically populated checkboxes for phases -->
           </div>
@@ -736,25 +736,25 @@
 
         <div class="xow-form-grid-2">
           <div class="xow-form-group">
-            <label for="expDate" id="lblExpDate">Fecha de pago / inicio</label>
+            <label for="expDate" id="lblExpDate" data-i18n-key="admin_exp_lbl_date">Fecha de pago / inicio</label>
             <input type="date" id="expDate" name="payment_date">
           </div>
           <div class="xow-form-group" style="display: flex; align-items: flex-end; padding-bottom: 8px;">
             <label class="xow-checkbox-pill" style="width: 100%; justify-content: center; padding: 10px;">
               <input type="checkbox" id="expIsActive" name="is_active" checked>
-              <span id="lblExpIsActive">Gasto Activo</span>
+              <span id="lblExpIsActive" data-i18n-key="admin_exp_lbl_active">Gasto Activo</span>
             </label>
           </div>
         </div>
 
         <div class="xow-form-group">
-          <label for="expNotes" id="lblExpNotes">Notas</label>
-          <textarea id="expNotes" name="notes" rows="2" placeholder="Detalles u observaciones"></textarea>
+          <label for="expNotes" id="lblExpNotes" data-i18n-key="admin_exp_lbl_notes">Notas</label>
+          <textarea id="expNotes" name="notes" rows="2" placeholder="Detalles u observaciones" data-i18n-placeholder="admin_exp_ph_notes"></textarea>
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-          <button type="button" class="btn btn-secondary" id="btnCancelExpense">Cancelar</button>
-          <button type="submit" class="btn btn-primary" id="btnSaveExpense">Guardar Gasto</button>
+          <button type="button" class="btn btn-secondary" id="btnCancelExpense" data-i18n-key="admin_btn_cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveExpense" data-i18n-key="admin_exp_btn_save">Guardar Gasto</button>
         </div>
       </form>
     </div>
@@ -764,7 +764,7 @@
   <div class="xow-modal-backdrop" id="modalIncomeBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalIncomeTitle">
     <div class="xow-modal-card">
       <div class="xow-modal-header">
-        <h3 class="xow-modal-title" id="modalIncomeTitle">Añadir Ingreso</h3>
+        <h3 class="xow-modal-title" id="modalIncomeTitle" data-i18n-key="admin_inc_modal_title">Añadir Ingreso</h3>
         <button type="button" class="xow-modal-close" id="btnCloseIncomeModal" aria-label="Cerrar">
           <svg class="icon"><use href="#i-close"></use></svg>
         </button>
@@ -774,17 +774,17 @@
         <input type="hidden" id="incomeEditId" name="id">
 
         <div class="xow-form-group">
-          <label for="incConcept" id="lblIncConcept">Concepto *</label>
-          <input type="text" id="incConcept" name="concept" placeholder="Ej. Aportación inicial o Donación consumible" required>
+          <label for="incConcept" id="lblIncConcept" data-i18n-key="admin_inc_lbl_concept">Concepto *</label>
+          <input type="text" id="incConcept" name="concept" placeholder="Ej. Aportación inicial o Donación consumible" data-i18n-placeholder="admin_inc_ph_concept" required>
         </div>
 
         <div class="xow-form-grid-2">
           <div class="xow-form-group">
-            <label for="incDate" id="lblIncDate">Fecha *</label>
+            <label for="incDate" id="lblIncDate" data-i18n-key="admin_inc_lbl_date">Fecha *</label>
             <input type="date" id="incDate" name="date" required>
           </div>
           <div class="xow-form-group">
-            <label for="incSource" id="lblIncSource">Origen / Canal *</label>
+            <label for="incSource" id="lblIncSource" data-i18n-key="admin_inc_lbl_source">Origen / Canal *</label>
             <select id="incSource" name="source" required>
               <option value="founder_investment">Inversión propia (Fondos propios)</option>
               <option value="google_play">Google Play (IAP)</option>
@@ -795,22 +795,22 @@
         </div>
 
         <div class="xow-form-group">
-          <label for="incGross" id="lblIncGross">Importe Bruto (€) *</label>
-          <input type="number" id="incGross" name="gross_amount_eur" step="0.01" min="0" placeholder="Ej. 1000.00" required>
+          <label for="incGross" id="lblIncGross" data-i18n-key="admin_inc_lbl_gross">Importe Bruto (€) *</label>
+          <input type="number" id="incGross" name="gross_amount_eur" step="0.01" min="0" placeholder="Ej. 1000.00" data-i18n-placeholder="admin_inc_ph_gross" required>
         </div>
 
         <!-- Real-time Automatic Financial Calculation Preview -->
         <div class="xow-calc-preview">
           <div class="xow-calc-item">
-            <span class="xow-calc-label">Comisión</span>
+            <span class="xow-calc-label" data-i18n-key="admin_inc_calc_fee">Comisión</span>
             <span class="xow-calc-val" id="calcPreviewFee">0.00 €</span>
           </div>
           <div class="xow-calc-item">
-            <span class="xow-calc-label">Impuestos (IRPF)</span>
+            <span class="xow-calc-label" data-i18n-key="admin_inc_calc_tax">Impuestos (IRPF)</span>
             <span class="xow-calc-val" id="calcPreviewTax">0.00 €</span>
           </div>
           <div class="xow-calc-item">
-            <span class="xow-calc-label">Neto en Caja</span>
+            <span class="xow-calc-label" data-i18n-key="admin_inc_calc_net">Neto en Caja</span>
             <span class="xow-calc-val net" id="calcPreviewNet">0.00 €</span>
           </div>
         </div>
@@ -822,25 +822,25 @@
 
         <div class="xow-form-grid-2">
           <div class="xow-form-group">
-            <label for="incExtId" id="lblIncExtId">ID / Referencia Externa</label>
-            <input type="text" id="incExtId" name="external_id" placeholder="Ej. ch_3M5x... o GPA.3321...">
+            <label for="incExtId" id="lblIncExtId" data-i18n-key="admin_inc_lbl_ext_id">ID / Referencia Externa</label>
+            <input type="text" id="incExtId" name="external_id" placeholder="Ej. ch_3M5x... o GPA.3321..." data-i18n-placeholder="admin_inc_ph_ext_id">
           </div>
           <div class="xow-form-group" style="display: flex; align-items: flex-end; padding-bottom: 8px;">
             <label class="xow-checkbox-pill" style="width: 100%; justify-content: center; padding: 10px;">
               <input type="checkbox" id="incIsRecurring" name="is_recurring">
-              <span id="lblIncIsRecurring">Ingreso Recurrente</span>
+              <span id="lblIncIsRecurring" data-i18n-key="admin_inc_lbl_recurring">Ingreso Recurrente</span>
             </label>
           </div>
         </div>
 
         <div class="xow-form-group">
-          <label for="incNotes" id="lblIncNotes">Notas</label>
-          <textarea id="incNotes" name="notes" rows="2" placeholder="Observaciones contables"></textarea>
+          <label for="incNotes" id="lblIncNotes" data-i18n-key="admin_inc_lbl_notes">Notas</label>
+          <textarea id="incNotes" name="notes" rows="2" placeholder="Observaciones contables" data-i18n-placeholder="admin_inc_ph_notes"></textarea>
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-          <button type="button" class="btn btn-secondary" id="btnCancelIncome">Cancelar</button>
-          <button type="submit" class="btn btn-primary" id="btnSaveIncome">Guardar Ingreso</button>
+          <button type="button" class="btn btn-secondary" id="btnCancelIncome" data-i18n-key="admin_btn_cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveIncome" data-i18n-key="admin_inc_btn_save">Guardar Ingreso</button>
         </div>
       </form>
     </div>
@@ -850,7 +850,7 @@
   <div class="xow-modal-backdrop" id="modalPhaseBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalPhaseTitle">
     <div class="xow-modal-card">
       <div class="xow-modal-header">
-        <h3 class="xow-modal-title" id="modalPhaseTitle">Añadir Fase</h3>
+        <h3 class="xow-modal-title" id="modalPhaseTitle" data-i18n-key="admin_phase_modal_title">Añadir Fase</h3>
         <button type="button" class="xow-modal-close" id="btnClosePhaseModal" aria-label="Cerrar">
           <svg class="icon"><use href="#i-close"></use></svg>
         </button>
@@ -872,29 +872,29 @@
             <button type="button" class="xow-lang-tab" data-phase-lang="pt">🇵🇹 PT</button>
           </div>
           <button type="button" class="btn btn-secondary btn-sm" id="btnAutoTranslatePhase" title="Auto-traducir con PocketBase a los 8 idiomas">
-            <span id="btnAutoTranslateText">✨ Auto-traducir con IA</span>
+            <span id="btnAutoTranslateText" data-i18n-key="admin_phase_btn_autotranslate">✨ Auto-traducir con IA</span>
           </button>
         </div>
 
         <div class="xow-form-grid-2">
           <div class="xow-form-group">
-            <label for="phaseOrder" id="lblPhaseOrder">Orden en la Cascada *</label>
+            <label for="phaseOrder" id="lblPhaseOrder" data-i18n-key="admin_phase_lbl_order">Orden en la Cascada *</label>
             <input type="number" id="phaseOrder" name="order" min="1" max="99" value="1" required>
           </div>
           <div class="xow-form-group">
             <label for="phaseName" id="lblPhaseName">Nombre de la Fase (<span id="phaseActiveLangBadge">ES</span>) *</label>
-            <input type="text" id="phaseName" name="name" placeholder="Ej. Fase 1: Supervivencia" required>
+            <input type="text" id="phaseName" name="name" placeholder="Ej. Fase 1: Supervivencia" data-i18n-placeholder="admin_phase_ph_name" required>
           </div>
         </div>
 
         <div class="xow-form-group">
           <label for="phaseDesc" id="lblPhaseDesc">Descripción (<span id="phaseActiveLangDescBadge">ES</span>)</label>
-          <textarea id="phaseDesc" name="description" rows="3" placeholder="Ej. Servidores básicos, dominio y mantenimiento"></textarea>
+          <textarea id="phaseDesc" name="description" rows="3" placeholder="Ej. Servidores básicos, dominio y mantenimiento" data-i18n-placeholder="admin_phase_ph_desc"></textarea>
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-          <button type="button" class="btn btn-secondary" id="btnCancelPhase">Cancelar</button>
-          <button type="submit" class="btn btn-primary" id="btnSavePhase">Guardar Fase</button>
+          <button type="button" class="btn btn-secondary" id="btnCancelPhase" data-i18n-key="admin_btn_cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSavePhase" data-i18n-key="admin_phase_btn_save">Guardar Fase</button>
         </div>
       </form>
     </div>
@@ -906,11 +906,11 @@
       <div style="margin-bottom: 16px;">
         <svg class="icon icon-lg" style="color: #ef4444; width: 44px; height: 44px;"><use href="#i-warning"></use></svg>
       </div>
-      <h3 class="xow-modal-title" id="modalDeleteTitle" style="margin-bottom: 10px;">Eliminar registro</h3>
-      <p class="xow-subtitle" id="deleteConfirmMessage" style="margin-bottom: 24px;">¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.</p>
+      <h3 class="xow-modal-title" id="modalDeleteTitle" style="margin-bottom: 10px;" data-i18n-key="admin_modal_delete_title">Eliminar registro</h3>
+      <p class="xow-subtitle" id="deleteConfirmMessage" style="margin-bottom: 24px;" data-i18n-key="admin_modal_delete_confirm">¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.</p>
       <div style="display: flex; justify-content: center; gap: 12px;">
-        <button type="button" class="btn btn-secondary" id="btnCancelDelete">Cancelar</button>
-        <button type="button" class="btn btn-primary" style="background: #ef4444; border-color: #ef4444;" id="btnConfirmDelete">Eliminar</button>
+        <button type="button" class="btn btn-secondary" id="btnCancelDelete" data-i18n-key="admin_btn_cancel">Cancelar</button>
+        <button type="button" class="btn btn-primary" style="background: #ef4444; border-color: #ef4444;" id="btnConfirmDelete" data-i18n-key="admin_modal_delete_btn">Eliminar</button>
       </div>
     </div>
   </div>
@@ -934,23 +934,23 @@
         <!-- Report Info Meta Grid -->
         <div class="xow-meta-grid">
           <div class="xow-meta-item">
-            <span class="xow-meta-label">ID de Denuncia</span>
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_id">ID de Denuncia</span>
             <span class="xow-meta-value font-mono" id="repDetailIdText">-</span>
           </div>
           <div class="xow-meta-item">
-            <span class="xow-meta-label">Fecha / Hora</span>
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_date">Fecha / Hora</span>
             <span class="xow-meta-value" id="repDetailDateText">-</span>
           </div>
           <div class="xow-meta-item">
-            <span class="xow-meta-label">Tipo de Contenido</span>
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_content">Tipo de Contenido</span>
             <span class="xow-meta-value" id="repDetailContentTypeText">-</span>
           </div>
           <div class="xow-meta-item">
-            <span class="xow-meta-label">Categoría de Abuso</span>
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_category">Categoría de Abuso</span>
             <span class="xow-meta-value" id="repDetailCategoryText">-</span>
           </div>
           <div class="xow-meta-item">
-            <span class="xow-meta-label">Denunciante (Reporter)</span>
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_reporter">Denunciante (Reporter)</span>
             <div style="display: flex; align-items: center; gap: 6px;">
               <span class="xow-meta-value font-mono" id="repDetailReporterText">-</span>
               <button type="button" class="btn btn-secondary btn-xs" id="btnViewReporterUser" title="Ver ficha del denunciante">
@@ -959,7 +959,7 @@
             </div>
           </div>
           <div class="xow-meta-item">
-            <span class="xow-meta-label">Usuario Denunciado (Target)</span>
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_target">Usuario Denunciado (Target)</span>
             <div style="display: flex; align-items: center; gap: 6px;">
               <span class="xow-meta-value font-mono" id="repDetailTargetText">-</span>
               <button type="button" class="btn btn-secondary btn-xs" id="btnViewTargetUser" title="Ver ficha del denunciado">
@@ -968,11 +968,11 @@
             </div>
           </div>
           <div class="xow-meta-item">
-            <span class="xow-meta-label">ID de Álbum / Medio</span>
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_album">ID de Álbum / Medio</span>
             <span class="xow-meta-value font-mono" id="repDetailAlbumIdText">-</span>
           </div>
           <div class="xow-meta-item">
-            <span class="xow-meta-label">Bloqueo Inmediato Solicitado</span>
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_blocked">Bloqueo Inmediato Solicitado</span>
             <span class="xow-meta-value" id="repDetailBlockedText">-</span>
           </div>
         </div>
@@ -1013,7 +1013,7 @@
 
             <div class="xow-form-group">
               <label for="repModNotes" data-i18n-key="admin_reports_mod_notes">Notas internas de moderación</label>
-              <textarea id="repModNotes" name="moderation_notes" rows="3" placeholder="Motivo de la resolución o detalles de investigación interna..."></textarea>
+              <textarea id="repModNotes" name="moderation_notes" rows="3" placeholder="Motivo de la resolución o detalles de investigación interna..." data-i18n-placeholder="admin_reports_ph_mod_notes"></textarea>
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 24px;">
@@ -1061,27 +1061,27 @@
         <!-- User Metadata Grid -->
         <div class="xow-meta-grid">
           <div class="xow-meta-item">
-            <span class="xow-meta-label">ID PocketBase</span>
+            <span class="xow-meta-label" data-i18n-key="admin_users_modal_meta_id">ID PocketBase</span>
             <span class="xow-meta-value font-mono" id="modalUserIdText">-</span>
           </div>
           <div class="xow-meta-item">
-            <span class="xow-meta-label">Nivel de Confianza (Trust Score)</span>
+            <span class="xow-meta-label" data-i18n-key="admin_users_modal_meta_trust">Nivel de Confianza (Trust Score)</span>
             <span class="xow-meta-value highlight" id="modalUserTrustText">-</span>
           </div>
           <div class="xow-meta-item">
-            <span class="xow-meta-label">Idioma / Locale</span>
+            <span class="xow-meta-label" data-i18n-key="admin_users_modal_meta_lang">Idioma / Locale</span>
             <span class="xow-meta-value" id="modalUserLocaleText">-</span>
           </div>
           <div class="xow-meta-item">
-            <span class="xow-meta-label">Versión de App</span>
+            <span class="xow-meta-label" data-i18n-key="admin_users_modal_meta_version">Versión de App</span>
             <span class="xow-meta-value" id="modalUserVersionText">-</span>
           </div>
           <div class="xow-meta-item">
-            <span class="xow-meta-label">Fecha de Registro</span>
+            <span class="xow-meta-label" data-i18n-key="admin_users_modal_meta_created">Fecha de Registro</span>
             <span class="xow-meta-value" id="modalUserCreatedText">-</span>
           </div>
           <div class="xow-meta-item">
-            <span class="xow-meta-label">Última Conexión</span>
+            <span class="xow-meta-label" data-i18n-key="admin_users_modal_meta_seen">Última Conexión</span>
             <span class="xow-meta-value" id="modalUserLastSeenText">-</span>
           </div>
         </div>
@@ -1090,7 +1090,7 @@
         <div class="xow-ban-banner" id="modalUserBanBanner" hidden>
           <svg class="icon icon-sm" style="color: #ef4444;"><use href="#i-block"></use></svg>
           <div>
-            <strong>Cuenta Suspendida / Baneada</strong>
+            <strong data-i18n-key="admin_users_ban_banner_title">Cuenta Suspendida / Baneada</strong>
             <p id="modalUserBanReasonText" style="margin-top: 2px; font-size: 13px;"></p>
           </div>
         </div>
@@ -1102,7 +1102,7 @@
             <span class="xow-badge-count" id="modalUserReportsReceivedCount">0</span>
           </div>
           <div class="xow-history-list" id="modalUserReportsReceivedList">
-            <p class="xow-text-muted" style="font-size: 13px;">Sin denuncias registradas.</p>
+            <p class="xow-text-muted" style="font-size: 13px;" data-i18n-key="admin_users_no_reports">Sin denuncias registradas.</p>
           </div>
         </div>
 
@@ -1113,7 +1113,7 @@
             <span class="xow-badge-count" id="modalUserReportsMadeCount">0</span>
           </div>
           <div class="xow-history-list" id="modalUserReportsMadeList">
-            <p class="xow-text-muted" style="font-size: 13px;">Sin denuncias realizadas.</p>
+            <p class="xow-text-muted" style="font-size: 13px;" data-i18n-key="admin_users_no_reports">Sin denuncias realizadas.</p>
           </div>
         </div>
 
@@ -1121,9 +1121,9 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
           <button type="button" class="btn btn-danger" id="btnToggleUserBan">
             <svg class="icon icon-sm"><use href="#i-block"></use></svg>
-            <span id="btnToggleUserBanText">Suspender / Bloquear Cuenta</span>
+            <span id="btnToggleUserBanText" data-i18n-key="admin_users_btn_ban">Suspender / Bloquear Cuenta</span>
           </button>
-          <button type="button" class="btn btn-secondary" id="btnDismissUserDetail">Cerrar</button>
+          <button type="button" class="btn btn-secondary" id="btnDismissUserDetail" data-i18n-key="admin_users_btn_dismiss">Cerrar</button>
         </div>
 
       </div>
@@ -1143,18 +1143,18 @@
       <form id="formReservedHandle" novalidate>
         <div class="xow-form-group">
           <label for="reservedHandleInput" data-i18n-key="admin_reserved_input_handle">Handle (sin @) *</label>
-          <input type="text" id="reservedHandleInput" name="handle" placeholder="ej. soporte, oficial, xow_admin" required>
-          <p class="xow-form-hint">Letras minúsculas, números, guiones y guiones bajos (3-30 caracteres).</p>
+          <input type="text" id="reservedHandleInput" name="handle" placeholder="ej. soporte, oficial, xow_admin" data-i18n-placeholder="admin_reserved_input_handle_ph" required>
+          <p class="xow-form-hint" data-i18n-key="admin_reserved_hint">Letras minúsculas, números, guiones y guiones bajos (3-30 caracteres).</p>
         </div>
 
         <div class="xow-form-group">
           <label for="reservedReasonInput" data-i18n-key="admin_reserved_input_reason">Motivo de la reserva</label>
-          <input type="text" id="reservedReasonInput" name="reason" placeholder="ej. Cuenta de sistema, marca protegida...">
+          <input type="text" id="reservedReasonInput" name="reason" placeholder="ej. Cuenta de sistema, marca protegida..." data-i18n-placeholder="admin_reserved_input_reason_ph">
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
-          <button type="button" class="btn btn-secondary" id="btnCancelReserved">Cancelar</button>
-          <button type="submit" class="btn btn-primary" id="btnSaveReserved">Guardar Handle</button>
+          <button type="button" class="btn btn-secondary" id="btnCancelReserved" data-i18n-key="admin_btn_cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveReserved" data-i18n-key="admin_reserved_btn_save">Guardar Handle</button>
         </div>
       </form>
     </div>
@@ -1163,11 +1163,11 @@
   <!-- Toast Container -->
   <div class="xow-toast-container" id="toastContainer" aria-live="polite"></div>
 
-  <script src="../assets/js/config.js?v=550"></script>
-  <script src="../assets/js/icons.js?v=550"></script>
-  <script src="../assets/js/i18n-data.js?v=550"></script>
-  <script src="../assets/js/i18n.js?v=550"></script>
+  <script src="../assets/js/config.js?v=552"></script>
+  <script src="../assets/js/icons.js?v=552"></script>
+  <script src="../assets/js/i18n-data.js?v=552"></script>
+  <script src="../assets/js/i18n.js?v=552"></script>
   <script src="vendor/pocketbase.umd.js"></script>
-  <script src="admin.js?v=550"></script>
+  <script src="admin.js?v=552"></script>
 </body>
 </html>

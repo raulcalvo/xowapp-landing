@@ -38,6 +38,17 @@
     return 'en';
   }
 
+  var LANG_LABELS = {
+    en: 'English', es: 'Español', ca: 'Català', fr: 'Français',
+    it: 'Italiano', de: 'Deutsch', ro: 'Română', pt: 'Português',
+    pl: 'Polski', zh: '中文', ja: '日本語', da: 'Dansk', ar: 'العربية',
+  };
+  var LANG_CODES = {
+    en: 'EN', es: 'ES', ca: 'CAT', fr: 'FR',
+    it: 'IT', de: 'DE', ro: 'RO', pt: 'PT',
+    pl: 'PL', zh: 'ZH', ja: 'JA', da: 'DA', ar: 'AR',
+  };
+
   function applyTranslations(lang) {
     var table = dict();
     var langTable = table[lang] || table.en || {};
@@ -58,12 +69,21 @@
     });
 
     document.querySelectorAll('[data-i18n-attr]').forEach(function (el) {
+      var attrList = el.getAttribute('data-i18n-attr');
+      if (!attrList) return;
       var key = el.getAttribute('data-i18n-key') || el.id;
       var value = translate(lang, key);
       if (value == null) return;
-      el.getAttribute('data-i18n-attr').split(',').forEach(function (attr) {
+      attrList.split(',').forEach(function (attr) {
         el.setAttribute(attr.trim(), value);
       });
+    });
+
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-placeholder');
+      var value = translate(lang, key);
+      if (value == null) return;
+      el.setAttribute('placeholder', value);
     });
 
     document.documentElement.lang = lang;
@@ -72,8 +92,10 @@
     // NOT cover every physical left/right value (e.g. icons that imply a direction) -- that's
     // a design pass of its own, not attempted here.
     document.documentElement.dir = RTL_LANGS.indexOf(lang) !== -1 ? 'rtl' : 'ltr';
-    var langSelect = document.getElementById('langSelect');
-    if (langSelect) langSelect.value = lang;
+
+    document.querySelectorAll('#langSelect, #adminLangSelect, #loginLangSelect, .xow-lang-select').forEach(function (sel) {
+      if (sel) sel.value = lang;
+    });
   }
 
   function changeLanguage(lang) {
@@ -112,6 +134,8 @@
 
   window.XowI18n = {
     SUPPORTED_LANGS: SUPPORTED_LANGS,
+    LANG_LABELS: LANG_LABELS,
+    LANG_CODES: LANG_CODES,
     translate: translate,
     getBrowserLanguage: getBrowserLanguage,
     applyTranslations: applyTranslations,

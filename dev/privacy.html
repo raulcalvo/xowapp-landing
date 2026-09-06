@@ -377,11 +377,12 @@
     </ul>
     <p id="sec4NoTrack"></p>
 
-    <h2 id="sec5Title">5. Data Retention and Account Deletion</h2>
+    <h2 id="sec5Title"><a id="deletion"></a>5. Data Retention and Account Deletion</h2>
     <p id="sec5Desc"></p>
     <ul>
       <li id="sec5Item1"></li>
       <li id="sec5Item2"></li>
+      <li id="sec5Item3"></li>
     </ul>
 
     <h2 id="sec6Title">6. Children's Privacy & Age Restrictions</h2>
@@ -457,6 +458,7 @@
     "sec5Desc": "You have full control over your data at all times:",
     "sec5Item1": "<strong>Account Deletion:</strong> You can delete your account at any time directly within the app settings (Profile > Delete Account). Account deletion permanently removes your user profile, public keys, and signaling records from our PocketBase server.",
     "sec5Item2": "<strong>Local Data Wiping:</strong> Logging out or uninstalling the app permanently wipes your local SQLite database, cached thumbnails, and local encryption keys from your device.",
+    "sec5Item3": "<strong>External Deletion Request (Web):</strong> If you cannot access the app or wish to request the deletion of your account and all associated signaling data remotely, you can send an email to <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a> with your User ID / handle. All account records on our servers will be permanently purged within 48 hours.",
     "sec6Title": "6. Children's Privacy & Age Restrictions",
     "sec6Desc": "XowApp is intended exclusively for users aged <strong>18 and older</strong>. We do not knowingly collect or solicit personal information from children under 18. If we become aware that a child under 18 has provided us with personal information, we will immediately delete such data from our servers.",
     "sec7Title": "7. Rights under GDPR & CCPA",
@@ -520,6 +522,7 @@
     "sec5Desc": "Tienes el control total de tus datos en todo momento:",
     "sec5Item1": "<strong>Eliminación de Cuenta:</strong> Puedes eliminar tu cuenta en cualquier momento en los ajustes de la app (Perfil > Eliminar Cuenta). Esto borra permanentemente tu perfil, claves públicas y registros de señalización de PocketBase.",
     "sec5Item2": "<strong>Borrado de Datos Locales:</strong> Cerrar sesión o desinstalar la app borra de forma permanente tu base de datos SQLite local, miniaturas en caché y claves de cifrado de tu dispositivo.",
+    "sec5Item3": "<strong>Solicitud de Eliminación Externa (Web):</strong> Si no tienes acceso a la app o deseas solicitar la eliminación de tu cuenta y todos los datos de señalización asociados de forma remota, puedes escribirnos a <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a> indicando tu ID de usuario / alias. Todos los datos se purgarán de forma permanente en un plazo máximo de 48 horas.",
     "sec6Title": "6. Privacidad Infantil y Restricciones de Edad",
     "sec6Desc": "XowApp está destinada exclusivamente a usuarios de <strong>18 años o más</strong>. No recopilamos a sabiendas información personal de menores de 18 años. Si detectamos que un menor nos ha facilitado datos personales, procederemos a su eliminación inmediata de nuestros servidores.",
     "sec7Title": "7. Derechos bajo el RGPD y CCPA",
@@ -901,6 +904,16 @@
       document.getElementById('sec5Desc').innerText = t.sec5Desc;
       document.getElementById('sec5Item1').innerHTML = t.sec5Item1;
       document.getElementById('sec5Item2').innerHTML = t.sec5Item2;
+      const sec5Item3El = document.getElementById('sec5Item3');
+      if (sec5Item3El) {
+        if (t.sec5Item3) {
+          sec5Item3El.innerHTML = t.sec5Item3;
+          sec5Item3El.style.display = '';
+        } else {
+          sec5Item3El.innerHTML = (translations.en && translations.en.sec5Item3) ? translations.en.sec5Item3 : '';
+          sec5Item3El.style.display = sec5Item3El.innerHTML ? '' : 'none';
+        }
+      }
 
       document.getElementById('sec6Title').innerText = t.sec6Title;
       document.getElementById('sec6Desc').innerHTML = t.sec6Desc;

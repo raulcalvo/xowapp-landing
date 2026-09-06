@@ -1105,7 +1105,7 @@
       .catch(function (err) {
         if (isAbortError(err)) return;
         console.error('Error loading admin data:', err);
-        showToast('Error cargando los datos de PocketBase', 'error');
+        showToast(t('admin_toast_pb_load_error'), 'error');
       });
   }
 
@@ -1235,8 +1235,11 @@
   // and the expenses table's phase badges (all three read fields that are already i18n objects
   // once they come from computeFinancialAggregation's output, not raw PocketBase records).
   function resolvePhaseText(field, fallback) {
+    var currentLang = (typeof window !== 'undefined' && window.XowI18n && typeof window.XowI18n.getBrowserLanguage === 'function')
+      ? window.XowI18n.getBrowserLanguage()
+      : 'es';
     var obj = (typeof field === 'object' && field !== null) ? field : parseI18nField(field);
-    var resolved = obj && (obj.es || obj.en || firstNonEmptyTranslation(obj));
+    var resolved = obj && (obj[currentLang] || obj.es || obj.en || firstNonEmptyTranslation(obj));
     return resolved || (fallback !== undefined ? fallback : '-');
   }
 
@@ -2082,7 +2085,7 @@
         console.error('Error loading reports:', err);
         var status = err && err.status;
         if (status === 403) {
-          showToast('Error 403: web_admins no tiene permisos para listar la colección reports en PocketBase', 'error');
+          showToast(t('admin_toast_reports_perm_error'), 'error');
         } else {
           showToast('Error cargando denuncias de PocketBase: ' + ((err && err.message) || 'desconocido'), 'error');
         }
@@ -2291,19 +2294,19 @@
       .then(function (updated) {
         var idx = state.reports.findIndex(function (r) { return r.id === reportId; });
         if (idx !== -1) state.reports[idx] = updated;
-        showToast('Resolución de denuncia guardada', 'success');
+        showToast(t('admin_toast_report_saved'), 'success');
         closeReportModal();
         renderReportsSection();
       })
       .catch(function (err) {
         console.error('Save report resolution error:', err);
-        showToast('Error guardando resolución de denuncia', 'error');
+        showToast(t('admin_toast_report_save_error'), 'error');
       });
   }
 
   function banReportedUserFromReport(report) {
     if (!report || !report.target_user_id) {
-      showToast('No hay ID de usuario denunciado para bloquear', 'error');
+      showToast(t('admin_toast_no_target_ban'), 'error');
       return;
     }
 
@@ -2327,13 +2330,13 @@
       .then(function (updatedReport) {
         var idx = state.reports.findIndex(function (r) { return r.id === report.id; });
         if (idx !== -1) state.reports[idx] = updatedReport;
-        showToast('Usuario bloqueado y denuncia resuelta', 'success');
+        showToast(t('admin_toast_user_banned'), 'success');
         closeReportModal();
         renderReportsSection();
       })
       .catch(function (err) {
         console.error('Ban user from report error:', err);
-        showToast('Error al bloquear usuario denunciado', 'error');
+        showToast(t('admin_toast_ban_error'), 'error');
       });
   }
 
@@ -2352,13 +2355,13 @@
       .then(function (updatedReport) {
         var idx = state.reports.findIndex(function (r) { return r.id === report.id; });
         if (idx !== -1) state.reports[idx] = updatedReport;
-        showToast('Denuncia desestimada', 'info');
+        showToast(t('admin_toast_report_dismissed'), 'info');
         closeReportModal();
         renderReportsSection();
       })
       .catch(function (err) {
         console.error('Dismiss report error:', err);
-        showToast('Error desestimando denuncia', 'error');
+        showToast(t('admin_toast_dismiss_error'), 'error');
       });
   }
 
@@ -2408,7 +2411,7 @@
         renderUsersSection(0);
         var status = err && err.status;
         if (status === 403) {
-          showToast('Error 403: web_admins no tiene permisos para listar la colección users en PocketBase', 'error');
+          showToast(t('admin_toast_users_perm_error'), 'error');
         } else {
           showToast('Error buscando usuarios en PocketBase: ' + ((err && err.message) || 'desconocido'), 'error');
         }
@@ -2503,7 +2506,7 @@
         var repMade = (results[2] && results[2].items) || [];
 
         if (!user) {
-          showToast('Usuario no encontrado en PocketBase', 'error');
+          showToast(t('admin_toast_user_not_found'), 'error');
           return;
         }
 
@@ -2581,7 +2584,7 @@
       })
       .catch(function (err) {
         console.error('Error opening user modal:', err);
-        showToast('Error cargando ficha de usuario', 'error');
+        showToast(t('admin_toast_user_detail_error'), 'error');
       });
   }
 
@@ -2600,13 +2603,13 @@
         .then(function (updated) {
           var idx = state.users.findIndex(function (u) { return u.id === user.id; });
           if (idx !== -1) state.users[idx] = updated;
-          showToast('Cuenta de usuario reactivada con éxito', 'success');
+          showToast(t('admin_toast_user_unbanned'), 'success');
           closeUserModal();
           renderUsersSection();
         })
         .catch(function (err) {
           console.error('Unban user error:', err);
-          showToast('Error reactivando la cuenta', 'error');
+          showToast(t('admin_toast_unban_error'), 'error');
         });
     } else {
       var reason = prompt('Motivo de la suspensión / baneo de @' + (user.handle || user.name) + ':', 'Violación de Términos de Servicio / Conducta Inapropiada');
@@ -2617,13 +2620,13 @@
         .then(function (updated) {
           var idx = state.users.findIndex(function (u) { return u.id === user.id; });
           if (idx !== -1) state.users[idx] = updated;
-          showToast('Cuenta de usuario suspendida / baneada', 'success');
+          showToast(t('admin_toast_user_suspended'), 'success');
           closeUserModal();
           renderUsersSection();
         })
         .catch(function (err) {
           console.error('Ban user error:', err);
-          showToast('Error suspendiendo la cuenta', 'error');
+          showToast(t('admin_toast_suspend_error'), 'error');
         });
     }
   }
@@ -2687,7 +2690,7 @@
     var pattern = /^[a-z0-9_-]{3,30}$/;
 
     if (!pattern.test(clean)) {
-      showToast('Formato de handle no válido (3-30 chars, minúsculas, números, guiones)', 'error');
+      showToast(t('admin_toast_handle_invalid'), 'error');
       return;
     }
 
@@ -2707,7 +2710,7 @@
       })
       .catch(function (err) {
         console.error('Create reserved handle error:', err);
-        showToast('Error: El handle ya está reservado o hubo un error', 'error');
+        showToast(t('admin_toast_handle_res_error'), 'error');
       });
   }
 
@@ -2718,11 +2721,11 @@
       .then(function () {
         state.reservedHandles = state.reservedHandles.filter(function (h) { return h.id !== id; });
         renderReservedHandles();
-        showToast('Reserva del handle eliminada', 'success');
+        showToast(t('admin_toast_handle_deleted'), 'success');
       })
       .catch(function (err) {
         console.error('Delete reserved handle error:', err);
-        showToast('Error eliminando la reserva', 'error');
+        showToast(t('admin_toast_handle_del_error'), 'error');
       });
   }
 
@@ -2730,6 +2733,46 @@
   // Event Listeners Setup
   // ------------------------------------------------------------------
   function setupEvents() {
+    // 0. Language Selectors
+    var loginLangSelect = doc.getElementById('loginLangSelect');
+    if (loginLangSelect) {
+      loginLangSelect.value = window.XowI18n ? window.XowI18n.getBrowserLanguage() : 'es';
+      loginLangSelect.addEventListener('change', function (e) {
+        if (window.XowI18n) window.XowI18n.changeLanguage(e.target.value);
+      });
+    }
+
+    var adminLangSelect = doc.getElementById('adminLangSelect');
+    if (adminLangSelect) {
+      adminLangSelect.value = window.XowI18n ? window.XowI18n.getBrowserLanguage() : 'es';
+      adminLangSelect.addEventListener('change', function (e) {
+        if (window.XowI18n) window.XowI18n.changeLanguage(e.target.value);
+      });
+    }
+
+    if (typeof document !== 'undefined') {
+      document.addEventListener('xow:langchange', function (e) {
+        var lang = e.detail && e.detail.lang;
+        if (loginLangSelect && lang) loginLangSelect.value = lang;
+        if (adminLangSelect && lang) adminLangSelect.value = lang;
+
+        if (state.activeMainSection === 'dashboard') {
+          renderCurrentKpis();
+          renderParameterPills();
+          renderAnalyticsChart();
+        } else if (state.activeMainSection === 'funding') {
+          renderDashboard();
+          renderPhasesTable();
+          renderExpensesTable();
+          renderIncomesTable();
+        } else if (state.activeMainSection === 'reports') {
+          renderReportsSection();
+        } else if (state.activeMainSection === 'users') {
+          renderUsersSection();
+        }
+      });
+    }
+
     // 1. Login Form Submit
     el.loginForm.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -2791,7 +2834,7 @@
       });
     }
 
-    var TARGET_LANGS = ['es', 'en', 'ca', 'fr', 'it', 'de', 'ro', 'pt'];
+    var TARGET_LANGS = ['es', 'en', 'ca', 'fr', 'it', 'de', 'ro', 'pt', 'pl', 'zh', 'ja', 'da', 'ar'];
 
     function translateSingleClient(text, fromLang, toLang) {
       if (!text || fromLang === toLang) return Promise.resolve(text);
@@ -2830,7 +2873,7 @@
         var sourceDesc = (el.phaseDesc ? el.phaseDesc.value.trim() : '') || phaseTranslations.description[currentPhaseLang] || phaseTranslations.description.es || phaseTranslations.description.en || '';
 
         if (!sourceName && !sourceDesc) {
-          showToast('Escribe al menos el nombre en un idioma para auto-traducir', 'error');
+          showToast(t('admin_toast_autotranslate_prompt'), 'error');
           return;
         }
 
@@ -2901,12 +2944,12 @@
             });
 
             updatePhaseLangUI();
-            showToast('✨ Traducciones generadas con éxito en los 8 idiomas', 'success');
+            showToast(t('admin_toast_autotranslate_success'), 'success');
           })
           .catch(function (err) {
             console.error('Auto-translate error:', err);
             updatePhaseLangUI();
-            showToast('Traducción completada con fallback', 'success');
+            showToast(t('admin_toast_autotranslate_fallback'), 'success');
           })
           .finally(function () {
             if (btnText) btnText.textContent = '✨ Auto-traducir con IA';
@@ -2960,7 +3003,7 @@
         var primaryDesc = phaseTranslations.description[currentPhaseLang] || phaseTranslations.description.es || phaseTranslations.description.en || firstNonEmptyTranslation(phaseTranslations.description) || currentInputDesc;
 
         if (!primaryName) {
-          showToast('La fase necesita un nombre en al menos un idioma antes de guardar', 'error');
+          showToast(t('admin_toast_phase_name_required'), 'error');
           return;
         }
 
@@ -3007,11 +3050,11 @@
             state.phases.sort(function (a, b) { return (Number(a.order) || 1) - (Number(b.order) || 1); });
             closePhaseModal();
             renderDashboard();
-            showToast('Fase guardada con éxito', 'success');
+            showToast(t('admin_toast_phase_saved'), 'success');
           })
           .catch(function (err) {
             console.error('Save phase failed:', err);
-            showToast('Error al guardar la fase', 'error');
+            showToast(t('admin_toast_phase_save_error'), 'error');
           });
       });
     }
@@ -3049,11 +3092,11 @@
           }
           closeExpenseModal();
           renderDashboard();
-          showToast('Gasto guardado con éxito', 'success');
+          showToast(t('admin_toast_expense_saved'), 'success');
         })
         .catch(function (err) {
           console.error('Save expense failed:', err);
-          showToast('Error al guardar el gasto', 'error');
+          showToast(t('admin_toast_expense_save_error'), 'error');
         });
     });
 
@@ -3092,11 +3135,11 @@
           }
           closeIncomeModal();
           renderDashboard();
-          showToast('Ingreso guardado con éxito', 'success');
+          showToast(t('admin_toast_income_saved'), 'success');
         })
         .catch(function (err) {
           console.error('Save income failed:', err);
-          showToast('Error al guardar el ingreso', 'error');
+          showToast(t('admin_toast_income_save_error'), 'error');
         });
     });
 
@@ -3119,11 +3162,11 @@
           }
           closeDeleteModal();
           renderDashboard();
-          showToast('Registro eliminado con éxito', 'success');
+          showToast(t('admin_toast_record_deleted'), 'success');
         })
         .catch(function (err) {
           console.error('Delete failed:', err);
-          showToast('Error al eliminar el registro', 'error');
+          showToast(t('admin_toast_record_del_error'), 'error');
         });
     });
 
@@ -3152,7 +3195,7 @@
         })
         .catch(function (err) {
           console.error('Save settings failed:', err);
-          showToast('Error al guardar la configuración', 'error');
+          showToast(t('admin_toast_settings_save_error'), 'error');
         });
     });
 
@@ -3209,12 +3252,12 @@
             var idx = state.expenses.findIndex(function (x) { return x.id === toggleId; });
             if (idx !== -1) state.expenses[idx] = record;
             renderDashboard();
-            showToast('Estado del gasto actualizado', 'info');
+            showToast(t('admin_toast_expense_status_updated'), 'info');
           })
           .catch(function (err) {
             console.error('Toggle expense failed:', err);
             toggle.checked = !isChecked;
-            showToast('Error actualizando estado del gasto', 'error');
+            showToast(t('admin_toast_expense_status_error'), 'error');
           });
       }
     });
@@ -3289,7 +3332,7 @@
     if (el.btnRefreshReports) {
       el.btnRefreshReports.addEventListener('click', function () {
         loadReports().then(function () {
-          showToast('Denuncias actualizadas', 'info');
+          showToast(t('admin_toast_reports_refreshed'), 'info');
         });
       });
     }
@@ -3398,7 +3441,7 @@
       el.btnRefreshUsers.addEventListener('click', function () {
         if (userSearchDebounceTimer) clearTimeout(userSearchDebounceTimer);
         loadUsers().then(function () {
-          showToast('Búsqueda de usuarios completada', 'info');
+          showToast(t('admin_toast_users_search_completed'), 'info');
         });
       });
     }
@@ -3446,7 +3489,7 @@
     if (el.btnRefreshReserved) {
       el.btnRefreshReserved.addEventListener('click', function () {
         loadReservedHandles().then(function () {
-          showToast('Lista de handles actualizada', 'info');
+          showToast(t('admin_toast_handles_refreshed'), 'info');
         });
       });
     }
@@ -3501,7 +3544,7 @@
               if (state.analyticsActiveParams.length > 1) {
                 state.analyticsActiveParams.splice(idx, 1);
               } else {
-                showToast('Debe haber al menos un parámetro activo en la gráfica', 'info');
+                showToast(t('admin_toast_min_active_param'), 'info');
                 return;
               }
             } else {
