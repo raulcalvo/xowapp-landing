@@ -15,7 +15,11 @@
 
   window.XOW_CONFIG = {
     isDev: isDev,
-    pocketbaseUrl: isDev ? 'https://dev.pocketbase.xowapp.com' : 'https://pocketbase.raulcalvo.com',
+    pocketbaseUrl: isDev
+      ? 'https://dev.pocketbase.xowapp.com'
+      : (typeof window !== 'undefined' && window.location && window.location.hostname.indexOf('raulcalvo.com') !== -1
+          ? 'https://pocketbase.raulcalvo.com'
+          : 'https://pocketbase.xowapp.com'),
     fundingCollection: 'funding_public_status',
     fundingSettingsCollection: 'funding_settings',
     fundingPhasesCollection: 'funding_phases',
