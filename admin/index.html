@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://pocketbase.raulcalvo.com https://dev.pocketbase.xowapp.com; img-src 'self' data: https://pocketbase.raulcalvo.com https://dev.pocketbase.xowapp.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-ancestors 'none'">
+  <title id="pageTitle" data-i18n-key="admin_title">XowApp Admin</title>
+  <link rel="icon" type="image/png" href="../logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=550">
+</head>
+<body data-page="admin">
+  <div class="xow-page">
+
+    <!-- Login Card View -->
+    <div class="xow-admin-shell" id="adminLoginShell">
+      <div class="xow-card" id="adminLoginCard">
+        <img class="xow-brand-logo" src="../logo.png" alt="XowApp" width="40" height="40">
+        <h1 class="xow-title-sm" id="admin_title"></h1>
+        <p class="xow-subtitle xow-lead" id="admin_subtitle"></p>
+
+        <form id="adminLoginForm" novalidate>
+          <div class="xow-form-group">
+            <label for="adminEmail" id="admin_email_label"></label>
+            <input type="email" id="adminEmail" name="email" autocomplete="username" required>
+          </div>
+          <div class="xow-form-group">
+            <label for="adminPassword" id="admin_password_label"></label>
+            <input type="password" id="adminPassword" name="password" autocomplete="current-password" required>
+          </div>
+          <p class="xow-form-error" id="adminLoginError" role="alert"></p>
+          <button type="submit" class="btn btn-primary btn-block" id="admin_submit"></button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Full Admin Dashboard View -->
+    <div class="xow-admin-app" id="adminDashboardApp" hidden>
+      
+      <!-- Header -->
+      <header class="xow-admin-header">
+        <div class="xow-admin-header-brand">
+          <img class="xow-brand-logo" src="../logo.png" alt="XowApp" width="36" height="36">
+          <div>
+            <h1 class="xow-admin-header-title" id="admin_dashboard_title"></h1>
+            <p class="xow-admin-header-subtitle" id="admin_header_subtitle" data-i18n-key="admin_subtitle"></p>
+          </div>
+        </div>
+
+        <!-- Main Module Navigation Tabs -->
+        <nav class="xow-admin-main-nav" role="tablist" aria-label="Secciones del Panel">
+          <button type="button" class="xow-admin-main-tab active" role="tab" aria-selected="true" data-main-section="dashboard" id="tabNavDashboard">
+            <svg class="icon icon-sm"><use href="#i-dashboard"></use></svg>
+            <span data-i18n-key="admin_nav_dashboard">Dashboard</span>
+          </button>
+          <button type="button" class="xow-admin-main-tab" role="tab" aria-selected="false" data-main-section="funding" id="tabNavFunding">
+            <svg class="icon icon-sm"><use href="#i-payments"></use></svg>
+            <span data-i18n-key="admin_nav_funding">Financiación</span>
+          </button>
+          <button type="button" class="xow-admin-main-tab" role="tab" aria-selected="false" data-main-section="reports" id="tabNavReports">
+            <svg class="icon icon-sm"><use href="#i-flag"></use></svg>
+            <span data-i18n-key="admin_nav_reports">Denuncias (UGC)</span>
+            <span class="xow-admin-tab-badge" id="reportsPendingBadge" hidden>0</span>
+          </button>
+          <button type="button" class="xow-admin-main-tab" role="tab" aria-selected="false" data-main-section="users" id="tabNavUsers">
+            <svg class="icon icon-sm"><use href="#i-person_search"></use></svg>
+            <span data-i18n-key="admin_nav_users">Usuarios</span>
+          </button>
+        </nav>
+
+        <div class="xow-admin-header-actions">
+          <div class="xow-admin-user-chip">
+            <span class="xow-admin-user-avatar" id="adminUserAvatar">XA</span>
+            <span id="adminWelcomeName">Admin</span>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="adminLogoutBtn">
+            <svg class="icon icon-sm"><use href="#i-logout"></use></svg>
+            <span id="admin_logout"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Section 0: Analytics Dashboard -->
+      <div class="xow-admin-main-section active" id="secDashboard">
+        <!-- Dashboard Current Values / KPIs Grid -->
+        <div class="xow-admin-section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2 class="xow-admin-section-title" style="margin: 0;">
+            <svg class="icon icon-sm"><use href="#i-analytics"></use></svg>
+            <span data-i18n-key="admin_dashboard_kpis_title">Valores Actuales y Estado del Sistema</span>
+          </h2>
+          <span class="xow-admin-kpi-sub" id="analyticsLastUpdatedText" style="font-size: 13px;"></span>
+        </div>
+
+        <section class="xow-admin-kpi-grid" aria-label="KPIs Actuales" style="margin-bottom: 24px;">
+          <!-- KPI 1: Total Users -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_kpi_total_users">Usuarios Totales</span>
+              <svg class="xow-admin-kpi-icon" style="color: #10b981;"><use href="#i-person"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value highlight" id="kpiTotalUsersValue">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiActiveUsersSub">0 activos (últimas 24h)</div>
+          </div>
+
+          <!-- KPI 2: Total & Pending Reports -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_kpi_reports_status">Denuncias (UGC)</span>
+              <svg class="xow-admin-kpi-icon" style="color: #ef4444;"><use href="#i-flag"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value" id="kpiTotalReportsValue">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiPendingReportsSub">0 pendientes de moderación</div>
+          </div>
+
+          <!-- KPI 3: Files in Transit (Pending) -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_kpi_transfers_transit">Ficheros en Tránsito</span>
+              <svg class="xow-admin-kpi-icon" style="color: #f59e0b;"><use href="#i-sync_alt"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value" id="kpiTransfersTransitValue">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiTransfersTransitSub" data-i18n-key="admin_kpi_transfers_transit_sub">Enviados, pendientes de descarga</div>
+          </div>
+
+          <!-- KPI 4: Delivered Files (Purged from Server) -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_kpi_transfers_delivered">Ficheros Entregados</span>
+              <svg class="xow-admin-kpi-icon" style="color: #3b82f6;"><use href="#i-check_circle"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value" id="kpiTransfersDeliveredValue">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiTransfersDeliveredSub" data-i18n-key="admin_kpi_transfers_delivered_sub">Completados y purgados del servidor</div>
+          </div>
+
+          <!-- KPI 5: User Deregistrations (Bajas) -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_kpi_user_deletions">Bajas de Usuarios</span>
+              <svg class="xow-admin-kpi-icon" style="color: #8b5cf6;"><use href="#i-delete"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value" id="kpiUserDeletionsValue">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiUserDeletionsSub" data-i18n-key="admin_kpi_user_deletions_sub">Cuentas eliminadas (Derecho al olvido)</div>
+          </div>
+
+          <!-- KPI 6: Active Albums -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_kpi_active_albums">Álbumes Creados</span>
+              <svg class="xow-admin-kpi-icon" style="color: #06b6d4;"><use href="#i-photo_library"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value" id="kpiActiveAlbumsValue">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiActiveAlbumsSub" data-i18n-key="admin_kpi_active_albums_sub">Álbumes activos en la red E2EE</div>
+          </div>
+        </section>
+
+        <!-- Time Series Multi-Parameter Chart Card -->
+        <div class="xow-admin-table-card xow-analytics-chart-card">
+          <div class="xow-chart-header">
+            <div class="xow-chart-title-wrap">
+              <h3 class="xow-chart-title" data-i18n-key="admin_chart_title">Gráfica Histórica de Actividad</h3>
+              <p class="xow-chart-subtitle" data-i18n-key="admin_chart_subtitle">Selecciona la granularidad temporal y activa los parámetros a comparar.</p>
+            </div>
+
+            <!-- Granularity Switcher Buttons -->
+            <div class="xow-granularity-group" role="group" aria-label="Granularidad Temporal">
+              <button type="button" class="xow-granularity-btn" data-granularity="hour" id="btnGranularityHour" data-i18n-key="admin_granularity_hour">Hora</button>
+              <button type="button" class="xow-granularity-btn active" data-granularity="day" id="btnGranularityDay" data-i18n-key="admin_granularity_day">Día</button>
+              <button type="button" class="xow-granularity-btn" data-granularity="week" id="btnGranularityWeek" data-i18n-key="admin_granularity_week">Semana</button>
+              <button type="button" class="xow-granularity-btn" data-granularity="month" id="btnGranularityMonth" data-i18n-key="admin_granularity_month">Mes</button>
+              <button type="button" class="xow-granularity-btn" data-granularity="year" id="btnGranularityYear" data-i18n-key="admin_granularity_year">Año</button>
+            </div>
+          </div>
+
+          <!-- Parameter Toggle Chips -->
+          <div class="xow-parameter-pills" id="chartParameterPills" aria-label="Parámetros de la gráfica">
+            <!-- Rendered dynamically or declared with color dots -->
+          </div>
+
+          <!-- Chart Area with SVG and Tooltip -->
+          <div class="xow-chart-container" id="analyticsChartContainer">
+            <svg class="xow-chart-svg" id="analyticsChartSvg" viewBox="0 0 960 380" preserveAspectRatio="none">
+              <!-- SVG chart elements (grid, axes, series paths, points) rendered dynamically -->
+            </svg>
+            <div class="xow-chart-tooltip" id="chartTooltip" hidden></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 1: Funding Dashboard -->
+      <div class="xow-admin-main-section" id="secFunding" hidden>
+        <!-- Funding Top Sync & Actions Bar -->
+        <div class="xow-admin-toolbar" style="margin-bottom: 20px; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg class="icon icon-sm" style="color: var(--teal-accent);"><use href="#i-schedule"></use></svg>
+            <span class="xow-admin-kpi-sub" id="lastSyncStatusText" style="font-size: 13px; font-weight: 500;"></span>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" id="btnSyncPublic">
+            <svg class="icon icon-sm"><use href="#i-refresh"></use></svg>
+            <span id="admin_sync_btn"></span>
+          </button>
+        </div>
+      <!-- KPI Summary Cards -->
+      <section class="xow-admin-kpi-grid" aria-label="KPIs">
+        <!-- KPI 1: Gross Raised -->
+        <div class="xow-admin-kpi-card">
+          <div class="xow-admin-kpi-head">
+            <span class="xow-admin-kpi-label" id="admin_kpi_gross"></span>
+            <svg class="xow-admin-kpi-icon"><use href="#i-trending_up"></use></svg>
+          </div>
+          <div class="xow-admin-kpi-value" id="kpiGrossValue">0 €</div>
+          <div class="xow-admin-kpi-sub" id="admin_kpi_gross_sub"></div>
+        </div>
+
+        <!-- KPI 2: Net Balance -->
+        <div class="xow-admin-kpi-card">
+          <div class="xow-admin-kpi-head">
+            <span class="xow-admin-kpi-label" id="admin_kpi_net"></span>
+            <svg class="xow-admin-kpi-icon"><use href="#i-payments"></use></svg>
+          </div>
+          <div class="xow-admin-kpi-value highlight" id="kpiNetValue">0 €</div>
+          <div class="xow-admin-kpi-sub" id="admin_kpi_net_sub"></div>
+        </div>
+
+        <!-- KPI 3: Monthly Cost -->
+        <div class="xow-admin-kpi-card">
+          <div class="xow-admin-kpi-head">
+            <span class="xow-admin-kpi-label" id="admin_kpi_monthly_cost"></span>
+            <svg class="xow-admin-kpi-icon"><use href="#i-schedule"></use></svg>
+          </div>
+          <div class="xow-admin-kpi-value" id="kpiMonthlyCostValue">0 €/mes</div>
+          <div class="xow-admin-kpi-sub" id="admin_kpi_monthly_cost_sub"></div>
+        </div>
+
+        <!-- KPI 4: Runway / Funded Until -->
+        <div class="xow-admin-kpi-card">
+          <div class="xow-admin-kpi-head">
+            <span class="xow-admin-kpi-label" id="admin_kpi_runway"></span>
+            <svg class="xow-admin-kpi-icon"><use href="#i-volunteer_activism"></use></svg>
+          </div>
+          <div class="xow-admin-kpi-value" id="kpiRunwayValue">-</div>
+          <div class="xow-admin-kpi-sub" id="kpiRunwaySub">-</div>
+        </div>
+      </section>
+
+      <!-- Funding Phases Visualizer -->
+      <h2 class="xow-admin-section-title">
+        <svg class="icon icon-sm"><use href="#i-schema"></use></svg>
+        <span data-i18n-key="transparencia_phases_title">Fases de Financiación</span>
+      </h2>
+      <section class="xow-admin-phases-grid" id="adminPhasesContainer">
+        <!-- Dynamically rendered phase cards -->
+      </section>
+
+      <!-- Tabs Navigation -->
+      <nav class="xow-admin-tabs-nav" role="tablist">
+        <button type="button" class="xow-admin-tab-btn active" role="tab" aria-selected="true" data-tab="expenses" id="tabBtnExpenses">
+          <svg class="icon icon-sm"><use href="#i-receipt_long"></use></svg>
+          <span id="admin_tab_expenses">Gastos</span>
+        </button>
+        <button type="button" class="xow-admin-tab-btn" role="tab" aria-selected="false" data-tab="phases" id="tabBtnPhases">
+          <svg class="icon icon-sm"><use href="#i-schema"></use></svg>
+          <span id="admin_tab_phases">Fases</span>
+        </button>
+        <button type="button" class="xow-admin-tab-btn" role="tab" aria-selected="false" data-tab="incomes" id="tabBtnIncomes">
+          <svg class="icon icon-sm"><use href="#i-payments"></use></svg>
+          <span id="admin_tab_incomes">Ingresos y Donaciones</span>
+        </button>
+        <button type="button" class="xow-admin-tab-btn" role="tab" aria-selected="false" data-tab="settings" id="tabBtnSettings">
+          <svg class="icon icon-sm"><use href="#i-settings"></use></svg>
+          <span id="admin_tab_settings">Configuración</span>
+        </button>
+      </nav>
+
+      <!-- Tab 1: Expenses Panel -->
+      <div class="xow-admin-tab-panel active" id="panelExpenses" role="tabpanel">
+        <div class="xow-admin-toolbar">
+          <h3 class="xow-admin-section-title" style="margin-bottom: 0;" id="expensesPanelTitle" data-i18n-key="admin_exp_panel_title">Listado de Gastos</h3>
+          <button type="button" class="btn btn-primary btn-sm" id="btnOpenAddExpenseModal">
+            <svg class="icon icon-sm"><use href="#i-add"></use></svg>
+            <span id="admin_btn_add_expense">+ Añadir Gasto</span>
+          </button>
+        </div>
+        <div class="xow-admin-table-card">
+          <div class="xow-admin-table-scroll">
+            <table class="xow-admin-table" id="expensesTable">
+              <thead>
+                <tr>
+                  <th id="thExpConcept" data-i18n-key="admin_col_concept">Concepto</th>
+                  <th id="thExpType" data-i18n-key="admin_exp_col_type">Tipo / Periodicidad</th>
+                  <th id="thExpPhases" data-i18n-key="admin_exp_col_phases">Fases</th>
+                  <th id="thExpDate" data-i18n-key="admin_col_date">Fecha</th>
+                  <th id="thExpAmount" data-i18n-key="admin_col_amount">Importe (€)</th>
+                  <th id="thExpStatus" data-i18n-key="admin_col_status">Estado</th>
+                  <th id="thExpActions" data-i18n-key="admin_col_actions">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="expensesTableBody">
+                <!-- Rows rendered via admin.js -->
+              </tbody>
+            </table>
+          </div>
+          <div class="xow-table-empty" id="expensesEmptyState" hidden>
+            <svg class="icon"><use href="#i-receipt_long"></use></svg>
+            <p id="admin_no_expenses">No hay gastos registrados todavía.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Phases Panel -->
+      <div class="xow-admin-tab-panel" id="panelPhases" role="tabpanel">
+        <div class="xow-admin-toolbar">
+          <h3 class="xow-admin-section-title" style="margin-bottom: 0;" id="phasesPanelTitle" data-i18n-key="admin_phase_panel_title">Fases del Proyecto</h3>
+          <button type="button" class="btn btn-primary btn-sm" id="btnOpenAddPhaseModal">
+            <svg class="icon icon-sm"><use href="#i-add"></use></svg>
+            <span id="admin_btn_add_phase">+ Añadir Fase</span>
+          </button>
+        </div>
+        <div class="xow-admin-table-card">
+          <div class="xow-admin-table-scroll">
+            <table class="xow-admin-table" id="phasesTable">
+              <thead>
+                <tr>
+                  <th id="thPhaseOrder" data-i18n-key="admin_phase_col_order">Orden</th>
+                  <th id="thPhaseName" data-i18n-key="admin_phase_col_name">Nombre de la Fase</th>
+                  <th id="thPhaseDesc" data-i18n-key="admin_phase_col_desc">Descripción</th>
+                  <th id="thPhaseMonthly" data-i18n-key="admin_phase_col_monthly">Coste Mensual</th>
+                  <th id="thPhaseTarget" data-i18n-key="admin_phase_col_target">Meta Anual (Bucket)</th>
+                  <th id="thPhaseActions" data-i18n-key="admin_col_actions">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="phasesTableBody">
+                <!-- Rows rendered via admin.js -->
+              </tbody>
+            </table>
+          </div>
+          <div class="xow-table-empty" id="phasesEmptyState" hidden>
+            <svg class="icon"><use href="#i-schema"></use></svg>
+            <p id="admin_phases_empty">No hay fases configuradas aún. Crea una para comenzar.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Incomes Panel -->
+      <div class="xow-admin-tab-panel" id="panelIncomes" role="tabpanel">
+        <div class="xow-admin-toolbar">
+          <h3 class="xow-admin-section-title" style="margin-bottom: 0;" id="incomesPanelTitle" data-i18n-key="admin_inc_panel_title">Listado de Ingresos y Donaciones</h3>
+          <button type="button" class="btn btn-primary btn-sm" id="btnOpenAddIncomeModal">
+            <svg class="icon icon-sm"><use href="#i-add"></use></svg>
+            <span id="admin_btn_add_income">+ Añadir Ingreso</span>
+          </button>
+        </div>
+        <div class="xow-admin-table-card">
+          <div class="xow-admin-table-scroll">
+            <table class="xow-admin-table" id="incomesTable">
+              <thead>
+                <tr>
+                  <th id="thIncDate" data-i18n-key="admin_col_date">Fecha</th>
+                  <th id="thIncConcept" data-i18n-key="admin_col_concept">Concepto</th>
+                  <th id="thIncSource" data-i18n-key="admin_inc_col_source">Origen</th>
+                  <th id="thIncGross" data-i18n-key="admin_inc_col_gross">Bruto (€)</th>
+                  <th id="thIncFee" data-i18n-key="admin_inc_col_fee">Comisión (€)</th>
+                  <th id="thIncTax" data-i18n-key="admin_inc_col_tax">Impuestos (€)</th>
+                  <th id="thIncNet" data-i18n-key="admin_inc_col_net">Neto (€)</th>
+                  <th id="thIncActions" data-i18n-key="admin_col_actions">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="incomesTableBody">
+                <!-- Rows rendered via admin.js -->
+              </tbody>
+            </table>
+          </div>
+          <div class="xow-table-empty" id="incomesEmptyState" hidden>
+            <svg class="icon"><use href="#i-payments"></use></svg>
+            <p id="admin_no_incomes">No hay ingresos registrados todavía.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Settings Panel -->
+      <div class="xow-admin-tab-panel" id="panelSettings" role="tabpanel">
+        <div class="xow-admin-table-card" style="padding: 24px; max-width: 680px;">
+          <h3 class="xow-title-sm" style="margin-bottom: 8px;" id="admin_settings_title">Configuración de Comisiones y Finanzas</h3>
+          <p class="xow-subtitle" style="margin-bottom: 24px;" data-i18n-key="admin_settings_rates_lead">Ajusta los porcentajes aplicados automáticamente al registrar ingresos y donaciones.</p>
+
+          <form id="adminSettingsForm" novalidate>
+            <div class="xow-form-grid-2">
+              <div class="xow-form-group">
+                <label for="setStartDate" id="admin_settings_start_date">Fecha de inicio del proyecto</label>
+                <input type="date" id="setStartDate" name="project_start_date" required>
+              </div>
+              <div class="xow-form-group">
+                <label for="setCurrency" id="admin_settings_currency">Moneda principal</label>
+                <input type="text" id="setCurrency" name="currency" value="EUR" required>
+              </div>
+            </div>
+
+            <div class="xow-form-grid-2">
+              <div class="xow-form-group">
+                <label for="setGoogleFee" id="admin_settings_google_fee">Comisión Google Play (%)</label>
+                <input type="number" id="setGoogleFee" name="google_fee_pct" step="0.1" min="0" max="100" value="15.0" required>
+              </div>
+              <div class="xow-form-group">
+                <label for="setAppleFee" id="admin_settings_apple_fee">Comisión Apple App Store (%)</label>
+                <input type="number" id="setAppleFee" name="apple_fee_pct" step="0.1" min="0" max="100" value="15.0" required>
+              </div>
+            </div>
+
+            <div class="xow-form-grid-2">
+              <div class="xow-form-group">
+                <label for="setStripePct" id="admin_settings_stripe_pct">Comisión variable Stripe Web (%)</label>
+                <input type="number" id="setStripePct" name="stripe_fee_pct" step="0.01" min="0" max="100" value="1.5" required>
+              </div>
+              <div class="xow-form-group">
+                <label for="setStripeFixed" id="admin_settings_stripe_fixed">Comisión fija Stripe Web (€)</label>
+                <input type="number" id="setStripeFixed" name="stripe_fee_fixed_eur" step="0.01" min="0" value="0.25" required>
+              </div>
+            </div>
+
+            <div class="xow-form-group">
+              <label for="setTaxRate" id="admin_settings_tax_rate">Retención / Impuestos IRPF (%)</label>
+              <input type="number" id="setTaxRate" name="tax_rate_pct" step="0.1" min="0" max="100" value="19.0" required>
+            </div>
+
+            <div style="margin-top: 24px;">
+              <button type="submit" class="btn btn-primary" id="btnSaveSettings">
+                <span id="admin_settings_save_btn">Guardar Configuración</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      </div><!-- /secFunding -->
+
+      <!-- Section 2: Reports (UGC) Moderation -->
+      <div class="xow-admin-main-section" id="secReports" hidden>
+        
+        <!-- Reports KPI Cards -->
+        <section class="xow-admin-kpi-grid" aria-label="KPIs de Denuncias">
+          <!-- KPI 1: Total Reports -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_reports_kpi_total">Total Denuncias</span>
+              <svg class="xow-admin-kpi-icon"><use href="#i-flag"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value" id="kpiRepTotal">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiRepTotalSub" data-i18n-key="admin_reports_kpi_total_sub">Histórico registrado</div>
+          </div>
+
+          <!-- KPI 2: Pending Review -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_reports_kpi_pending">Pendientes de Revisión</span>
+              <svg class="xow-admin-kpi-icon" style="color: #f59e0b;"><use href="#i-schedule"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value highlight-warning" id="kpiRepPending">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiRepPendingSub" data-i18n-key="admin_reports_kpi_pending_sub">Requieren atención</div>
+          </div>
+
+          <!-- KPI 3: Resolved / Action Taken -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_reports_kpi_resolved">Resueltas / Acción Tomada</span>
+              <svg class="xow-admin-kpi-icon" style="color: #10b981;"><use href="#i-check_circle"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value highlight" id="kpiRepResolved">0</div>
+            <div class="xow-admin-kpi-sub" id="kpiRepResolvedSub" data-i18n-key="admin_reports_kpi_resolved_sub">Acción o desestimadas</div>
+          </div>
+
+          <!-- KPI 4: SLA Compliance -->
+          <div class="xow-admin-kpi-card">
+            <div class="xow-admin-kpi-head">
+              <span class="xow-admin-kpi-label" data-i18n-key="admin_reports_kpi_sla">Cumplimiento SLA (&lt;24h)</span>
+              <svg class="xow-admin-kpi-icon"><use href="#i-verified_user"></use></svg>
+            </div>
+            <div class="xow-admin-kpi-value" id="kpiRepSla">100%</div>
+            <div class="xow-admin-kpi-sub" id="kpiRepAvgTime">Tiempo medio: -</div>
+          </div>
+        </section>
+
+        <!-- Category & Content Breakdown Visualizer Grid -->
+        <div class="xow-reports-breakdown-grid">
+          <div class="xow-admin-table-card" style="padding: 16px;">
+            <h4 class="xow-admin-card-subtitle" data-i18n-key="admin_reports_category_breakdown">Desglose por Categoría de Abuso</h4>
+            <div class="xow-breakdown-chips" id="repCategoryChips">
+              <!-- Rendered via admin.js -->
+            </div>
+          </div>
+          <div class="xow-admin-table-card" style="padding: 16px;">
+            <h4 class="xow-admin-card-subtitle" data-i18n-key="admin_reports_content_breakdown">Desglose por Tipo de Contenido</h4>
+            <div class="xow-breakdown-chips" id="repContentChips">
+              <!-- Rendered via admin.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Reports Filter Toolbar -->
+        <div class="xow-admin-toolbar xow-reports-toolbar">
+          <div class="xow-filter-search-wrap">
+            <svg class="icon icon-sm xow-search-icon"><use href="#i-search"></use></svg>
+            <input type="search" class="xow-input-search" id="repSearchInput" placeholder="Buscar denuncias (ID, usuario, descripción)..." data-i18n-placeholder="admin_reports_search_ph" aria-label="Buscar denuncias">
+          </div>
+
+          <div class="xow-filter-group">
+            <select id="repStatusFilter" class="xow-select-sm" aria-label="Filtrar por estado">
+              <option value="">Estado: Todos</option>
+              <option value="pending">Pendientes</option>
+              <option value="in_review">En Revisión</option>
+              <option value="action_taken">Acción Tomada</option>
+              <option value="dismissed">Desestimadas</option>
+            </select>
+
+            <select id="repCategoryFilter" class="xow-select-sm" aria-label="Filtrar por categoría">
+              <option value="">Categoría: Todas</option>
+              <option value="spam">Spam / Publicidad</option>
+              <option value="harassment">Acoso / Odio</option>
+              <option value="inappropriate">Contenido Inapropiado</option>
+              <option value="impersonation">Suplantación</option>
+              <option value="other">Otros</option>
+            </select>
+
+            <select id="repContentFilter" class="xow-select-sm" aria-label="Filtrar por contenido">
+              <option value="">Tipo: Todos</option>
+              <option value="album">Álbum</option>
+              <option value="message">Mensaje / Chat</option>
+              <option value="user">Perfil / Usuario</option>
+              <option value="media">Foto / Vídeo</option>
+            </select>
+
+            <select id="repBlockedFilter" class="xow-select-sm" aria-label="Filtrar por bloqueo">
+              <option value="">Bloqueo: Todos</option>
+              <option value="true">Solo Bloqueados</option>
+              <option value="false">No Bloqueados</option>
+            </select>
+
+            <select id="repSortSelect" class="xow-select-sm" aria-label="Ordenar por">
+              <option value="created_desc">Más recientes primero</option>
+              <option value="created_asc">Más antiguas primero</option>
+              <option value="pending_first">Pendientes primero</option>
+            </select>
+
+            <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshReports" title="Refrescar denuncias">
+              <svg class="icon icon-sm"><use href="#i-refresh"></use></svg>
+              <span data-i18n-key="admin_btn_refresh">Refrescar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Reports Interactive Table -->
+        <div class="xow-admin-table-card">
+          <div class="xow-admin-table-scroll">
+            <table class="xow-admin-table" id="reportsTable">
+              <thead>
+                <tr>
+                  <th id="thRepDate" data-i18n-key="admin_reports_col_date">Fecha / Hora</th>
+                  <th id="thRepContentType" data-i18n-key="admin_reports_col_content_type">Contenido</th>
+                  <th id="thRepCategory" data-i18n-key="admin_reports_col_category">Categoría</th>
+                  <th id="thRepReporter" data-i18n-key="admin_reports_col_reporter">Denunciante</th>
+                  <th id="thRepTarget" data-i18n-key="admin_reports_col_target">Denunciado</th>
+                  <th id="thRepStatus" data-i18n-key="admin_reports_col_status">Estado</th>
+                  <th id="thRepAction" data-i18n-key="admin_reports_col_action">Acción Tomada</th>
+                  <th id="thRepActions" data-i18n-key="admin_actions">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="reportsTableBody">
+                <!-- Rows rendered via admin.js -->
+              </tbody>
+            </table>
+          </div>
+          <div class="xow-table-empty" id="reportsEmptyState" hidden>
+            <svg class="icon"><use href="#i-flag"></use></svg>
+            <p data-i18n-key="admin_reports_empty">No se encontraron denuncias con los filtros seleccionados.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Section 3: User Management & Reserved Handles -->
+      <div class="xow-admin-main-section" id="secUsers" hidden>
+        
+        <!-- User Subnav Tabs -->
+        <nav class="xow-admin-tabs-nav" role="tablist">
+          <button type="button" class="xow-admin-tab-btn active" role="tab" aria-selected="true" data-user-tab="directory" id="tabBtnUserDirectory">
+            <svg class="icon icon-sm"><use href="#i-person_search"></use></svg>
+            <span data-i18n-key="admin_users_tab_directory">Búsqueda de Usuarios</span>
+          </button>
+          <button type="button" class="xow-admin-tab-btn" role="tab" aria-selected="false" data-user-tab="reserved" id="tabBtnUserReserved">
+            <svg class="icon icon-sm"><use href="#i-lock"></use></svg>
+            <span data-i18n-key="admin_users_tab_reserved">Handles Reservados</span>
+          </button>
+        </nav>
+
+        <!-- Subpanel 1: User Directory -->
+        <div class="xow-admin-tab-panel active" id="panelUserDirectory" role="tabpanel">
+          <div class="xow-admin-toolbar xow-users-toolbar">
+            <div class="xow-users-search-inputs">
+              <div class="xow-filter-search-wrap">
+                <svg class="icon icon-sm xow-search-icon"><use href="#i-search"></use></svg>
+                <input type="search" class="xow-input-search" id="userSearchHandleInput" placeholder="Buscar por @handle (contiene)..." data-i18n-placeholder="admin_users_search_handle_ph" aria-label="Buscar por handle">
+              </div>
+              <div class="xow-filter-search-wrap">
+                <svg class="icon icon-sm xow-search-icon"><use href="#i-person"></use></svg>
+                <input type="search" class="xow-input-search" id="userSearchNameInput" placeholder="Buscar por Nombre (contiene)..." data-i18n-placeholder="admin_users_search_name_ph" aria-label="Buscar por nombre">
+              </div>
+            </div>
+
+            <div class="xow-filter-group">
+              <select id="userStatusFilter" class="xow-select-sm" aria-label="Estado de cuenta">
+                <option value="all">Todos los estados</option>
+                <option value="active">Solo Activos</option>
+                <option value="banned">Solo Baneados</option>
+              </select>
+
+              <button type="button" class="btn btn-primary btn-sm" id="btnRefreshUsers" title="Buscar usuarios">
+                <svg class="icon icon-sm"><use href="#i-search"></use></svg>
+                <span data-i18n-key="admin_users_btn_search">Buscar</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="xow-admin-table-card">
+            <div class="xow-admin-table-scroll">
+              <table class="xow-admin-table" id="usersTable">
+                <thead>
+                  <tr>
+                    <th id="thUserAvatar" data-i18n-key="admin_users_col_user">Usuario</th>
+                    <th id="thUserHandle" data-i18n-key="admin_users_col_handle">@handle</th>
+                    <th id="thUserTrust" data-i18n-key="admin_users_col_trust">Trust Score</th>
+                    <th id="thUserCreated" data-i18n-key="admin_users_col_created">Registro</th>
+                    <th id="thUserLastSeen" data-i18n-key="admin_users_col_last_seen">Última Conexión</th>
+                    <th id="thUserStatus" data-i18n-key="admin_col_status">Estado</th>
+                    <th id="thUserActions" data-i18n-key="admin_col_actions">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <!-- Rows rendered via admin.js -->
+                </tbody>
+              </table>
+            </div>
+            <div class="xow-table-empty" id="usersEmptyState" hidden>
+              <svg class="icon"><use href="#i-person_search"></use></svg>
+              <p data-i18n-key="admin_users_empty">No se encontraron usuarios coincidentes.</p>
+            </div>
+            <div class="xow-admin-table-footer" id="usersTableFooter">
+              <span id="usersCountLabel">Cargando usuarios...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subpanel 2: Reserved Handles -->
+        <div class="xow-admin-tab-panel" id="panelUserReserved" role="tabpanel">
+          <div class="xow-admin-toolbar">
+            <h3 class="xow-admin-section-title" style="margin-bottom: 0;" data-i18n-key="admin_reserved_title">Handles Reservados</h3>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshReserved">
+                <svg class="icon icon-sm"><use href="#i-refresh"></use></svg>
+                <span data-i18n-key="admin_btn_refresh">Refrescar</span>
+              </button>
+              <button type="button" class="btn btn-primary btn-sm" id="btnOpenAddReservedModal">
+                <svg class="icon icon-sm"><use href="#i-add"></use></svg>
+                <span data-i18n-key="admin_reserved_btn_add">+ Añadir Handle Reservado</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="xow-admin-table-card">
+            <div class="xow-admin-table-scroll">
+              <table class="xow-admin-table" id="reservedHandlesTable">
+                <thead>
+                  <tr>
+                    <th id="thResHandle" data-i18n-key="admin_reserved_col_handle">Handle</th>
+                    <th id="thResReason" data-i18n-key="admin_reserved_col_reason">Motivo</th>
+                    <th id="thResCreatedBy" data-i18n-key="admin_reserved_col_by">Añadido Por</th>
+                    <th id="thResDate" data-i18n-key="admin_reserved_col_date">Fecha</th>
+                    <th id="thResActions" data-i18n-key="admin_actions">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="reservedHandlesTableBody">
+                  <!-- Rows rendered via admin.js -->
+                </tbody>
+              </table>
+            </div>
+            <div class="xow-table-empty" id="reservedEmptyState" hidden>
+              <svg class="icon"><use href="#i-lock"></use></svg>
+              <p data-i18n-key="admin_reserved_empty">No hay handles reservados en la base de datos.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal: Create/Edit Expense -->
+  <div class="xow-modal-backdrop" id="modalExpenseBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalExpenseTitle">
+    <div class="xow-modal-card">
+      <div class="xow-modal-header">
+        <h3 class="xow-modal-title" id="modalExpenseTitle" data-i18n-key="admin_exp_modal_title">Añadir Gasto</h3>
+        <button type="button" class="xow-modal-close" id="btnCloseExpenseModal" aria-label="Cerrar">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+
+      <form id="formExpense" novalidate>
+        <input type="hidden" id="expenseEditId" name="id">
+
+        <div class="xow-form-group">
+          <label for="expConcept" id="lblExpConcept" data-i18n-key="admin_exp_lbl_concept">Concepto *</label>
+          <input type="text" id="expConcept" name="concept" placeholder="Ej. Servidor Hetzner VPS" data-i18n-placeholder="admin_exp_ph_concept" required>
+        </div>
+
+        <div class="xow-form-grid-2">
+          <div class="xow-form-group">
+            <label for="expAmount" id="lblExpAmount" data-i18n-key="admin_exp_lbl_amount">Importe (€) *</label>
+            <input type="number" id="expAmount" name="amount_eur" step="0.01" min="0" placeholder="Ej. 150.00" data-i18n-placeholder="admin_exp_ph_amount" required>
+          </div>
+          <div class="xow-form-group">
+            <label for="expType" id="lblExpType" data-i18n-key="admin_exp_lbl_type">Tipo *</label>
+            <select id="expType" name="type" required>
+              <option value="monthly">Mensual recurrente</option>
+              <option value="one_off">Puntual</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="xow-form-group">
+          <label id="lblExpPhases" data-i18n-key="admin_exp_lbl_phases">Fases aplicables</label>
+          <div class="xow-checkbox-group" id="expPhasesCheckboxGroup">
+            <!-- Dynamically populated checkboxes for phases -->
+          </div>
+        </div>
+
+        <div class="xow-form-grid-2">
+          <div class="xow-form-group">
+            <label for="expDate" id="lblExpDate" data-i18n-key="admin_exp_lbl_date">Fecha de pago / inicio</label>
+            <input type="date" id="expDate" name="payment_date">
+          </div>
+          <div class="xow-form-group" style="display: flex; align-items: flex-end; padding-bottom: 8px;">
+            <label class="xow-checkbox-pill" style="width: 100%; justify-content: center; padding: 10px;">
+              <input type="checkbox" id="expIsActive" name="is_active" checked>
+              <span id="lblExpIsActive" data-i18n-key="admin_exp_lbl_active">Gasto Activo</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="xow-form-group">
+          <label for="expNotes" id="lblExpNotes" data-i18n-key="admin_exp_lbl_notes">Notas</label>
+          <textarea id="expNotes" name="notes" rows="2" placeholder="Detalles u observaciones" data-i18n-placeholder="admin_exp_ph_notes"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" id="btnCancelExpense" data-i18n-key="admin_btn_cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveExpense" data-i18n-key="admin_exp_btn_save">Guardar Gasto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Create/Edit Income -->
+  <div class="xow-modal-backdrop" id="modalIncomeBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalIncomeTitle">
+    <div class="xow-modal-card">
+      <div class="xow-modal-header">
+        <h3 class="xow-modal-title" id="modalIncomeTitle" data-i18n-key="admin_inc_modal_title">Añadir Ingreso</h3>
+        <button type="button" class="xow-modal-close" id="btnCloseIncomeModal" aria-label="Cerrar">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+
+      <form id="formIncome" novalidate>
+        <input type="hidden" id="incomeEditId" name="id">
+
+        <div class="xow-form-group">
+          <label for="incConcept" id="lblIncConcept" data-i18n-key="admin_inc_lbl_concept">Concepto *</label>
+          <input type="text" id="incConcept" name="concept" placeholder="Ej. Aportación inicial o Donación consumible" data-i18n-placeholder="admin_inc_ph_concept" required>
+        </div>
+
+        <div class="xow-form-grid-2">
+          <div class="xow-form-group">
+            <label for="incDate" id="lblIncDate" data-i18n-key="admin_inc_lbl_date">Fecha *</label>
+            <input type="date" id="incDate" name="date" required>
+          </div>
+          <div class="xow-form-group">
+            <label for="incSource" id="lblIncSource" data-i18n-key="admin_inc_lbl_source">Origen / Canal *</label>
+            <select id="incSource" name="source" required>
+              <option value="founder_investment">Inversión propia (Fondos propios)</option>
+              <option value="google_play">Google Play (IAP)</option>
+              <option value="apple_appstore">Apple App Store (IAP)</option>
+              <option value="stripe_web">Stripe Web</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="xow-form-group">
+          <label for="incGross" id="lblIncGross" data-i18n-key="admin_inc_lbl_gross">Importe Bruto (€) *</label>
+          <input type="number" id="incGross" name="gross_amount_eur" step="0.01" min="0" placeholder="Ej. 1000.00" data-i18n-placeholder="admin_inc_ph_gross" required>
+        </div>
+
+        <!-- Real-time Automatic Financial Calculation Preview -->
+        <div class="xow-calc-preview">
+          <div class="xow-calc-item">
+            <span class="xow-calc-label" data-i18n-key="admin_inc_calc_fee">Comisión</span>
+            <span class="xow-calc-val" id="calcPreviewFee">0.00 €</span>
+          </div>
+          <div class="xow-calc-item">
+            <span class="xow-calc-label" data-i18n-key="admin_inc_calc_tax">Impuestos (IRPF)</span>
+            <span class="xow-calc-val" id="calcPreviewTax">0.00 €</span>
+          </div>
+          <div class="xow-calc-item">
+            <span class="xow-calc-label" data-i18n-key="admin_inc_calc_net">Neto en Caja</span>
+            <span class="xow-calc-val net" id="calcPreviewNet">0.00 €</span>
+          </div>
+        </div>
+
+        <!-- Hidden actual values to save -->
+        <input type="hidden" id="incFee" name="platform_fee_eur" value="0">
+        <input type="hidden" id="incTax" name="tax_amount_eur" value="0">
+        <input type="hidden" id="incNet" name="net_amount_eur" value="0">
+
+        <div class="xow-form-grid-2">
+          <div class="xow-form-group">
+            <label for="incExtId" id="lblIncExtId" data-i18n-key="admin_inc_lbl_ext_id">ID / Referencia Externa</label>
+            <input type="text" id="incExtId" name="external_id" placeholder="Ej. ch_3M5x... o GPA.3321..." data-i18n-placeholder="admin_inc_ph_ext_id">
+          </div>
+          <div class="xow-form-group" style="display: flex; align-items: flex-end; padding-bottom: 8px;">
+            <label class="xow-checkbox-pill" style="width: 100%; justify-content: center; padding: 10px;">
+              <input type="checkbox" id="incIsRecurring" name="is_recurring">
+              <span id="lblIncIsRecurring" data-i18n-key="admin_inc_lbl_recurring">Ingreso Recurrente</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="xow-form-group">
+          <label for="incNotes" id="lblIncNotes" data-i18n-key="admin_inc_lbl_notes">Notas</label>
+          <textarea id="incNotes" name="notes" rows="2" placeholder="Observaciones contables" data-i18n-placeholder="admin_inc_ph_notes"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" id="btnCancelIncome" data-i18n-key="admin_btn_cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveIncome" data-i18n-key="admin_inc_btn_save">Guardar Ingreso</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Create/Edit Phase -->
+  <div class="xow-modal-backdrop" id="modalPhaseBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalPhaseTitle">
+    <div class="xow-modal-card">
+      <div class="xow-modal-header">
+        <h3 class="xow-modal-title" id="modalPhaseTitle" data-i18n-key="admin_phase_modal_title">Añadir Fase</h3>
+        <button type="button" class="xow-modal-close" id="btnClosePhaseModal" aria-label="Cerrar">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+
+      <form id="formPhase" novalidate>
+        <input type="hidden" id="phaseEditId" name="id">
+
+        <!-- Selector de pestañas de idioma y botón de auto-traducción -->
+        <div class="xow-lang-tabs-container">
+          <div class="xow-lang-tabs" id="phaseLangTabs">
+            <button type="button" class="xow-lang-tab is-active" data-phase-lang="es">🇪🇸 ES</button>
+            <button type="button" class="xow-lang-tab" data-phase-lang="en">🇬🇧 EN</button>
+            <button type="button" class="xow-lang-tab" data-phase-lang="ca">🇦🇩 CA</button>
+            <button type="button" class="xow-lang-tab" data-phase-lang="fr">🇫🇷 FR</button>
+            <button type="button" class="xow-lang-tab" data-phase-lang="it">🇮🇹 IT</button>
+            <button type="button" class="xow-lang-tab" data-phase-lang="de">🇩🇪 DE</button>
+            <button type="button" class="xow-lang-tab" data-phase-lang="ro">🇷🇴 RO</button>
+            <button type="button" class="xow-lang-tab" data-phase-lang="pt">🇵🇹 PT</button>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="btnAutoTranslatePhase" title="Auto-traducir con PocketBase a los 8 idiomas">
+            <span id="btnAutoTranslateText" data-i18n-key="admin_phase_btn_autotranslate">✨ Auto-traducir con IA</span>
+          </button>
+        </div>
+
+        <div class="xow-form-grid-2">
+          <div class="xow-form-group">
+            <label for="phaseOrder" id="lblPhaseOrder" data-i18n-key="admin_phase_lbl_order">Orden en la Cascada *</label>
+            <input type="number" id="phaseOrder" name="order" min="1" max="99" value="1" required>
+          </div>
+          <div class="xow-form-group">
+            <label for="phaseName" id="lblPhaseName">Nombre de la Fase (<span id="phaseActiveLangBadge">ES</span>) *</label>
+            <input type="text" id="phaseName" name="name" placeholder="Ej. Fase 1: Supervivencia" data-i18n-placeholder="admin_phase_ph_name" required>
+          </div>
+        </div>
+
+        <div class="xow-form-group">
+          <label for="phaseDesc" id="lblPhaseDesc">Descripción (<span id="phaseActiveLangDescBadge">ES</span>)</label>
+          <textarea id="phaseDesc" name="description" rows="3" placeholder="Ej. Servidores básicos, dominio y mantenimiento" data-i18n-placeholder="admin_phase_ph_desc"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" id="btnCancelPhase" data-i18n-key="admin_btn_cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSavePhase" data-i18n-key="admin_phase_btn_save">Guardar Fase</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Delete Confirmation -->
+  <div class="xow-modal-backdrop" id="modalDeleteBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalDeleteTitle">
+    <div class="xow-modal-card" style="max-width: 420px; text-align: center;">
+      <div style="margin-bottom: 16px;">
+        <svg class="icon icon-lg" style="color: #ef4444; width: 44px; height: 44px;"><use href="#i-warning"></use></svg>
+      </div>
+      <h3 class="xow-modal-title" id="modalDeleteTitle" style="margin-bottom: 10px;" data-i18n-key="admin_modal_delete_title">Eliminar registro</h3>
+      <p class="xow-subtitle" id="deleteConfirmMessage" style="margin-bottom: 24px;" data-i18n-key="admin_modal_delete_confirm">¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.</p>
+      <div style="display: flex; justify-content: center; gap: 12px;">
+        <button type="button" class="btn btn-secondary" id="btnCancelDelete" data-i18n-key="admin_btn_cancel">Cancelar</button>
+        <button type="button" class="btn btn-primary" style="background: #ef4444; border-color: #ef4444;" id="btnConfirmDelete" data-i18n-key="admin_modal_delete_btn">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Report Detail / Moderation Resolution -->
+  <div class="xow-modal-backdrop" id="modalReportDetailBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalReportDetailTitle">
+    <div class="xow-modal-card xow-modal-card-lg">
+      <div class="xow-modal-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <h3 class="xow-modal-title" id="modalReportDetailTitle" data-i18n-key="admin_reports_modal_title">Detalle y Moderación de Denuncia</h3>
+          <span class="xow-badge" id="modalRepStatusBadge">Pendiente</span>
+        </div>
+        <button type="button" class="xow-modal-close" id="btnCloseReportDetailModal" aria-label="Cerrar">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+
+      <div class="xow-report-detail-body">
+        <input type="hidden" id="repDetailId">
+
+        <!-- Report Info Meta Grid -->
+        <div class="xow-meta-grid">
+          <div class="xow-meta-item">
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_id">ID de Denuncia</span>
+            <span class="xow-meta-value font-mono" id="repDetailIdText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_date">Fecha / Hora</span>
+            <span class="xow-meta-value" id="repDetailDateText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_content">Tipo de Contenido</span>
+            <span class="xow-meta-value" id="repDetailContentTypeText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_category">Categoría de Abuso</span>
+            <span class="xow-meta-value" id="repDetailCategoryText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_reporter">Denunciante (Reporter)</span>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span class="xow-meta-value font-mono" id="repDetailReporterText">-</span>
+              <button type="button" class="btn btn-secondary btn-xs" id="btnViewReporterUser" title="Ver ficha del denunciante">
+                <svg class="icon icon-sm"><use href="#i-account_circle"></use></svg>
+              </button>
+            </div>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_target">Usuario Denunciado (Target)</span>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span class="xow-meta-value font-mono" id="repDetailTargetText">-</span>
+              <button type="button" class="btn btn-secondary btn-xs" id="btnViewTargetUser" title="Ver ficha del denunciado">
+                <svg class="icon icon-sm"><use href="#i-account_circle"></use></svg>
+              </button>
+            </div>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_album">ID de Álbum / Medio</span>
+            <span class="xow-meta-value font-mono" id="repDetailAlbumIdText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label" data-i18n-key="admin_reports_meta_blocked">Bloqueo Inmediato Solicitado</span>
+            <span class="xow-meta-value" id="repDetailBlockedText">-</span>
+          </div>
+        </div>
+
+        <!-- Description Box -->
+        <div class="xow-form-group" style="margin-top: 16px;">
+          <label class="xow-label-static" data-i18n-key="admin_reports_description">Descripción del Denunciante</label>
+          <div class="xow-content-quote" id="repDetailDescriptionText">-</div>
+        </div>
+
+        <!-- Moderation Form Section -->
+        <div class="xow-mod-section">
+          <h4 class="xow-admin-card-subtitle" data-i18n-key="admin_reports_resolution">Resolución del Moderador</h4>
+          
+          <form id="formReportModeration" novalidate>
+            <div class="xow-form-grid-2">
+              <div class="xow-form-group">
+                <label for="repModStatus" data-i18n-key="admin_reports_filter_status">Estado de la Denuncia *</label>
+                <select id="repModStatus" name="status" required>
+                  <option value="pending">Pendiente</option>
+                  <option value="in_review">En Revisión</option>
+                  <option value="action_taken">Acción Tomada</option>
+                  <option value="dismissed">Desestimada</option>
+                </select>
+              </div>
+
+              <div class="xow-form-group">
+                <label for="repModAction" data-i18n-key="admin_reports_col_action">Acción Aplicada</label>
+                <select id="repModAction" name="action_taken">
+                  <option value="none">Ninguna</option>
+                  <option value="user_blocked">Usuario Bloqueado / Baneado</option>
+                  <option value="warning_issued">Advertencia Emitida</option>
+                  <option value="content_flagged">Contenido Marcado</option>
+                  <option value="dismissed">Desestimada</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="xow-form-group">
+              <label for="repModNotes" data-i18n-key="admin_reports_mod_notes">Notas internas de moderación</label>
+              <textarea id="repModNotes" name="moderation_notes" rows="3" placeholder="Motivo de la resolución o detalles de investigación interna..." data-i18n-placeholder="admin_reports_ph_mod_notes"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 24px;">
+              <button type="button" class="btn btn-danger btn-sm" id="btnBanReportedUser">
+                <svg class="icon icon-sm"><use href="#i-block"></use></svg>
+                <span data-i18n-key="admin_reports_btn_ban_user">Bloquear / Banear Usuario Denunciado</span>
+              </button>
+
+              <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn btn-secondary" id="btnDismissReport">
+                  <span data-i18n-key="admin_reports_btn_dismiss">Desestimar</span>
+                </button>
+                <button type="submit" class="btn btn-primary" id="btnSaveReportResolution">
+                  <span data-i18n-key="admin_reports_btn_save_resolution">Guardar Resolución</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: User Profile & Moderation Detail -->
+  <div class="xow-modal-backdrop" id="modalUserDetailBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalUserDetailTitle">
+    <div class="xow-modal-card xow-modal-card-lg">
+      <div class="xow-modal-header">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div class="xow-user-avatar-lg" id="modalUserAvatar">U</div>
+          <div>
+            <h3 class="xow-modal-title" id="modalUserName" style="margin-bottom: 2px;">Nombre de Usuario</h3>
+            <p class="xow-subtitle" id="modalUserHandle" style="margin-bottom: 0;">@handle</p>
+          </div>
+          <span class="xow-badge" id="modalUserStatusBadge">Activo</span>
+        </div>
+        <button type="button" class="xow-modal-close" id="btnCloseUserDetailModal" aria-label="Cerrar">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+
+      <div class="xow-user-detail-body">
+        <input type="hidden" id="modalUserId">
+
+        <!-- User Metadata Grid -->
+        <div class="xow-meta-grid">
+          <div class="xow-meta-item">
+            <span class="xow-meta-label" data-i18n-key="admin_users_modal_meta_id">ID PocketBase</span>
+            <span class="xow-meta-value font-mono" id="modalUserIdText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label" data-i18n-key="admin_users_modal_meta_trust">Nivel de Confianza (Trust Score)</span>
+            <span class="xow-meta-value highlight" id="modalUserTrustText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label" data-i18n-key="admin_users_modal_meta_lang">Idioma / Locale</span>
+            <span class="xow-meta-value" id="modalUserLocaleText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label" data-i18n-key="admin_users_modal_meta_version">Versión de App</span>
+            <span class="xow-meta-value" id="modalUserVersionText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label" data-i18n-key="admin_users_modal_meta_created">Fecha de Registro</span>
+            <span class="xow-meta-value" id="modalUserCreatedText">-</span>
+          </div>
+          <div class="xow-meta-item">
+            <span class="xow-meta-label" data-i18n-key="admin_users_modal_meta_seen">Última Conexión</span>
+            <span class="xow-meta-value" id="modalUserLastSeenText">-</span>
+          </div>
+        </div>
+
+        <!-- Ban Banner (if banned) -->
+        <div class="xow-ban-banner" id="modalUserBanBanner" hidden>
+          <svg class="icon icon-sm" style="color: #ef4444;"><use href="#i-block"></use></svg>
+          <div>
+            <strong data-i18n-key="admin_users_ban_banner_title">Cuenta Suspendida / Baneada</strong>
+            <p id="modalUserBanReasonText" style="margin-top: 2px; font-size: 13px;"></p>
+          </div>
+        </div>
+
+        <!-- Reports Received (Target) Accordion/Section -->
+        <div class="xow-user-history-section">
+          <div class="xow-user-history-head">
+            <h4 class="xow-admin-card-subtitle" style="margin: 0;" data-i18n-key="admin_users_reports_received">Denuncias Recibidas (como Denunciado)</h4>
+            <span class="xow-badge-count" id="modalUserReportsReceivedCount">0</span>
+          </div>
+          <div class="xow-history-list" id="modalUserReportsReceivedList">
+            <p class="xow-text-muted" style="font-size: 13px;" data-i18n-key="admin_users_no_reports">Sin denuncias registradas.</p>
+          </div>
+        </div>
+
+        <!-- Reports Made (Reporter) Section -->
+        <div class="xow-user-history-section">
+          <div class="xow-user-history-head">
+            <h4 class="xow-admin-card-subtitle" style="margin: 0;" data-i18n-key="admin_users_reports_made">Denuncias Realizadas (como Denunciante)</h4>
+            <span class="xow-badge-count" id="modalUserReportsMadeCount">0</span>
+          </div>
+          <div class="xow-history-list" id="modalUserReportsMadeList">
+            <p class="xow-text-muted" style="font-size: 13px;" data-i18n-key="admin_users_no_reports">Sin denuncias realizadas.</p>
+          </div>
+        </div>
+
+        <!-- User Action Footer -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+          <button type="button" class="btn btn-danger" id="btnToggleUserBan">
+            <svg class="icon icon-sm"><use href="#i-block"></use></svg>
+            <span id="btnToggleUserBanText" data-i18n-key="admin_users_btn_ban">Suspender / Bloquear Cuenta</span>
+          </button>
+          <button type="button" class="btn btn-secondary" id="btnDismissUserDetail" data-i18n-key="admin_users_btn_dismiss">Cerrar</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Reserved Handle -->
+  <div class="xow-modal-backdrop" id="modalReservedHandleBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalReservedHandleTitle">
+    <div class="xow-modal-card" style="max-width: 480px;">
+      <div class="xow-modal-header">
+        <h3 class="xow-modal-title" id="modalReservedHandleTitle" data-i18n-key="admin_reserved_modal_title">Añadir Handle Reservado</h3>
+        <button type="button" class="xow-modal-close" id="btnCloseReservedModal" aria-label="Cerrar">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+
+      <form id="formReservedHandle" novalidate>
+        <div class="xow-form-group">
+          <label for="reservedHandleInput" data-i18n-key="admin_reserved_input_handle">Handle (sin @) *</label>
+          <input type="text" id="reservedHandleInput" name="handle" placeholder="ej. soporte, oficial, xow_admin" data-i18n-placeholder="admin_reserved_input_handle_ph" required>
+          <p class="xow-form-hint" data-i18n-key="admin_reserved_hint">Letras minúsculas, números, guiones y guiones bajos (3-30 caracteres).</p>
+        </div>
+
+        <div class="xow-form-group">
+          <label for="reservedReasonInput" data-i18n-key="admin_reserved_input_reason">Motivo de la reserva</label>
+          <input type="text" id="reservedReasonInput" name="reason" placeholder="ej. Cuenta de sistema, marca protegida..." data-i18n-placeholder="admin_reserved_input_reason_ph">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+          <button type="button" class="btn btn-secondary" id="btnCancelReserved" data-i18n-key="admin_btn_cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveReserved" data-i18n-key="admin_reserved_btn_save">Guardar Handle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="xow-toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <script src="../assets/js/config.js?v=550"></script>
+  <script src="../assets/js/icons.js?v=550"></script>
+  <script src="../assets/js/i18n-data.js?v=550"></script>
+  <script src="../assets/js/i18n.js?v=550"></script>
+  <script src="vendor/pocketbase.umd.js"></script>
+  <script src="admin.js?v=550"></script>
+</body>
+</html>

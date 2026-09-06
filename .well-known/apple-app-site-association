@@ -1,0 +1,13 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TU_TEAM_ID.TU_BUNDLE_ID",
+        "paths": [
+          "/invite/*"
+        ]
+      }
+    ]
+  }
+}
