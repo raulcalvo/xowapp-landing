@@ -4,71 +4,234 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://pocketbase.xowapp.com https://pocketbase.raulcalvo.com https://dev.pocketbase.xowapp.com https://accounts.google.com/gsi/; img-src 'self' data: https://pocketbase.xowapp.com https://pocketbase.raulcalvo.com https://dev.pocketbase.xowapp.com https://*.googleusercontent.com; style-src 'self' https://fonts.googleapis.com https://accounts.google.com/gsi/style; font-src 'self' https://fonts.gstatic.com; script-src 'self' https://accounts.google.com/gsi/client; frame-src https://accounts.google.com/gsi/; frame-ancestors 'none'">
-  <title id="pageTitle" data-i18n-key="heroHeadline">XowApp</title>
+  <title id="pageTitle" data-i18n-key="home_page_title">XowApp</title>
+  <meta name="description" content="XowApp: comparte álbumes de fotos y vídeos sin que nadie pueda reenviarlos, guardarlos ni sacarlos de la app. Sin teléfono, sin email y sin anuncios.">
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..650&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 <body data-page="index">
   <div class="xow-page">
     <div id="xow-nav-root"></div>
 
-    <main class="xow-main">
-      <div class="xow-container">
+    <main class="xow-main xow-home">
 
-        <section class="xow-section xow-hero">
-          <h1 class="xow-title" id="heroHeadline"></h1>
-          <p class="xow-subtitle" id="heroSubtitle"></p>
-          <div class="xow-manifesto" id="hero_manifesto"></div>
-        </section>
+      <section class="xow-home-hero">
+        <div class="xow-container xow-container-wide xow-hero-grid">
+          <div class="xow-hero-copy">
+            <h1 class="xow-display" id="home_hero_title"></h1>
+            <p class="xow-hero-body" id="home_hero_body"></p>
+            <div class="xow-stores">
+            <span class="xow-store" aria-disabled="true">
+              <svg class="xow-store-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5v17l14-8.5z"/></svg>
+              <span class="xow-store-text"><small data-i18n-key="store_soon"></small><b>Google Play</b></span>
+            </span>
+            <span class="xow-store" aria-disabled="true">
+              <svg class="xow-store-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>
+              <span class="xow-store-text"><small data-i18n-key="store_soon"></small><b>App Store</b></span>
+            </span>
+          </div>
+            <p class="xow-hero-note" id="home_hero_note"></p>
+          </div>
 
-        <section class="xow-section xow-card">
-          <div class="xow-kicker" id="whatis_kicker"></div>
-          <h2 class="xow-title-sm" id="whatis_title"></h2>
-          <p class="xow-subtitle" id="whatis_body"></p>
-        </section>
+          <div class="xow-phone" aria-hidden="true">
+            <div class="xow-phone-screen">
+              <div class="xow-phone-top">
+                <span class="xow-phone-back">&lsaquo;</span>
+                <div>
+                  <div class="xow-phone-title" id="mock_album_title"></div>
+                  <div class="xow-phone-meta">
+                    <span class="xow-phone-faces"><i></i><i></i><i></i><i></i></span>
+                    <span id="mock_album_meta"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="xow-phone-grid"><span class="xow-tile xow-tile-1"></span><span class="xow-tile xow-tile-2"></span><span class="xow-tile xow-tile-3"></span><span class="xow-tile xow-tile-4"></span><span class="xow-tile xow-tile-5"></span><span class="xow-tile xow-tile-6"></span><span class="xow-tile xow-tile-7"></span><span class="xow-tile xow-tile-8"></span><span class="xow-tile xow-tile-9"></span><span class="xow-tile xow-tile-5"></span><span class="xow-tile xow-tile-2"></span><span class="xow-tile xow-tile-4"></span></div>
+              <div class="xow-phone-toast">
+                <svg class="icon"><use href="#i-lock"></use></svg>
+                <span id="mock_toast"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        <section class="xow-section xow-card">
-          <div class="xow-kicker" id="how_kicker"></div>
-          <h2 class="xow-title-sm" id="how_title"></h2>
-          <div class="xow-grid-3">
-            <div class="xow-step-card">
+      <section class="xow-band">
+        <div class="xow-container xow-container-wide">
+          <div class="xow-kicker" id="home_problem_kicker"></div>
+          <h2 class="xow-h2" id="home_problem_title"></h2>
+          <ol class="xow-problems">
+            <li><p id="home_problem_1"></p></li>
+            <li><p id="home_problem_2"></p></li>
+            <li><p id="home_problem_3"></p></li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="xow-band xow-band-alt">
+        <div class="xow-container xow-container-wide xow-story">
+          <figure class="xow-story-portrait">
+            <img src="assets/img/raul-calvo.jpg" width="220" height="220" alt="Raúl Calvo" loading="lazy">
+          </figure>
+          <div>
+            <div class="xow-kicker" id="home_story_kicker"></div>
+            <h2 class="xow-h2" id="home_story_title"></h2>
+            <p class="xow-story-body" id="home_story_body"></p>
+            <p class="xow-story-sign" id="home_story_sign"></p>
+            <a class="xow-arrow-link" href="historia.html"><span id="home_story_cta"></span> <span aria-hidden="true">&rarr;</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="xow-band">
+        <div class="xow-container xow-container-wide">
+          <div class="xow-kicker" id="home_how_kicker"></div>
+          <h2 class="xow-h2" id="home_how_title"></h2>
+          <ol class="xow-steps">
+            <li>
+              <span class="xow-step-num">1</span>
+              <h3 id="home_how_1_title"></h3>
+              <p id="home_how_1_body"></p>
+            </li>
+            <li>
+              <span class="xow-step-num">2</span>
+              <h3 id="home_how_2_title"></h3>
+              <p id="home_how_2_body"></p>
+            </li>
+            <li>
+              <span class="xow-step-num">3</span>
+              <h3 id="home_how_3_title"></h3>
+              <p id="home_how_3_body"></p>
+            </li>
+          </ol>
+          <a class="xow-arrow-link" href="como-funciona.html"><span id="home_how_cta"></span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </section>
+
+      <section class="xow-band xow-band-alt">
+        <div class="xow-container xow-container-wide">
+          <div class="xow-kicker" id="home_why_kicker"></div>
+          <h2 class="xow-h2" id="home_why_title"></h2>
+          <div class="xow-why">
+            <div class="xow-why-item">
               <svg class="icon"><use href="#i-photo_library"></use></svg>
-              <h3 id="how_step1_title"></h3>
-              <p id="how_step1_body"></p>
+              <h3 id="home_why_1_title"></h3>
+              <p id="home_why_1_body"></p>
             </div>
-            <div class="xow-step-card">
+            <div class="xow-why-item">
+              <svg class="icon"><use href="#i-person"></use></svg>
+              <h3 id="home_why_2_title"></h3>
+              <p id="home_why_2_body"></p>
+            </div>
+            <div class="xow-why-item">
               <svg class="icon"><use href="#i-lock"></use></svg>
-              <h3 id="how_step2_title"></h3>
-              <p id="how_step2_body"></p>
+              <h3 id="home_why_3_title"></h3>
+              <p id="home_why_3_body"></p>
             </div>
-            <div class="xow-step-card">
-              <svg class="icon"><use href="#i-shield"></use></svg>
-              <h3 id="how_step3_title"></h3>
-              <p id="how_step3_body"></p>
+            <div class="xow-why-item">
+              <svg class="icon"><use href="#i-volunteer_activism"></use></svg>
+              <h3 id="home_why_4_title"></h3>
+              <p id="home_why_4_body"></p>
             </div>
           </div>
-          <div class="xow-how-cta-box">
-            <p class="xow-how-cta-text" id="how_cta_prompt"></p>
-            <a class="btn btn-secondary" href="como-funciona.html" id="how_cta_deepdive"></a>
-          </div>
-        </section>
+        </div>
+      </section>
 
-        <section class="xow-section">
-          <div class="xow-teaser">
-            <div class="xow-kicker xow-center" id="teaser_kicker"></div>
-            <h2 class="xow-title-sm" id="teaser_title"></h2>
-            <p class="xow-subtitle" id="teaser_body"></p>
-            <div class="xow-teaser-actions">
-              <a class="btn btn-primary" href="historia.html" id="teaser_cta_story"></a>
-              <a class="btn btn-secondary" href="vision.html" id="teaser_cta_vision"></a>
-            </div>
+      <section class="xow-band">
+        <div class="xow-container">
+          <div class="xow-kicker" id="home_cmp_kicker"></div>
+          <h2 class="xow-h2" id="home_cmp_title"></h2>
+          <p class="xow-band-intro" id="home_cmp_intro"></p>
+          <div class="xow-compare-wrap">
+            <table class="xow-compare">
+              <thead>
+                <tr><th scope="col"><span class="xow-visually-hidden">&nbsp;</span></th><th scope="col" id="home_cmp_col_wa"></th><th scope="col" class="is-us" id="home_cmp_col_x"></th></tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row" id="home_cmp_r1"></th><td id="home_cmp_r1_wa"></td><td class="is-us" id="home_cmp_r1_x"></td></tr>
+                <tr><th scope="row" id="home_cmp_r2"></th><td id="home_cmp_r2_wa"></td><td class="is-us" id="home_cmp_r2_x"></td></tr>
+                <tr><th scope="row" id="home_cmp_r3"></th><td id="home_cmp_r3_wa"></td><td class="is-us" id="home_cmp_r3_x"></td></tr>
+                <tr><th scope="row" id="home_cmp_r4"></th><td id="home_cmp_r4_wa"></td><td class="is-us" id="home_cmp_r4_x"></td></tr>
+                <tr><th scope="row" id="home_cmp_r5"></th><td id="home_cmp_r5_wa"></td><td class="is-us" id="home_cmp_r5_x"></td></tr>
+                <tr><th scope="row" id="home_cmp_r6"></th><td id="home_cmp_r6_wa"></td><td class="is-us" id="home_cmp_r6_x"></td></tr>
+              </tbody>
+            </table>
           </div>
-        </section>
+          <p class="xow-fineprint"><a href="https://faq.whatsapp.com/1077018839582332/" rel="noopener" target="_blank" id="home_cmp_source"></a></p>
+        </div>
+      </section>
 
-      </div>
+      <section class="xow-band xow-band-alt">
+        <div class="xow-container">
+          <div class="xow-kicker" id="home_faq_kicker"></div>
+          <h2 class="xow-h2" id="home_faq_title"></h2>
+          <div class="xow-faq">
+            <details class="xow-faq-item">
+              <summary id="home_faq_q1"></summary>
+              <p id="home_faq_a1"></p>
+            </details>
+            <details class="xow-faq-item">
+              <summary id="home_faq_q2"></summary>
+              <p id="home_faq_a2"></p>
+            </details>
+            <details class="xow-faq-item">
+              <summary id="home_faq_q3"></summary>
+              <p id="home_faq_a3"></p>
+            </details>
+            <details class="xow-faq-item">
+              <summary id="home_faq_q4"></summary>
+              <p id="home_faq_a4"></p>
+            </details>
+            <details class="xow-faq-item">
+              <summary id="home_faq_q5"></summary>
+              <p id="home_faq_a5"></p>
+            </details>
+            <details class="xow-faq-item">
+              <summary id="home_faq_q6"></summary>
+              <p id="home_faq_a6"></p>
+            </details>
+            <details class="xow-faq-item">
+              <summary id="home_faq_q7"></summary>
+              <p id="home_faq_a7"></p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="xow-band xow-download" id="descargar">
+        <div class="xow-container xow-center">
+          <div class="xow-kicker" id="home_dl_kicker"></div>
+          <h2 class="xow-h2" id="home_dl_title"></h2>
+          <p class="xow-band-intro" id="home_dl_body"></p>
+          <div class="xow-stores xow-stores-center">
+            <span class="xow-store" aria-disabled="true">
+              <svg class="xow-store-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5v17l14-8.5z"/></svg>
+              <span class="xow-store-text"><small data-i18n-key="store_soon"></small><b>Google Play</b></span>
+            </span>
+            <span class="xow-store" aria-disabled="true">
+              <svg class="xow-store-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>
+              <span class="xow-store-text"><small data-i18n-key="store_soon"></small><b>App Store</b></span>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="xow-band xow-band-alt">
+        <div class="xow-container xow-close">
+          <img class="xow-close-portrait" src="assets/img/raul-calvo.jpg" width="96" height="96" alt="Raúl Calvo" loading="lazy">
+          <div>
+            <h2 class="xow-h3" id="home_close_title"></h2>
+            <p id="home_close_body"></p>
+            <p class="xow-close-links">
+              <a class="xow-arrow-link" href="about.html"><span id="home_close_about"></span> <span aria-hidden="true">&rarr;</span></a>
+            </p>
+            <p class="xow-fineprint" data-donate-cta><span id="home_close_support"></span> <a href="donar.html" id="home_close_support_link"></a></p>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <div id="xow-footer-root"></div>
@@ -80,7 +243,6 @@
   <script src="assets/js/i18n-data.js"></script>
   <script src="assets/js/i18n.js"></script>
   <script src="assets/js/nav.js"></script>
-  <script src="assets/js/donate-fab.js"></script>
   <script src="assets/js/auth.js"></script>
   <script src="assets/js/user-menu.js"></script>
 </body>

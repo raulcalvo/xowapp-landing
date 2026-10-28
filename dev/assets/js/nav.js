@@ -5,14 +5,23 @@
 // addEventListener after the markup is injected via innerHTML (which never executes
 // embedded <script> tags, so this is compliant, not just "workaround-compliant").
 (function () {
+  // Four sections plus the download CTA. "What we believe", "Project status" and "Donate"
+  // live in the footer (FOOTER_LINKS): the header is for people deciding whether to use the
+  // app, and asking for money before showing the product put them off.
   var NAV_LINKS = [
     { page: 'index', href: 'index.html', key: 'nav_home', icon: 'home' },
     { page: 'como-funciona', href: 'como-funciona.html', key: 'nav_how', icon: 'schema' },
-    { page: 'about', href: 'about.html', key: 'nav_about', icon: 'person' },
     { page: 'historia', href: 'historia.html', key: 'nav_story', icon: 'menu_book' },
-    { page: 'vision', href: 'vision.html', key: 'nav_vision', icon: 'lightbulb' },
-    { page: 'transparencia', href: 'transparencia.html', key: 'nav_transparency', icon: 'shield' },
-    { page: 'donar', href: 'donar.html', key: 'nav_donate', cta: true },
+    { page: 'about', href: 'about.html', key: 'nav_about', icon: 'person' },
+    { page: 'download', href: 'index.html#descargar', key: 'nav_download', cta: true },
+  ];
+
+  var FOOTER_LINKS = [
+    { href: 'vision.html', key: 'nav_vision' },
+    { href: 'transparencia.html', key: 'nav_transparency' },
+    { href: 'donar.html', key: 'nav_donate', donate: true },
+    { href: 'privacy.html', key: 'footer_privacy' },
+    { href: 'safety.html', key: 'footer_safety' },
   ];
 
   var LANG_LABELS = {
@@ -31,11 +40,11 @@
     pl: 'PL', zh: 'ZH', ja: 'JA', da: 'DA', ar: 'AR',
   };
 
-  var NAV_COMPACT_QUERY = '(max-width: 1200px)';
+  var NAV_COMPACT_QUERY = '(max-width: 1180px)';
 
   // Session-only flag set by app-entry.js (?ref=app -- the entry point linked from the mobile
-  // app). When set, every donate/support prompt on the site (this nav's
-  // own "Donar" CTA, the header FAB in donate-fab.js, and any [data-donate-cta] element on
+  // app). When set, every donate/support prompt on the site (the footer's
+  // "Donar" link, the header FAB in donate-fab.js, and any [data-donate-cta] element on
   // the current page) stays hidden for the rest of this browser tab's session, so a page
   // opened from an in-app link never surfaces an alternative-payment call to action --
   // App Store/Play Store review guidelines restrict exactly that.
@@ -44,7 +53,7 @@
   }
 
   function headerMarkup(currentPage) {
-    var visibleNavLinks = isDonateHidden() ? NAV_LINKS.filter(function (l) { return !l.cta; }) : NAV_LINKS;
+    var visibleNavLinks = NAV_LINKS;
     var links = visibleNavLinks.map(function (link) {
       var classes = ['xow-nav-link'];
       if (link.cta) classes.push('xow-nav-cta');
@@ -103,14 +112,42 @@
   }
 
   function footerMarkup() {
+    var links = FOOTER_LINKS.filter(function (l) { return !(l.donate && isDonateHidden()); }).map(function (l) {
+      return '<a href="' + l.href + '" data-i18n-key="' + l.key + '"></a>';
+    }).join('');
     return (
       '<div class="xow-footer-inner">' +
-        '<p class="xow-footer-tagline" id="footer_tagline"></p>' +
-        '<div class="xow-footer-links">' +
-          '<a href="privacy.html" id="footer_privacy"></a>' +
-          '<a href="safety.html" id="footer_safety"></a>' +
+        '<div class="xow-footer-brand">' +
+          '<p class="xow-footer-tagline" id="footer_tagline"></p>' +
+          '<p class="xow-footer-made" id="footer_made"></p>' +
         '</div>' +
+        '<nav class="xow-footer-links">' + links + '</nav>' +
         '<p class="xow-footer-rights">&copy; 2026 XowApp. <span id="footer_rights"></span></p>' +
+      '</div>'
+    );
+  }
+
+  // Pages that end with a "coming soon to your phone" band before the footer, so no page is a
+  // dead end. The home page has its own download section; the donation and profile pages
+  // have a different job.
+  var PREFOOTER_SKIP = ['index', 'donar', 'perfil'];
+
+  function storeBadge(iconPath, store) {
+    return (
+      '<span class="xow-store" aria-disabled="true">' +
+        '<svg class="xow-store-icon" viewBox="0 0 24 24" aria-hidden="true">' + iconPath + '</svg>' +
+        '<span class="xow-store-text"><small data-i18n-key="store_soon"></small><b>' + store + '</b></span>' +
+      '</span>'
+    );
+  }
+
+  function prefooterMarkup() {
+    return (
+      '<h2 class="xow-h2" data-i18n-key="home_dl_title"></h2>' +
+      '<p data-i18n-key="home_dl_body"></p>' +
+      '<div class="xow-stores xow-stores-center">' +
+        storeBadge('<path d="M5 3.5v17l14-8.5z"/>', 'Google Play') +
+        storeBadge('<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>', 'App Store') +
       '</div>'
     );
   }
@@ -169,6 +206,14 @@
       header.innerHTML = headerMarkup(currentPage);
       navRoot.replaceWith(header);
       wireHeader(header);
+    }
+
+    if (footerRoot && PREFOOTER_SKIP.indexOf(currentPage) === -1) {
+      var band = document.createElement('section');
+      band.className = 'xow-prefooter';
+      band.id = 'descargar';
+      band.innerHTML = prefooterMarkup();
+      footerRoot.parentNode.insertBefore(band, footerRoot);
     }
 
     if (footerRoot) {
