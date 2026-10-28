@@ -9,7 +9,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..650&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <link rel="stylesheet" href="assets/css/theme.css">
+  <script src="assets/js/theme-init.js"></script>
+
   <style>
     :root {
       --bg-color: #f6f2ea;
@@ -43,26 +45,14 @@
       --highlight-text: #f1ede4;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
 
-    body {
-      font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      line-height: 1.7;
-      padding: 40px 20px;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      position: relative;
-      transition: background-color 0.3s ease, color 0.3s ease;
+
+    .wrapper * {
+      box-sizing: border-box;
     }
 
     .wrapper {
+      margin: 0 auto;
       max-width: 860px;
       width: 100%;
       background: var(--card-bg);
@@ -89,42 +79,10 @@
       gap: 12px;
     }
 
-    .controls-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
 
-    .picker-container {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--select-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 6px 12px;
-      transition: background 0.3s ease, border-color 0.3s ease;
-    }
 
-    .picker-icon {
-      font-size: 14px;
-    }
 
-    .picker-select {
-      background: transparent;
-      border: none;
-      color: var(--teal-accent);
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      outline: none;
-    }
 
-    .picker-select option {
-      background: var(--bg-color);
-      color: var(--text-main);
-    }
 
     .header {
       border-bottom: 1px solid var(--border-color);
@@ -172,7 +130,7 @@
       font-weight: 600;
     }
 
-    h2 {
+    .wrapper h2 {
       font-size: 20px;
       font-weight: 700;
       color: var(--heading-color);
@@ -183,7 +141,7 @@
       gap: 10px;
     }
 
-    h2::before {
+    .wrapper h2::before {
       content: '';
       display: inline-block;
       width: 4px;
@@ -192,7 +150,7 @@
       border-radius: 2px;
     }
 
-    h3 {
+    .wrapper h3 {
       font-size: 16px;
       font-weight: 600;
       color: var(--teal-accent);
@@ -200,20 +158,20 @@
       margin-bottom: 8px;
     }
 
-    p {
+    .wrapper p {
       margin-bottom: 16px;
       color: var(--text-main);
       font-size: 15px;
     }
 
-    ul, ol {
+    .wrapper ul, .wrapper ol {
       margin-bottom: 16px;
       padding-left: 24px;
       color: var(--text-main);
       font-size: 15px;
     }
 
-    li {
+    .wrapper li {
       margin-bottom: 8px;
     }
 
@@ -232,13 +190,13 @@
       color: var(--heading-color);
     }
 
-    a {
+    .wrapper a {
       color: var(--teal-accent);
       text-decoration: none;
       transition: color 0.2s;
     }
 
-    a:hover {
+    .wrapper a:hover {
       text-decoration: underline;
     }
 
@@ -252,10 +210,6 @@
     }
 
     /* 2026-10 redesign: same flat paper look as the rest of the site. */
-    body::before,
-    body::after {
-      display: none;
-    }
 
     .wrapper {
       box-shadow: none;
@@ -266,7 +220,7 @@
 
     h1,
     h2,
-    h3 {
+    .wrapper h3 {
       font-family: 'Fraunces', Georgia, serif;
       font-weight: 500;
       letter-spacing: -0.01em;
@@ -277,9 +231,26 @@
       -webkit-text-fill-color: currentColor;
       color: var(--heading-color);
     }
+    /* Flat like the rest of the site: no glow on the logo, no gradient text. */
+    .wrapper .logo {
+      box-shadow: none;
+      border-radius: 14px;
+    }
+
+    .wrapper h1 {
+      background: none;
+      -webkit-text-fill-color: currentColor;
+      color: var(--heading-color);
+    }
   </style>
 </head>
-<body>
+<body data-page="privacy">
+  <div class="xow-page">
+    <div id="xow-nav-root"></div>
+
+    <main class="xow-main">
+      <div class="xow-container">
+
 
   <div class="wrapper">
     <div class="header-top">
@@ -287,35 +258,6 @@
         <span id="badgeText">🛡️ Zero-Knowledge & End-to-End Encrypted</span>
       </div>
 
-      <div class="controls-container">
-        <div class="picker-container">
-          <span class="picker-icon">🌓</span>
-          <select class="picker-select" id="themeSelect" onchange="changeTheme(this.value)">
-            <option value="system" id="optThemeSystem">System</option>
-            <option value="dark" id="optThemeDark">Dark</option>
-            <option value="light" id="optThemeLight">Light</option>
-          </select>
-        </div>
-
-        <div class="picker-container">
-          <span class="picker-icon">🌐</span>
-          <select class="picker-select" id="langSelect" onchange="changeLanguage(this.value)">
-            <option value="en">English</option>
-            <option value="es">Español</option>
-            <option value="ca">Català</option>
-            <option value="fr">Français</option>
-            <option value="it">Italiano</option>
-            <option value="de">Deutsch</option>
-            <option value="ro">Română</option>
-            <option value="pt">Português</option>
-            <option value="pl">Polski</option>
-            <option value="zh">中文</option>
-            <option value="ja">日本語</option>
-            <option value="da">Dansk</option>
-            <option value="ar">العربية</option>
-          </select>
-        </div>
-      </div>
     </div>
 
     <div class="header">
@@ -327,7 +269,7 @@
     </div>
 
     <p><strong id="effectiveDate">Effective Date: August 9, 2026</strong></p>
-    <p id="developerInfo">Developer & Data Controller: Raul Calvo / XowApp Team (<a href="mailto:raulcalvo@gmail.com">raulcalvo@gmail.com</a>)</p>
+    <p id="developerInfo">Developer & Data Controller: Raul Calvo / XowApp Team (<a href="mailto:raul@xowapp.com">raul@xowapp.com</a>)</p>
 
     <div class="highlight-box">
       <strong id="summaryTitle">Summary:</strong> <span id="summaryText">XowApp is designed around a strict Zero-Knowledge and End-to-End Encryption (E2EE) architecture.</span>
@@ -408,7 +350,7 @@
     <p id="sec9Desc"></p>
     <p>
       <strong id="sec9Dev">Developer:</strong> Raul Calvo<br>
-      <strong id="sec9Email">Email:</strong> <a href="mailto:raulcalvo@gmail.com">raulcalvo@gmail.com</a><br>
+      <strong id="sec9Email">Email:</strong> <a href="mailto:raul@xowapp.com">raul@xowapp.com</a><br>
       <strong id="sec9Web">Website:</strong> <a href="https://www.raulcalvo.com" target="_blank" rel="noopener">https://www.raulcalvo.com</a>
     </p>
 
@@ -417,6 +359,20 @@
     </div>
   </div>
 
+      </div>
+    </main>
+
+    <div id="xow-footer-root"></div>
+  </div>
+
+  <script src="assets/js/app-entry.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/i18n-data.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/nav.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/user-menu.js"></script>
   <script>
     const translations = {
   "en": {
@@ -424,7 +380,7 @@
     "subtitle": "XowApp — End-to-End Encrypted Photo & Video Sharing",
     "badge": "🛡️ Zero-Knowledge & End-to-End Encrypted",
     "effectiveDate": "Effective Date: August 9, 2026",
-    "developerInfo": "Developer & Data Controller: Raul Calvo / XowApp Team (<a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>)",
+    "developerInfo": "Developer & Data Controller: Raul Calvo / XowApp Team (<a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>)",
     "summaryTitle": "Summary:",
     "summaryText": "XowApp is designed around a strict <strong>Zero-Knowledge and End-to-End Encryption (E2EE)</strong> architecture. Your photos, videos, album titles, and messages are encrypted directly on your device before transmission. We do not collect or store email addresses, we cannot read your media, we do not track your activity, we do not display advertisements, and we never sell your personal data.",
     "sec1Title": "1. Architectural Overview & Cryptographic Model",
@@ -462,7 +418,7 @@
     "sec5Desc": "You have full control over your data at all times:",
     "sec5Item1": "<strong>Account Deletion:</strong> You can delete your account at any time directly within the app settings (Profile > Delete Account). Account deletion permanently removes your user profile, public keys, and signaling records from our PocketBase server.",
     "sec5Item2": "<strong>Local Data Wiping:</strong> Logging out or uninstalling the app permanently wipes your local SQLite database, cached thumbnails, and local encryption keys from your device.",
-    "sec5Item3": "<strong>External Deletion Request (Web):</strong> If you cannot access the app or wish to request the deletion of your account and all associated signaling data remotely, you can send an email to <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a> with your User ID / handle. All account records on our servers will be permanently purged within 48 hours.",
+    "sec5Item3": "<strong>External Deletion Request (Web):</strong> If you cannot access the app or wish to request the deletion of your account and all associated signaling data remotely, you can send an email to <a href='mailto:raul@xowapp.com'>raul@xowapp.com</a> with your User ID / handle. All account records on our servers will be permanently purged within 48 hours.",
     "sec6Title": "6. Children's Privacy & Age Restrictions",
     "sec6Desc": "XowApp is intended exclusively for users aged <strong>18 and older</strong>. We do not knowingly collect or solicit personal information from children under 18. If we become aware that a child under 18 has provided us with personal information, we will immediately delete such data from our servers.",
     "sec7Title": "7. Rights under GDPR & CCPA",
@@ -488,7 +444,7 @@
     "subtitle": "XowApp — Compartición de Fotos y Vídeos Cifrada de Extremo a Extremo",
     "badge": "🛡️ Zero-Knowledge y Cifrado de Extremo a Extremo",
     "effectiveDate": "Fecha de Entrada en Vigor: 9 de Agosto de 2026",
-    "developerInfo": "Desarrollador y Responsable del Tratamiento: Raul Calvo / Equipo XowApp (<a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>)",
+    "developerInfo": "Desarrollador y Responsable del Tratamiento: Raul Calvo / Equipo XowApp (<a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>)",
     "summaryTitle": "Resumen:",
     "summaryText": "XowApp está diseñada bajo una estricta arquitectura <strong>Zero-Knowledge y Cifrado de Extremo a Extremo (E2EE)</strong>. Tus fotos, vídeos, títulos de álbumes y mensajes se cifran directamente en tu dispositivo antes de enviarse. No recopilamos ni almacenamos direcciones de correo electrónico, no podemos leer tu contenido multimedia, no rastreamos tu actividad, no mostramos anuncios y nunca vendemos tus datos personales.",
     "sec1Title": "1. Descripción Arquitectónica y Modelo Criptográfico",
@@ -526,7 +482,7 @@
     "sec5Desc": "Tienes el control total de tus datos en todo momento:",
     "sec5Item1": "<strong>Eliminación de Cuenta:</strong> Puedes eliminar tu cuenta en cualquier momento en los ajustes de la app (Perfil > Eliminar Cuenta). Esto borra permanentemente tu perfil, claves públicas y registros de señalización de PocketBase.",
     "sec5Item2": "<strong>Borrado de Datos Locales:</strong> Cerrar sesión o desinstalar la app borra de forma permanente tu base de datos SQLite local, miniaturas en caché y claves de cifrado de tu dispositivo.",
-    "sec5Item3": "<strong>Solicitud de Eliminación Externa (Web):</strong> Si no tienes acceso a la app o deseas solicitar la eliminación de tu cuenta y todos los datos de señalización asociados de forma remota, puedes escribirnos a <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a> indicando tu ID de usuario / alias. Todos los datos se purgarán de forma permanente en un plazo máximo de 48 horas.",
+    "sec5Item3": "<strong>Solicitud de Eliminación Externa (Web):</strong> Si no tienes acceso a la app o deseas solicitar la eliminación de tu cuenta y todos los datos de señalización asociados de forma remota, puedes escribirnos a <a href='mailto:raul@xowapp.com'>raul@xowapp.com</a> indicando tu ID de usuario / alias. Todos los datos se purgarán de forma permanente en un plazo máximo de 48 horas.",
     "sec6Title": "6. Privacidad Infantil y Restricciones de Edad",
     "sec6Desc": "XowApp está destinada exclusivamente a usuarios de <strong>18 años o más</strong>. No recopilamos a sabiendas información personal de menores de 18 años. Si detectamos que un menor nos ha facilitado datos personales, procederemos a su eliminación inmediata de nuestros servidores.",
     "sec7Title": "7. Derechos bajo el RGPD y CCPA",
@@ -552,7 +508,7 @@
     "subtitle": "XowApp — Compartició de Fotos i Vídeos Xifrada d'Extrem a Extrem",
     "badge": "🛡️ Zero-Knowledge i Xifrat d'Extrem a Extrem",
     "effectiveDate": "Data d'Entrada en Vigor: 9 d'Agost de 2026",
-    "developerInfo": "Desenvolupador i Responsable del Tractament: Raul Calvo / Equip XowApp (<a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>)",
+    "developerInfo": "Desenvolupador i Responsable del Tractament: Raul Calvo / Equip XowApp (<a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>)",
     "summaryTitle": "Resum:",
     "summaryText": "XowApp està dissenyada sota una estricta arquitectura <strong>Zero-Knowledge i Xifrat d'Extrem a Extrem (E2EE)</strong>. Les teves fotos, vídeos, títols d'àlbums i missatges es xifren directament al teu dispositiu abans d'enviar-se. No recopilem ni emmagatzemem correus electrònics, no podem llegir el teu contingut multimèdia, no rastregem la teva activitat, no mostrem anuncis i mai venem les teves dades personals.",
     "sec1Title": "1. Descripció Arquitectònica i Model Criptogràfic",
@@ -590,7 +546,7 @@
     "sec5Desc": "Pots eliminar el teu compte en qualsevol moment als ajustos de l'app.",
     "sec5Item1": "<strong>Eliminació de Compte:</strong> Pots eliminar el teu compte en qualsevol moment des dels ajustos de l'app (Perfil > Eliminar Compte). L'eliminació del compte esborra permanentment el teu perfil, claus públiques i registres de senyalització del nostre servidor PocketBase.",
     "sec5Item2": "<strong>Esborrat de Dades Locals:</strong> Tancar sessió o desinstal·lar l'app esborra permanentment la teva base de dades SQLite local, les miniatures en memòria cau i les claus de xifrat locals del teu dispositiu.",
-    "sec5Item3": "<strong>Sol·licitud d'Eliminació Externa (Web):</strong> Si no pots accedir a l'app o vols sol·licitar l'eliminació remota del teu compte i totes les dades de senyalització associades, pots enviar un correu a <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a> indicant el teu ID d'usuari / àlies. Totes les dades del compte als nostres servidors s'esborraran permanentment en un termini màxim de 48 hores.",
+    "sec5Item3": "<strong>Sol·licitud d'Eliminació Externa (Web):</strong> Si no pots accedir a l'app o vols sol·licitar l'eliminació remota del teu compte i totes les dades de senyalització associades, pots enviar un correu a <a href='mailto:raul@xowapp.com'>raul@xowapp.com</a> indicant el teu ID d'usuari / àlies. Totes les dades del compte als nostres servidors s'esborraran permanentment en un termini màxim de 48 hores.",
     "sec6Title": "6. Privacitat Infantil i Restriccions d'Edat",
     "sec6Desc": "Destinada exclusivament a usuaris de <strong>18 anys o més</strong>.",
     "sec7Title": "7. Drets sota el RGPD i CCPA",
@@ -616,7 +572,7 @@
     "subtitle": "XowApp — Partage de Photos et Vidéos Chiffré de Bout en Bout",
     "badge": "🛡️ Zero-Knowledge et Chiffrement de Bout en Bout",
     "effectiveDate": "Date d'Entrée en Vigueur : 9 Août 2026",
-    "developerInfo": "Développeur et Responsable du Traitement : Raul Calvo / Équipe XowApp (<a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>)",
+    "developerInfo": "Développeur et Responsable du Traitement : Raul Calvo / Équipe XowApp (<a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>)",
     "summaryTitle": "Résumé :",
     "summaryText": "XowApp est conçue selon une architecture stricte de <strong>Zero-Knowledge et Chiffrement de Bout en Bout (E2EE)</strong>. Vos photos, vidéos, titres d'albums et messages sont chiffrés directement sur votre appareil avant leur transmission. Nous ne collectons ni ne stockons d'adresses e-mail, nous ne pouvons pas lire vos contenus, nous ne suivons pas votre activité, nous n'affichons aucune publicité et nous ne vendons jamais vos données personnelles.",
     "sec1Title": "1. Présentation de l'Architecture et Modèle Cryptographique",
@@ -654,7 +610,7 @@
     "sec5Desc": "Vous pouvez supprimer votre compte à tout moment dans les paramètres.",
     "sec5Item1": "<strong>Suppression du compte :</strong> Vous pouvez supprimer votre compte à tout moment directement depuis les paramètres de l'application (Profil > Supprimer le compte). La suppression du compte efface définitivement votre profil, vos clés publiques et vos enregistrements de signalisation de notre serveur PocketBase.",
     "sec5Item2": "<strong>Effacement des données locales :</strong> Se déconnecter ou désinstaller l'application efface définitivement votre base de données SQLite locale, les miniatures mises en cache et les clés de chiffrement locales de votre appareil.",
-    "sec5Item3": "<strong>Demande de suppression externe (Web) :</strong> Si vous ne pouvez pas accéder à l'application ou si vous souhaitez demander à distance la suppression de votre compte et de toutes les données de signalisation associées, vous pouvez envoyer un e-mail à <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a> en indiquant votre identifiant d'utilisateur / pseudonyme. Toutes les données de compte sur nos serveurs seront définitivement supprimées dans un délai de 48 heures.",
+    "sec5Item3": "<strong>Demande de suppression externe (Web) :</strong> Si vous ne pouvez pas accéder à l'application ou si vous souhaitez demander à distance la suppression de votre compte et de toutes les données de signalisation associées, vous pouvez envoyer un e-mail à <a href='mailto:raul@xowapp.com'>raul@xowapp.com</a> en indiquant votre identifiant d'utilisateur / pseudonyme. Toutes les données de compte sur nos serveurs seront définitivement supprimées dans un délai de 48 heures.",
     "sec6Title": "6. Protection des Mineurs et Limite d'Âge",
     "sec6Desc": "Destinée exclusivement aux utilisateurs de <strong>18 ans et plus</strong>.",
     "sec7Title": "7. Droits au titre du RGPD et du CCPA",
@@ -680,7 +636,7 @@
     "subtitle": "XowApp — Condivisione Foto e Video Crittografata End-to-End",
     "badge": "🛡️ Zero-Knowledge e Crittografia End-to-End",
     "effectiveDate": "Data di Entrata in Vigore: 9 Agosto 2026",
-    "developerInfo": "Sviluppatore e Titolare del Trattamento: Raul Calvo / Team XowApp (<a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>)",
+    "developerInfo": "Sviluppatore e Titolare del Trattamento: Raul Calvo / Team XowApp (<a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>)",
     "summaryTitle": "Riepilogo:",
     "summaryText": "XowApp è progettata secondo una rigorosa architettura <strong>Zero-Knowledge e Crittografia End-to-End (E2EE)</strong>. Le tue foto, video, titoli di album e messaggi vengono crittografati direttamente sul tuo dispositivo prima dell'invio. Non raccogliamo né memorizziamo indirizzi e-mail, non possiamo leggere i tuoi media, non tracciamo la tua attività, non mostriamo pubblicità e non vendiamo mai i tuoi dati personali.",
     "sec1Title": "1. Panoramica dell'Architettura e Modello Crittografico",
@@ -718,7 +674,7 @@
     "sec5Desc": "Puoi eliminare l'account in qualsiasi momento dalle impostazioni.",
     "sec5Item1": "<strong>Eliminazione dell'Account:</strong> Puoi eliminare il tuo account in qualsiasi momento direttamente dalle impostazioni dell'app (Profilo > Elimina Account). L'eliminazione dell'account rimuove definitivamente il tuo profilo utente, le chiavi pubbliche e i registri di segnalazione dal nostro server PocketBase.",
     "sec5Item2": "<strong>Cancellazione dei Dati Locali:</strong> Disconnettersi o disinstallare l'app cancella definitivamente il database SQLite locale, le miniature memorizzate nella cache e le chiavi di crittografia locali dal tuo dispositivo.",
-    "sec5Item3": "<strong>Richiesta di Eliminazione Esterna (Web):</strong> Se non puoi accedere all'app o desideri richiedere da remoto l'eliminazione del tuo account e di tutti i dati di segnalazione associati, puoi inviare un'e-mail a <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a> indicando il tuo ID utente / handle. Tutti i dati dell'account sui nostri server verranno cancellati definitivamente entro 48 ore.",
+    "sec5Item3": "<strong>Richiesta di Eliminazione Esterna (Web):</strong> Se non puoi accedere all'app o desideri richiedere da remoto l'eliminazione del tuo account e di tutti i dati di segnalazione associati, puoi inviare un'e-mail a <a href='mailto:raul@xowapp.com'>raul@xowapp.com</a> indicando il tuo ID utente / handle. Tutti i dati dell'account sui nostri server verranno cancellati definitivamente entro 48 ore.",
     "sec6Title": "6. Privacy dei Minori e Limiti di Età",
     "sec6Desc": "Destinata esclusivamente a utenti di <strong>età pari o superiore a 18 anni</strong>.",
     "sec7Title": "7. Diritti GDPR e CCPA",
@@ -744,7 +700,7 @@
     "subtitle": "XowApp — Ende-zu-Ende verschlüsselte Foto- & Video-Freigabe",
     "badge": "🛡️ Zero-Knowledge & Ende-zu-Ende verschlüsselt",
     "effectiveDate": "Inkrafttreten: 9. August 2026",
-    "developerInfo": "Entwickler & Verantwortlicher: Raul Calvo / XowApp-Team (<a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>)",
+    "developerInfo": "Entwickler & Verantwortlicher: Raul Calvo / XowApp-Team (<a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>)",
     "summaryTitle": "Zusammenfassung:",
     "summaryText": "XowApp basiert auf einer strikten <strong>Zero-Knowledge & Ende-zu-Ende-Verschlüsselungs-Architektur (E2EE)</strong>. Ihre Fotos, Videos, Albumtitel und Nachrichten werden direkt auf Ihrem Gerät verschlüsselt. Wir speichern keine E-Mail-Adressen, können Ihre Medien nicht lesen, verfolgen Ihre Aktivitäten nicht, zeigen keine Werbung an und verkaufen niemals Ihre Daten.",
     "sec1Title": "1. Architektur-Übersicht & Kryptografisches Modell",
@@ -782,7 +738,7 @@
     "sec5Desc": "Sie können Ihr Konto jederzeit in den App-Einstellungen löschen.",
     "sec5Item1": "<strong>Kontolöschung:</strong> Du kannst dein Konto jederzeit direkt in den App-Einstellungen löschen (Profil > Konto löschen). Die Kontolöschung entfernt dein Nutzerprofil, öffentliche Schlüssel und Signalisierungsdatensätze dauerhaft von unserem PocketBase-Server.",
     "sec5Item2": "<strong>Löschung lokaler Daten:</strong> Durch Abmelden oder Deinstallieren der App werden deine lokale SQLite-Datenbank, zwischengespeicherte Vorschaubilder und lokale Verschlüsselungsschlüssel dauerhaft von deinem Gerät gelöscht.",
-    "sec5Item3": "<strong>Externe Löschanfrage (Web):</strong> Falls du keinen Zugriff auf die App hast oder die Löschung deines Kontos und aller zugehörigen Signalisierungsdaten aus der Ferne beantragen möchtest, kannst du eine E-Mail mit deiner Nutzer-ID/deinem Handle an <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a> senden. Alle Kontodaten auf unseren Servern werden innerhalb von 48 Stunden dauerhaft gelöscht.",
+    "sec5Item3": "<strong>Externe Löschanfrage (Web):</strong> Falls du keinen Zugriff auf die App hast oder die Löschung deines Kontos und aller zugehörigen Signalisierungsdaten aus der Ferne beantragen möchtest, kannst du eine E-Mail mit deiner Nutzer-ID/deinem Handle an <a href='mailto:raul@xowapp.com'>raul@xowapp.com</a> senden. Alle Kontodaten auf unseren Servern werden innerhalb von 48 Stunden dauerhaft gelöscht.",
     "sec6Title": "6. Jugendschutz & Altersbeschränkung",
     "sec6Desc": "Richtet sich ausschließlich an Personen ab <strong>18 Jahren</strong>.",
     "sec7Title": "7. Rechte nach DSGVO & CCPA",
@@ -808,7 +764,7 @@
     "subtitle": "XowApp — Partajare Foto și Video Criptată Cap-la-Cap",
     "badge": "🛡️ Zero-Knowledge și Criptare Cap-la-Cap",
     "effectiveDate": "Data Intrării în Vigoare: 9 August 2026",
-    "developerInfo": "Dezvoltator și Operator de Date: Raul Calvo / Echipa XowApp (<a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>)",
+    "developerInfo": "Dezvoltator și Operator de Date: Raul Calvo / Echipa XowApp (<a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>)",
     "summaryTitle": "Rezumat:",
     "summaryText": "XowApp este concepută pe o arhitectură strictă <strong>Zero-Knowledge și Criptare Cap-la-Cap (E2EE)</strong>. Fotografiile, videoclipurile, titlurile albumelor și mesajele dvs. sunt criptate direct pe dispozitivul dvs. Nu colectăm și nu stocăm adrese de e-mail, nu putem citi fișierele dvs., nu vă urmărim activitatea, nu afișăm reclame și nu vindem datele dvs. personale.",
     "sec1Title": "1. Prezentare Generală a Arhitecturii și Modelul Criptografic",
@@ -846,7 +802,7 @@
     "sec5Desc": "Puteți șterge contul în orice moment din setările aplicației.",
     "sec5Item1": "<strong>Ștergerea Contului:</strong> Îți poți șterge contul oricând, direct din setările aplicației (Profil > Șterge Contul). Ștergerea contului elimină definitiv profilul tău de utilizator, cheile publice și înregistrările de semnalizare de pe serverul nostru PocketBase.",
     "sec5Item2": "<strong>Ștergerea Datelor Locale:</strong> Deconectarea sau dezinstalarea aplicației șterge definitiv baza ta de date SQLite locală, miniaturile stocate în cache și cheile de criptare locale de pe dispozitivul tău.",
-    "sec5Item3": "<strong>Cerere de Ștergere Externă (Web):</strong> Dacă nu poți accesa aplicația sau dorești să soliciți la distanță ștergerea contului tău și a tuturor datelor de semnalizare asociate, poți trimite un e-mail la <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a> indicând ID-ul tău de utilizator / alias. Toate înregistrările contului de pe serverele noastre vor fi șterse definitiv în termen de 48 de ore.",
+    "sec5Item3": "<strong>Cerere de Ștergere Externă (Web):</strong> Dacă nu poți accesa aplicația sau dorești să soliciți la distanță ștergerea contului tău și a tuturor datelor de semnalizare asociate, poți trimite un e-mail la <a href='mailto:raul@xowapp.com'>raul@xowapp.com</a> indicând ID-ul tău de utilizator / alias. Toate înregistrările contului de pe serverele noastre vor fi șterse definitiv în termen de 48 de ore.",
     "sec6Title": "6. Confidențialitatea Minorilor",
     "sec6Desc": "Destinată exclusiv persoanelor cu vârsta de <strong>peste 18 ani</strong>.",
     "sec7Title": "7. Drepturile GDPR și CCPA",
@@ -872,7 +828,7 @@
     "subtitle": "XowApp — Compartilhamento de Fotos e Vídeos Criptografado de Ponta a Ponta",
     "badge": "🛡️ Zero-Knowledge e Criptografia de Ponta a Ponta",
     "effectiveDate": "Data de Vigência: 9 de Agosto de 2026",
-    "developerInfo": "Desenvolvedor e Controlado de Dados: Raul Calvo / Equipe XowApp (<a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>)",
+    "developerInfo": "Desenvolvedor e Controlado de Dados: Raul Calvo / Equipe XowApp (<a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>)",
     "summaryTitle": "Resumo:",
     "summaryText": "O XowApp foi projetado sob uma rigorosa arquitetura <strong>Zero-Knowledge e Criptografia de Ponta a Ponta (E2EE)</strong>. Suas fotos, vídeos, títulos de álbuns e mensagens são criptografados diretamente no seu dispositivo antes do envio. Não coletamos nem armazenamos endereços de e-mail, não podemos ler suas mídias, não rastreamos sua atividade, não exibimos anúncios e nunca vendemos seus dados pessoais.",
     "sec1Title": "1. Visão Geral da Arquitetura e Modelo Criptográfico",
@@ -910,7 +866,7 @@
     "sec5Desc": "Você pode excluir sua conta a qualquer momento nas configurações do aplicativo.",
     "sec5Item1": "<strong>Exclusão de Conta:</strong> Você pode excluir sua conta a qualquer momento diretamente nas configurações do aplicativo (Perfil > Excluir Conta). A exclusão da conta remove permanentemente seu perfil de usuário, chaves públicas e registros de sinalização do nosso servidor PocketBase.",
     "sec5Item2": "<strong>Apagamento de Dados Locais:</strong> Sair da conta ou desinstalar o aplicativo apaga permanentemente seu banco de dados SQLite local, miniaturas em cache e chaves de criptografia locais do seu dispositivo.",
-    "sec5Item3": "<strong>Solicitação de Exclusão Externa (Web):</strong> Se você não conseguir acessar o aplicativo ou quiser solicitar remotamente a exclusão da sua conta e de todos os dados de sinalização associados, você pode enviar um e-mail para <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a> informando seu ID de usuário / apelido. Todos os registros da conta em nossos servidores serão permanentemente apagados em até 48 horas.",
+    "sec5Item3": "<strong>Solicitação de Exclusão Externa (Web):</strong> Se você não conseguir acessar o aplicativo ou quiser solicitar remotamente a exclusão da sua conta e de todos os dados de sinalização associados, você pode enviar um e-mail para <a href='mailto:raul@xowapp.com'>raul@xowapp.com</a> informando seu ID de usuário / apelido. Todos os registros da conta em nossos servidores serão permanentemente apagados em até 48 horas.",
     "sec6Title": "6. Privacidade de Menores e Limite de Idade",
     "sec6Desc": "Destinado exclusivamente a usuários com <strong>18 anos ou mais</strong>.",
     "sec7Title": "7. Direitos sob o GDPR e CCPA",
@@ -936,7 +892,7 @@
     "subtitle": "XowApp — Udostępnianie Zdjęć i Filmów z Szyfrowaniem End-to-End",
     "badge": "🛡️ Zero-Knowledge i Szyfrowanie End-to-End",
     "effectiveDate": "Data wejścia w życie: 9 sierpnia 2026",
-    "developerInfo": "Deweloper i Administrator Danych: Raul Calvo / Zespół XowApp (<a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>)",
+    "developerInfo": "Deweloper i Administrator Danych: Raul Calvo / Zespół XowApp (<a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>)",
     "summaryTitle": "Podsumowanie:",
     "summaryText": "XowApp została zaprojektowana wokół rygorystycznej architektury <strong>Zero-Knowledge i szyfrowania end-to-end (E2EE)</strong>. Twoje zdjęcia, filmy, tytuły albumów i wiadomości są szyfrowane bezpośrednio na Twoim urządzeniu przed wysłaniem. Nie zbieramy ani nie przechowujemy adresów e-mail, nie możemy odczytać Twoich mediów, nie śledzimy Twojej aktywności, nie wyświetlamy reklam i nigdy nie sprzedajemy Twoich danych osobowych.",
     "sec1Title": "1. Przegląd Architektury i Model Kryptograficzny",
@@ -974,7 +930,7 @@
     "sec5Desc": "Masz pełną kontrolę nad swoimi danymi w każdej chwili:",
     "sec5Item1": "<strong>Usunięcie Konta:</strong> Możesz usunąć swoje konto w każdej chwili bezpośrednio w ustawieniach aplikacji (Profil > Usuń Konto). Usunięcie konta trwale usuwa Twój profil użytkownika, klucze publiczne i zapisy sygnalizacyjne z naszego serwera PocketBase.",
     "sec5Item2": "<strong>Usunięcie Danych Lokalnych:</strong> Wylogowanie się lub odinstalowanie aplikacji trwale usuwa lokalną bazę danych SQLite, zapisane w pamięci podręcznej miniatury i lokalne klucze szyfrujące z Twojego urządzenia.",
-    "sec5Item3": "<strong>Zewnętrzne Żądanie Usunięcia (Web):</strong> Jeśli nie masz dostępu do aplikacji lub chcesz zdalnie zażądać usunięcia swojego konta i wszystkich powiązanych danych sygnalizacyjnych, możesz wysłać e-mail na adres <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>, podając swój identyfikator użytkownika / nazwę. Wszystkie zapisy konta na naszych serwerach zostaną trwale usunięte w ciągu 48 godzin.",
+    "sec5Item3": "<strong>Zewnętrzne Żądanie Usunięcia (Web):</strong> Jeśli nie masz dostępu do aplikacji lub chcesz zdalnie zażądać usunięcia swojego konta i wszystkich powiązanych danych sygnalizacyjnych, możesz wysłać e-mail na adres <a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>, podając swój identyfikator użytkownika / nazwę. Wszystkie zapisy konta na naszych serwerach zostaną trwale usunięte w ciągu 48 godzin.",
     "sec6Title": "6. Prywatność Dzieci i Ograniczenia Wiekowe",
     "sec6Desc": "XowApp jest przeznaczona wyłącznie dla użytkowników w wieku <strong>18 lat i więcej</strong>. Nie zbieramy świadomie ani nie żądamy danych osobowych od dzieci poniżej 18 lat. Jeśli dowiemy się, że dziecko poniżej 18 lat przekazało nam dane osobowe, niezwłocznie usuniemy takie dane z naszych serwerów.",
     "sec7Title": "7. Prawa wynikające z RODO i CCPA",
@@ -1000,7 +956,7 @@
     "subtitle": "XowApp — 端到端加密的照片与视频分享",
     "badge": "🛡️ 零知识与端到端加密",
     "effectiveDate": "生效日期：2026 年 8 月 9 日",
-    "developerInfo": "开发者与数据控制者：Raul Calvo / XowApp 团队（<a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>）",
+    "developerInfo": "开发者与数据控制者：Raul Calvo / XowApp 团队（<a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>）",
     "summaryTitle": "摘要：",
     "summaryText": "XowApp 采用严格的<strong>零知识与端到端加密（E2EE）</strong>架构设计。你的照片、视频、相册标题和消息在发送前会直接在你的设备上加密。我们不收集或存储电子邮箱地址，我们无法读取你的媒体内容，我们不追踪你的活动，我们不展示广告，我们也绝不出售你的个人数据。",
     "sec1Title": "1. 架构概览与加密模型",
@@ -1038,7 +994,7 @@
     "sec5Desc": "你始终对自己的数据拥有完全的控制权：",
     "sec5Item1": "<strong>删除账户：</strong>你可以随时直接在应用设置中删除你的账户（个人主页 > 删除账户）。删除账户会从我们的 PocketBase 服务器中永久移除你的用户资料、公钥和信令记录。",
     "sec5Item2": "<strong>清除本地数据：</strong>退出登录或卸载应用会从你的设备上永久清除本地 SQLite 数据库、缓存的缩略图以及本地加密密钥。",
-    "sec5Item3": "<strong>远程删除请求（网页）：</strong>如果你无法访问该应用，或希望远程请求删除你的账户及所有相关的信令数据，你可以发送电子邮件至 <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>，并注明你的用户 ID / 用户名。我们服务器上的所有账户记录将在 48 小时内被永久清除。",
+    "sec5Item3": "<strong>远程删除请求（网页）：</strong>如果你无法访问该应用，或希望远程请求删除你的账户及所有相关的信令数据，你可以发送电子邮件至 <a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>，并注明你的用户 ID / 用户名。我们服务器上的所有账户记录将在 48 小时内被永久清除。",
     "sec6Title": "6. 儿童隐私与年龄限制",
     "sec6Desc": "XowApp 专为<strong>18 岁及以上</strong>的用户设计。我们不会在知情的情况下收集或索取 18 岁以下儿童的个人信息。如果我们发现有未满 18 岁的儿童向我们提供了个人信息，我们将立即从我们的服务器中删除此类数据。",
     "sec7Title": "7. GDPR 与 CCPA 赋予你的权利",
@@ -1064,7 +1020,7 @@
     "subtitle": "XowApp — エンドツーエンド暗号化された写真・動画共有",
     "badge": "🛡️ ゼロ知識およびエンドツーエンド暗号化",
     "effectiveDate": "発効日：2026年8月9日",
-    "developerInfo": "開発者およびデータ管理者：Raul Calvo / XowAppチーム（<a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>）",
+    "developerInfo": "開発者およびデータ管理者：Raul Calvo / XowAppチーム（<a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>）",
     "summaryTitle": "概要：",
     "summaryText": "XowAppは厳格な<strong>ゼロ知識およびエンドツーエンド暗号化（E2EE）</strong>アーキテクチャを基盤として設計されています。あなたの写真、動画、アルバムのタイトル、メッセージは、送信前にあなたの端末上で直接暗号化されます。当社はメールアドレスを収集・保存せず、あなたのメディアを読み取ることもできず、あなたの行動を追跡せず、広告を表示せず、あなたの個人データを販売することも一切ありません。",
     "sec1Title": "1. アーキテクチャの概要と暗号モデル",
@@ -1102,7 +1058,7 @@
     "sec5Desc": "あなたは常に自分のデータを完全にコントロールできます：",
     "sec5Item1": "<strong>アカウントの削除：</strong>アプリの設定内（プロフィール＞アカウントを削除）から、いつでも直接アカウントを削除できます。アカウントを削除すると、当社のPocketBaseサーバーからあなたのユーザープロフィール、公開鍵、シグナリング記録が永久に削除されます。",
     "sec5Item2": "<strong>ローカルデータの消去：</strong>ログアウトまたはアプリのアンインストールにより、あなたの端末上のローカルSQLiteデータベース、キャッシュされたサムネイル、ローカルの暗号鍵は永久に消去されます。",
-    "sec5Item3": "<strong>外部からの削除リクエスト（Web）：</strong>アプリにアクセスできない場合や、遠隔でアカウントおよび関連するすべてのシグナリングデータの削除をリクエストしたい場合は、あなたのユーザーID／ハンドルネームを記載して <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a> までメールをお送りください。当社サーバー上のすべてのアカウント記録は、48時間以内に完全に消去されます。",
+    "sec5Item3": "<strong>外部からの削除リクエスト（Web）：</strong>アプリにアクセスできない場合や、遠隔でアカウントおよび関連するすべてのシグナリングデータの削除をリクエストしたい場合は、あなたのユーザーID／ハンドルネームを記載して <a href='mailto:raul@xowapp.com'>raul@xowapp.com</a> までメールをお送りください。当社サーバー上のすべてのアカウント記録は、48時間以内に完全に消去されます。",
     "sec6Title": "6. 児童のプライバシーと年齢制限",
     "sec6Desc": "XowAppは<strong>18歳以上</strong>の利用者のみを対象としています。当社は、18歳未満の児童から個人情報を意図的に収集または要求することはありません。18歳未満の児童が当社に個人情報を提供したことが判明した場合、当社は当該データを直ちに当社サーバーから削除します。",
     "sec7Title": "7. GDPRおよびCCPAに基づく権利",
@@ -1128,7 +1084,7 @@
     "subtitle": "XowApp — End-to-End Krypteret Deling af Billeder og Videoer",
     "badge": "🛡️ Zero-Knowledge og End-to-End Kryptering",
     "effectiveDate": "Ikrafttrædelsesdato: 9. august 2026",
-    "developerInfo": "Udvikler og Dataansvarlig: Raul Calvo / XowApp-teamet (<a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>)",
+    "developerInfo": "Udvikler og Dataansvarlig: Raul Calvo / XowApp-teamet (<a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>)",
     "summaryTitle": "Resumé:",
     "summaryText": "XowApp er designet omkring en strikt <strong>Zero-Knowledge- og end-to-end-krypteringsarkitektur (E2EE)</strong>. Dine billeder, videoer, albumtitler og beskeder krypteres direkte på din enhed, før de sendes. Vi indsamler eller opbevarer ikke e-mailadresser, vi kan ikke læse dine medier, vi følger ikke din aktivitet, vi viser ingen reklamer, og vi sælger aldrig dine personoplysninger.",
     "sec1Title": "1. Arkitektonisk Overblik og Kryptografisk Model",
@@ -1166,7 +1122,7 @@
     "sec5Desc": "Du har fuld kontrol over dine data på alle tidspunkter:",
     "sec5Item1": "<strong>Kontosletning:</strong> Du kan slette din konto når som helst direkte i appens indstillinger (Profil > Slet Konto). Kontosletning fjerner permanent din brugerprofil, offentlige nøgler og signaleringsregistreringer fra vores PocketBase-server.",
     "sec5Item2": "<strong>Lokal Datasletning:</strong> Log ud eller afinstallation af appen fjerner permanent din lokale SQLite-database, cachede miniaturebilleder og lokale krypteringsnøgler fra din enhed.",
-    "sec5Item3": "<strong>Ekstern Sletningsanmodning (Web):</strong> Hvis du ikke har adgang til appen, eller ønsker at anmode om sletning af din konto og alle tilknyttede signaleringsdata på afstand, kan du sende en e-mail til <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a> med dit bruger-ID/håndtag. Alle kontooplysninger på vores servere slettes permanent inden for 48 timer.",
+    "sec5Item3": "<strong>Ekstern Sletningsanmodning (Web):</strong> Hvis du ikke har adgang til appen, eller ønsker at anmode om sletning af din konto og alle tilknyttede signaleringsdata på afstand, kan du sende en e-mail til <a href='mailto:raul@xowapp.com'>raul@xowapp.com</a> med dit bruger-ID/håndtag. Alle kontooplysninger på vores servere slettes permanent inden for 48 timer.",
     "sec6Title": "6. Børns Privatliv og Aldersbegrænsninger",
     "sec6Desc": "XowApp er udelukkende tiltænkt brugere på <strong>18 år eller ældre</strong>. Vi indsamler eller anmoder ikke bevidst om personoplysninger fra børn under 18 år. Hvis vi bliver bekendt med, at et barn under 18 år har givet os personoplysninger, sletter vi omgående disse data fra vores servere.",
     "sec7Title": "7. Rettigheder under GDPR og CCPA",
@@ -1192,7 +1148,7 @@
     "subtitle": "XowApp — مشاركة الصور ومقاطع الفيديو المشفّرة من طرف إلى طرف",
     "badge": "🛡️ عدم المعرفة (Zero-Knowledge) والتشفير من طرف إلى طرف",
     "effectiveDate": "تاريخ النفاذ: 9 أغسطس 2026",
-    "developerInfo": "المطوّر ومتحكم البيانات: راؤول كالفو / فريق XowApp (<a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a>)",
+    "developerInfo": "المطوّر ومتحكم البيانات: راؤول كالفو / فريق XowApp (<a href='mailto:raul@xowapp.com'>raul@xowapp.com</a>)",
     "summaryTitle": "ملخص:",
     "summaryText": "صُمم XowApp حول بنية صارمة من <strong>عدم المعرفة (Zero-Knowledge) والتشفير من طرف إلى طرف (E2EE)</strong>. يتم تشفير صورك ومقاطع الفيديو الخاصة بك وعناوين ألبوماتك ورسائلك مباشرة على جهازك قبل إرسالها. نحن لا نجمع أو نخزّن عناوين البريد الإلكتروني، ولا يمكننا قراءة محتواك الإعلامي، ولا نتتبع نشاطك، ولا نعرض أي إعلانات، ولا نبيع بياناتك الشخصية أبدًا.",
     "sec1Title": "1. نظرة عامة على البنية والنموذج التشفيري",
@@ -1230,7 +1186,7 @@
     "sec5Desc": "تتمتع بالتحكم الكامل في بياناتك في جميع الأوقات:",
     "sec5Item1": "<strong>حذف الحساب:</strong> يمكنك حذف حسابك في أي وقت مباشرة من إعدادات التطبيق (الملف الشخصي > حذف الحساب). يؤدي حذف الحساب إلى إزالة ملفك الشخصي ومفاتيحك العامة وسجلات الإشارة بشكل نهائي من خادم PocketBase الخاص بنا.",
     "sec5Item2": "<strong>محو البيانات المحلية:</strong> يؤدي تسجيل الخروج أو إلغاء تثبيت التطبيق إلى محو قاعدة بيانات SQLite المحلية والصور المصغّرة المخزّنة مؤقتًا ومفاتيح التشفير المحلية بشكل نهائي من جهازك.",
-    "sec5Item3": "<strong>طلب حذف خارجي (عبر الويب):</strong> إذا لم تتمكن من الوصول إلى التطبيق أو رغبت في طلب حذف حسابك وجميع بيانات الإشارة المرتبطة به عن بُعد، يمكنك إرسال بريد إلكتروني إلى <a href='mailto:raulcalvo@gmail.com'>raulcalvo@gmail.com</a> مع ذكر معرّف المستخدم / اسم المستخدم الخاص بك. سيتم محو جميع سجلات الحساب على خوادمنا بشكل نهائي في غضون 48 ساعة.",
+    "sec5Item3": "<strong>طلب حذف خارجي (عبر الويب):</strong> إذا لم تتمكن من الوصول إلى التطبيق أو رغبت في طلب حذف حسابك وجميع بيانات الإشارة المرتبطة به عن بُعد، يمكنك إرسال بريد إلكتروني إلى <a href='mailto:raul@xowapp.com'>raul@xowapp.com</a> مع ذكر معرّف المستخدم / اسم المستخدم الخاص بك. سيتم محو جميع سجلات الحساب على خوادمنا بشكل نهائي في غضون 48 ساعة.",
     "sec6Title": "6. خصوصية الأطفال والقيود العمرية",
     "sec6Desc": "صُمم XowApp خصيصًا للمستخدمين البالغين <strong>18 عامًا فأكثر</strong>. نحن لا نجمع أو نطلب عن علم أي معلومات شخصية من الأطفال دون سن 18 عامًا. وإذا علمنا أن طفلًا دون سن 18 عامًا قد قدّم لنا معلومات شخصية، فسنقوم فورًا بحذف هذه البيانات من خوادمنا.",
     "sec7Title": "7. الحقوق بموجب GDPR وCCPA",
@@ -1254,7 +1210,7 @@
 };
 
     function getBrowserLanguage() {
-      const savedLang = localStorage.getItem('xowapp_privacy_lang');
+      const savedLang = localStorage.getItem('xowapp_landing_lang');
       if (savedLang && translations[savedLang]) {
         return savedLang;
       }
@@ -1279,7 +1235,6 @@
       const t = translations[lang] || translations.en;
       document.documentElement.lang = lang;
       document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-      document.getElementById('langSelect').value = lang;
       document.getElementById('pageTitle').innerText = t.title + ' - XowApp';
       document.getElementById('docTitle').innerText = t.title;
       document.getElementById('docSubtitle').innerText = t.subtitle;
@@ -1360,52 +1315,14 @@
       document.getElementById('sec9Email').innerText = t.sec9Email;
       document.getElementById('sec9Web').innerText = t.sec9Web;
 
-      document.getElementById('optThemeSystem').innerText = t.themeSystem || 'System';
-      document.getElementById('optThemeDark').innerText = t.themeDark || 'Dark';
-      document.getElementById('optThemeLight').innerText = t.themeLight || 'Light';
 
       document.getElementById('footerText').innerHTML = t.footer;
     }
 
-    function changeLanguage(lang) {
-      localStorage.setItem('xowapp_privacy_lang', lang);
-      renderLanguage(lang);
-    }
-
-    function getSystemTheme() {
-      return (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
-    }
-
-    function applyTheme(mode) {
-      let activeTheme = mode;
-      if (mode === 'system') {
-        activeTheme = getSystemTheme();
-      }
-      document.documentElement.setAttribute('data-theme', activeTheme);
-      document.getElementById('themeSelect').value = mode;
-    }
-
-    function changeTheme(mode) {
-      localStorage.setItem('xowapp_privacy_theme', mode);
-      applyTheme(mode);
-    }
-
-    // Auto-detect system changes
-    if (window.matchMedia) {
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        const savedTheme = localStorage.getItem('xowapp_privacy_theme') || 'system';
-        if (savedTheme === 'system') {
-          applyTheme('system');
-        }
-      });
-    }
-
-    // Auto-detect and render on startup
-    const currentLang = getBrowserLanguage();
-    renderLanguage(currentLang);
-
-    const savedTheme = localStorage.getItem('xowapp_privacy_theme') || 'system';
-    applyTheme(savedTheme);
+    renderLanguage(getBrowserLanguage());
+    document.addEventListener('xow:langchange', function (e) {
+      renderLanguage(e.detail.lang);
+    });
   </script>
 </body>
 </html>

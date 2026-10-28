@@ -9,7 +9,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..650&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <link rel="stylesheet" href="assets/css/theme.css">
+  <script src="assets/js/theme-init.js"></script>
+
   <style>
     :root {
       --bg-color: #f6f2ea;
@@ -43,52 +45,16 @@
       --highlight-text: #f1ede4;
     }
 
-    * {
+
+
+
+
+    .wrapper * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      line-height: 1.6;
-      padding: 40px 20px;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      overflow-x: hidden;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      width: 450px;
-      height: 450px;
-      background: radial-gradient(circle, var(--teal-glow) 0%, transparent 70%);
-      top: -80px;
-      left: -80px;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    body::after {
-      content: '';
-      position: fixed;
-      width: 550px;
-      height: 550px;
-      background: radial-gradient(circle, var(--indigo-glow) 0%, transparent 70%);
-      bottom: -120px;
-      right: -120px;
-      z-index: 0;
-      pointer-events: none;
     }
 
     .wrapper {
+      margin: 0 auto;
       max-width: 860px;
       width: 100%;
       background: var(--card-bg);
@@ -123,42 +89,10 @@
       gap: 12px;
     }
 
-    .controls-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
 
-    .picker-container {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--select-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 6px 12px;
-      transition: background 0.3s ease, border-color 0.3s ease;
-    }
 
-    .picker-icon {
-      font-size: 14px;
-    }
 
-    .picker-select {
-      background: transparent;
-      border: none;
-      color: var(--teal-accent);
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      outline: none;
-    }
 
-    .picker-select option {
-      background: var(--bg-color);
-      color: var(--text-main);
-    }
 
     .status-badge {
       display: inline-flex;
@@ -204,7 +138,7 @@
       margin-bottom: 12px;
     }
 
-    h1 {
+    .wrapper h1 {
       font-size: 32px;
       font-weight: 800;
       line-height: 1.25;
@@ -291,10 +225,6 @@
     }
 
     /* 2026-10 redesign: same flat paper look as the rest of the site. */
-    body::before,
-    body::after {
-      display: none;
-    }
 
     .wrapper {
       box-shadow: none;
@@ -305,7 +235,7 @@
 
     h1,
     h2,
-    h3 {
+    .wrapper h3 {
       font-family: 'Fraunces', Georgia, serif;
       font-weight: 500;
       letter-spacing: -0.01em;
@@ -316,9 +246,26 @@
       -webkit-text-fill-color: currentColor;
       color: var(--heading-color);
     }
+    /* Flat like the rest of the site: no glow on the logo, no gradient text. */
+    .wrapper .logo {
+      box-shadow: none;
+      border-radius: 14px;
+    }
+
+    .wrapper h1 {
+      background: none;
+      -webkit-text-fill-color: currentColor;
+      color: var(--heading-color);
+    }
   </style>
 </head>
-<body>
+<body data-page="safety">
+  <div class="xow-page">
+    <div id="xow-nav-root"></div>
+
+    <main class="xow-main">
+      <div class="xow-container">
+
 
   <div class="wrapper">
     <div class="header-top">
@@ -326,35 +273,6 @@
         <span id="statusBadgeText">🛡️ Child Safety & Protection Standards</span>
       </div>
 
-      <div class="controls-container">
-        <div class="picker-container">
-          <span class="picker-icon">🌓</span>
-          <select class="picker-select" id="themeSelect" onchange="changeTheme(this.value)">
-            <option value="system" id="optThemeSystem">System</option>
-            <option value="dark" id="optThemeDark">Dark</option>
-            <option value="light" id="optThemeLight">Light</option>
-          </select>
-        </div>
-
-        <div class="picker-container">
-          <span class="picker-icon">🌐</span>
-          <select class="picker-select" id="langSelect" onchange="changeLanguage(this.value)">
-            <option value="en">English</option>
-            <option value="es">Español</option>
-            <option value="ca">Català</option>
-            <option value="fr">Français</option>
-            <option value="it">Italiano</option>
-            <option value="de">Deutsch</option>
-            <option value="ro">Română</option>
-            <option value="pt">Português</option>
-            <option value="pl">Polski</option>
-            <option value="zh">中文</option>
-            <option value="ja">日本語</option>
-            <option value="da">Dansk</option>
-            <option value="ar">العربية</option>
-          </select>
-        </div>
-      </div>
     </div>
 
     <!-- Hero Section -->
@@ -389,7 +307,7 @@
 
       <div class="vision-card">
         <h3 id="sec5Title">5. Dedicated Safety Contact</h3>
-        <p id="sec5Desc">For child safety inquiries, urgent abuse reports, or law enforcement requests, please contact our designated child safety team at <a href='mailto:raulcalvo@gmail.com' class='contact-link'>raulcalvo@gmail.com</a>.</p>
+        <p id="sec5Desc">For child safety inquiries, urgent abuse reports, or law enforcement requests, please contact our designated child safety team at <a href='mailto:raul@xowapp.com' class='contact-link'>raul@xowapp.com</a>.</p>
       </div>
     </div>
 
@@ -401,6 +319,20 @@
     </div>
   </div>
 
+      </div>
+    </main>
+
+    <div id="xow-footer-root"></div>
+  </div>
+
+  <script src="assets/js/app-entry.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/i18n-data.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/nav.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/user-menu.js"></script>
   <script>
     const translations = {
   "en": {
@@ -417,7 +349,7 @@
     "sec4Title": "4. Age Restriction (18+ Only)",
     "sec4Desc": "XowApp is strictly designed and intended for users aged 18 and older. Minors are prohibited from creating accounts or using the application.",
     "sec5Title": "5. Dedicated Safety Contact",
-    "sec5Desc": "For child safety inquiries, urgent abuse reports, or law enforcement requests, please contact our designated child safety team at <a href='mailto:raulcalvo@gmail.com' class='contact-link'>raulcalvo@gmail.com</a>.",
+    "sec5Desc": "For child safety inquiries, urgent abuse reports, or law enforcement requests, please contact our designated child safety team at <a href='mailto:raul@xowapp.com' class='contact-link'>raul@xowapp.com</a>.",
     "footerText": "&copy; 2026 XowApp. All rights reserved. Child Safety Standards.",
     "themeSystem": "System",
     "themeDark": "Dark",
@@ -437,7 +369,7 @@
     "sec4Title": "4. Restricción de Edad (Exclusivo 18+)",
     "sec4Desc": "XowApp está diseñada exclusivamente para usuarios de 18 años o más. Está prohibido el uso de la aplicación a menores de edad.",
     "sec5Title": "5. Contacto Dedicado de Seguridad",
-    "sec5Desc": "Para consultas de seguridad infantil, reportes urgentes o requerimientos judiciales, contacte con nuestro equipo de seguridad en <a href='mailto:raulcalvo@gmail.com' class='contact-link'>raulcalvo@gmail.com</a>.",
+    "sec5Desc": "Para consultas de seguridad infantil, reportes urgentes o requerimientos judiciales, contacte con nuestro equipo de seguridad en <a href='mailto:raul@xowapp.com' class='contact-link'>raul@xowapp.com</a>.",
     "footerText": "&copy; 2026 XowApp. Todos los derechos reservados. Estándares de Protección Infantil.",
     "themeSystem": "Sistema",
     "themeDark": "Oscuro",
@@ -457,7 +389,7 @@
     "sec4Title": "4. Restricció d'Edat (Només 18+)",
     "sec4Desc": "XowApp està dissenyada exclusivament per a usuaris de 18 anys o més.",
     "sec5Title": "5. Contacte de Seguretat",
-    "sec5Desc": "Per a consultes de seguretat infantil, contacteu amb <a href='mailto:raulcalvo@gmail.com' class='contact-link'>raulcalvo@gmail.com</a>.",
+    "sec5Desc": "Per a consultes de seguretat infantil, contacteu amb <a href='mailto:raul@xowapp.com' class='contact-link'>raul@xowapp.com</a>.",
     "footerText": "&copy; 2026 XowApp. Tots els drets reservats. Estàndards de Seguretat Infantil.",
     "themeSystem": "Sistema",
     "themeDark": "Fosc",
@@ -477,7 +409,7 @@
     "sec4Title": "4. Restriction d'Âge (18+ Uniquement)",
     "sec4Desc": "XowApp est strictement réservée aux personnes âgées de 18 ans et plus.",
     "sec5Title": "5. Contact Dédié à la Sécurité",
-    "sec5Desc": "Pour toute question relative à la protection de l'enfance, contactez <a href='mailto:raulcalvo@gmail.com' class='contact-link'>raulcalvo@gmail.com</a>.",
+    "sec5Desc": "Pour toute question relative à la protection de l'enfance, contactez <a href='mailto:raul@xowapp.com' class='contact-link'>raul@xowapp.com</a>.",
     "footerText": "&copy; 2026 XowApp. Tous droits réservés. Normes de Sécurité Enfant.",
     "themeSystem": "Système",
     "themeDark": "Sombre",
@@ -497,7 +429,7 @@
     "sec4Title": "4. Limite di Età (Solo 18+)",
     "sec4Desc": "XowApp è destinata esclusivamente a utenti di età pari o superiore a 18 anni.",
     "sec5Title": "5. Contatto per la Sicurezza",
-    "sec5Desc": "Per segnalazioni sulla sicurezza dei minori, contattare <a href='mailto:raulcalvo@gmail.com' class='contact-link'>raulcalvo@gmail.com</a>.",
+    "sec5Desc": "Per segnalazioni sulla sicurezza dei minori, contattare <a href='mailto:raul@xowapp.com' class='contact-link'>raul@xowapp.com</a>.",
     "footerText": "&copy; 2026 XowApp. Tutti i diritti riservati. Standard di Sicurezza Minori.",
     "themeSystem": "Sistema",
     "themeDark": "Scuro",
@@ -517,7 +449,7 @@
     "sec4Title": "4. Altersbeschränkung (Nur ab 18 Jahren)",
     "sec4Desc": "XowApp richtet sich ausschließlich an Personen ab 18 Jahren.",
     "sec5Title": "5. Kontakt für Sicherheitsfragen",
-    "sec5Desc": "Bei Fragen zum Kinderschutz wenden Sie sich an <a href='mailto:raulcalvo@gmail.com' class='contact-link'>raulcalvo@gmail.com</a>.",
+    "sec5Desc": "Bei Fragen zum Kinderschutz wenden Sie sich an <a href='mailto:raul@xowapp.com' class='contact-link'>raul@xowapp.com</a>.",
     "footerText": "&copy; 2026 XowApp. Alle Rechte vorbehalten. Kinderschutzstandards.",
     "themeSystem": "System",
     "themeDark": "Dunkel",
@@ -537,7 +469,7 @@
     "sec4Title": "4. Restricție de Vârstă (Doar 18+)",
     "sec4Desc": "XowApp este destinată exclusiv persoanelor cu vârsta de peste 18 ani.",
     "sec5Title": "5. Contact pentru Siguranță",
-    "sec5Desc": "Pentru raportări privind siguranța copiilor, contactați <a href='mailto:raulcalvo@gmail.com' class='contact-link'>raulcalvo@gmail.com</a>.",
+    "sec5Desc": "Pentru raportări privind siguranța copiilor, contactați <a href='mailto:raul@xowapp.com' class='contact-link'>raul@xowapp.com</a>.",
     "footerText": "&copy; 2026 XowApp. Toate drepturile rezervate. Standarde de Siguranță.",
     "themeSystem": "Sistem",
     "themeDark": "Întunecat",
@@ -557,7 +489,7 @@
     "sec4Title": "4. Restrição de Idade (Apenas 18+)",
     "sec4Desc": "O XowApp é estritamente voltado para maiores de 18 anos.",
     "sec5Title": "5. Contato de Segurança",
-    "sec5Desc": "Para questões de segurança infantil, entre em contato via <a href='mailto:raulcalvo@gmail.com' class='contact-link'>raulcalvo@gmail.com</a>.",
+    "sec5Desc": "Para questões de segurança infantil, entre em contato via <a href='mailto:raul@xowapp.com' class='contact-link'>raul@xowapp.com</a>.",
     "footerText": "&copy; 2026 XowApp. Todos os direitos reservados. Padrões de Segurança Infantil.",
     "themeSystem": "Sistema",
     "themeDark": "Escuro",
@@ -577,7 +509,7 @@
     "sec4Title": "4. Ograniczenie Wiekowe (Tylko 18+)",
     "sec4Desc": "XowApp jest zaprojektowana i przeznaczona wyłącznie dla użytkowników w wieku 18 lat i starszych. Osobom niepełnoletnim zabrania się tworzenia kont lub korzystania z aplikacji.",
     "sec5Title": "5. Dedykowany Kontakt w Sprawach Bezpieczeństwa",
-    "sec5Desc": "W przypadku pytań dotyczących bezpieczeństwa dzieci, pilnych zgłoszeń dotyczących wykorzystywania lub wniosków organów ścigania, prosimy o kontakt z naszym zespołem ds. bezpieczeństwa dzieci pod adresem <a href='mailto:raulcalvo@gmail.com' class='contact-link'>raulcalvo@gmail.com</a>.",
+    "sec5Desc": "W przypadku pytań dotyczących bezpieczeństwa dzieci, pilnych zgłoszeń dotyczących wykorzystywania lub wniosków organów ścigania, prosimy o kontakt z naszym zespołem ds. bezpieczeństwa dzieci pod adresem <a href='mailto:raul@xowapp.com' class='contact-link'>raul@xowapp.com</a>.",
     "footerText": "&copy; 2026 XowApp. Wszelkie prawa zastrzeżone. Standardy Bezpieczeństwa Dzieci.",
     "themeSystem": "System",
     "themeDark": "Ciemny",
@@ -597,7 +529,7 @@
     "sec4Title": "4. 年龄限制（仅限 18 岁以上）",
     "sec4Desc": "XowApp 严格设计并仅供 18 岁及以上用户使用。未成年人不得创建账户或使用本应用。",
     "sec5Title": "5. 专属安全联络渠道",
-    "sec5Desc": "如有儿童安全相关咨询、紧急虐待举报或执法机构请求，请联系我们的儿童安全专责团队：<a href='mailto:raulcalvo@gmail.com' class='contact-link'>raulcalvo@gmail.com</a>。",
+    "sec5Desc": "如有儿童安全相关咨询、紧急虐待举报或执法机构请求，请联系我们的儿童安全专责团队：<a href='mailto:raul@xowapp.com' class='contact-link'>raul@xowapp.com</a>。",
     "footerText": "&copy; 2026 XowApp. 保留所有权利。儿童安全标准。",
     "themeSystem": "跟随系统",
     "themeDark": "深色",
@@ -617,7 +549,7 @@
     "sec4Title": "4. 年齢制限（18歳以上限定）",
     "sec4Desc": "XowAppは18歳以上の利用者のみを対象として厳格に設計・提供されています。未成年者によるアカウント作成およびアプリの利用は禁止されています。",
     "sec5Title": "5. 専用の安全窓口",
-    "sec5Desc": "児童の安全に関するお問い合わせ、緊急の虐待通報、または法執行機関からのご依頼については、児童安全対応チーム宛てに <a href='mailto:raulcalvo@gmail.com' class='contact-link'>raulcalvo@gmail.com</a> までご連絡ください。",
+    "sec5Desc": "児童の安全に関するお問い合わせ、緊急の虐待通報、または法執行機関からのご依頼については、児童安全対応チーム宛てに <a href='mailto:raul@xowapp.com' class='contact-link'>raul@xowapp.com</a> までご連絡ください。",
     "footerText": "&copy; 2026 XowApp. 無断複写・転載を禁じます。児童安全基準。",
     "themeSystem": "システム",
     "themeDark": "ダーク",
@@ -637,7 +569,7 @@
     "sec4Title": "4. Aldersbegrænsning (Kun 18+)",
     "sec4Desc": "XowApp er udelukkende designet og tiltænkt brugere på 18 år eller ældre. Det er forbudt for mindreårige at oprette konti eller bruge applikationen.",
     "sec5Title": "5. Dedikeret Sikkerhedskontakt",
-    "sec5Desc": "Ved spørgsmål om børnesikkerhed, akutte misbrugsanmeldelser eller anmodninger fra retshåndhævende myndigheder, kontakt venligst vores dedikerede team for børnesikkerhed på <a href='mailto:raulcalvo@gmail.com' class='contact-link'>raulcalvo@gmail.com</a>.",
+    "sec5Desc": "Ved spørgsmål om børnesikkerhed, akutte misbrugsanmeldelser eller anmodninger fra retshåndhævende myndigheder, kontakt venligst vores dedikerede team for børnesikkerhed på <a href='mailto:raul@xowapp.com' class='contact-link'>raul@xowapp.com</a>.",
     "footerText": "&copy; 2026 XowApp. Alle rettigheder forbeholdes. Standarder for Børnesikkerhed.",
     "themeSystem": "System",
     "themeDark": "Mørk",
@@ -657,7 +589,7 @@
     "sec4Title": "4. تقييد السن (18 عامًا فأكثر فقط)",
     "sec4Desc": "صُمم XowApp ليكون مخصصًا بشكل صارم للمستخدمين البالغين 18 عامًا فأكثر. يُمنع على القاصرين إنشاء حسابات أو استخدام التطبيق.",
     "sec5Title": "5. جهة اتصال مخصصة للسلامة",
-    "sec5Desc": "للاستفسارات المتعلقة بسلامة الأطفال، أو البلاغات العاجلة عن الاعتداء، أو طلبات جهات تطبيق القانون، يُرجى التواصل مع فريقنا المخصص لسلامة الأطفال على <a href='mailto:raulcalvo@gmail.com' class='contact-link'>raulcalvo@gmail.com</a>.",
+    "sec5Desc": "للاستفسارات المتعلقة بسلامة الأطفال، أو البلاغات العاجلة عن الاعتداء، أو طلبات جهات تطبيق القانون، يُرجى التواصل مع فريقنا المخصص لسلامة الأطفال على <a href='mailto:raul@xowapp.com' class='contact-link'>raul@xowapp.com</a>.",
     "footerText": "&copy; 2026 XowApp. جميع الحقوق محفوظة. معايير سلامة الأطفال.",
     "themeSystem": "النظام",
     "themeDark": "داكن",
@@ -666,7 +598,7 @@
 };
 
     function getBrowserLanguage() {
-      const savedLang = localStorage.getItem('xowapp_safety_lang');
+      const savedLang = localStorage.getItem('xowapp_landing_lang');
       if (savedLang && translations[savedLang]) {
         return savedLang;
       }
@@ -691,7 +623,6 @@
       const t = translations[lang] || translations.en;
       document.documentElement.lang = lang;
       document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-      document.getElementById('langSelect').value = lang;
       document.getElementById('pageTitle').innerText = t.title;
       document.getElementById('statusBadgeText').innerText = t.statusBadge;
       document.getElementById('heroHeadline').innerText = t.heroHeadline;
@@ -712,50 +643,14 @@
       document.getElementById('sec5Title').innerText = t.sec5Title;
       document.getElementById('sec5Desc').innerHTML = t.sec5Desc;
 
-      document.getElementById('optThemeSystem').innerText = t.themeSystem || 'System';
-      document.getElementById('optThemeDark').innerText = t.themeDark || 'Dark';
-      document.getElementById('optThemeLight').innerText = t.themeLight || 'Light';
 
       document.getElementById('footerText').innerHTML = t.footerText;
     }
 
-    function changeLanguage(lang) {
-      localStorage.setItem('xowapp_safety_lang', lang);
-      renderLanguage(lang);
-    }
-
-    function getSystemTheme() {
-      return (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
-    }
-
-    function applyTheme(mode) {
-      let activeTheme = mode;
-      if (mode === 'system') {
-        activeTheme = getSystemTheme();
-      }
-      document.documentElement.setAttribute('data-theme', activeTheme);
-      document.getElementById('themeSelect').value = mode;
-    }
-
-    function changeTheme(mode) {
-      localStorage.setItem('xowapp_safety_theme', mode);
-      applyTheme(mode);
-    }
-
-    if (window.matchMedia) {
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        const savedTheme = localStorage.getItem('xowapp_safety_theme') || 'system';
-        if (savedTheme === 'system') {
-          applyTheme('system');
-        }
-      });
-    }
-
-    const currentLang = getBrowserLanguage();
-    renderLanguage(currentLang);
-
-    const savedTheme = localStorage.getItem('xowapp_safety_theme') || 'system';
-    applyTheme(savedTheme);
+    renderLanguage(getBrowserLanguage());
+    document.addEventListener('xow:langchange', function (e) {
+      renderLanguage(e.detail.lang);
+    });
   </script>
 </body>
 </html>
